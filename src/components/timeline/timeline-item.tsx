@@ -1,13 +1,20 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Building2, Calendar, MapPin, Briefcase, Award, ArrowRight } from "lucide-react"
-import { PlaceholderImage } from "../shared/placeholder-image"
-import { ExperienceData } from "@/types/experience"
+import { motion } from "framer-motion";
+import {
+  Building2,
+  Calendar,
+  MapPin,
+  Briefcase,
+  Award,
+  ArrowRight,
+} from "lucide-react";
+import { PlaceholderImage } from "../shared/placeholder-image";
+import { ExperienceData } from "@/types/experience";
 
 interface TimelineItemProps {
-  job: ExperienceData
-  index: number
+  job: ExperienceData;
+  index: number;
 }
 
 export function TimelineItem({ job, index }: TimelineItemProps) {
@@ -54,9 +61,9 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
               </div>
             </div>
           </div>
-          
+
           {/* Company Logo */}
-          <PlaceholderImage 
+          <PlaceholderImage
             text={job.company}
             size="md"
             className="group-hover:border-primary/20"
@@ -64,9 +71,7 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
         </div>
 
         {/* Description */}
-        <p className="text-muted-foreground mb-4">
-          {job.description}
-        </p>
+        <p className="text-muted-foreground mb-4">{job.description}</p>
 
         {/* Achievements */}
         <div className="mb-4">
@@ -81,7 +86,7 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
                 initial={{ opacity: 0, x: -10 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: (index * 0.1) + (i * 0.05) }}
+                transition={{ delay: index * 0.1 + i * 0.05 }}
                 className="flex items-start gap-2 text-muted-foreground"
               >
                 <ArrowRight className="h-4 w-4 mt-1 text-primary" />
@@ -99,7 +104,7 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: (index * 0.1) + (i * 0.05) }}
+              transition={{ delay: index * 0.1 + i * 0.05 }}
               className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs text-primary"
             >
               {tech}
@@ -112,5 +117,5 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
         <div className="absolute -bottom-px -left-px h-8 w-8 rounded-tr-xl border-t border-r border-primary/20" />
       </div>
     </motion.div>
-  )
-} 
+  );
+}

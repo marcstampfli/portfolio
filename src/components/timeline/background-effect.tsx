@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 export function BackgroundEffect() {
   return (
@@ -12,5 +12,5 @@ export function BackgroundEffect() {
         </div>
       </div>
     </>
-  )
-} 
+  );
+}
