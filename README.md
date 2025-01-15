@@ -5,54 +5,47 @@ Modern portfolio website with interactive elements and dynamic content managemen
 ## 🎯 Key Features
 
 - 🌟 Interactive particle system with mouse tracking
-- ⚡ Real-time content updates with React Query
+- ⚡ Optimized data fetching with React Query
 - 📱 Responsive design with dark mode
 - 🎨 Beautiful animations and transitions
 - 💼 Dynamic project showcase with modals
-- 📊 Interactive experience timeline
+- 📊 Professional experience timeline
 - 📬 Contact form with email notifications
 
 ## 🛠️ Tech Stack
 
+[![Next.js](https://img.shields.io/badge/Next.js-15.1.4-000000?style=flat&logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-3178C6?style=flat&logo=typescript)](https://www.typescriptlang.org)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.3.0-06B6D4?style=flat&logo=tailwindcss)](https://tailwindcss.com)
+[![Prisma](https://img.shields.io/badge/Prisma-5.22.0-2D3748?style=flat&logo=prisma)](https://www.prisma.io)
+
 - ⚛️ Next.js 15 App Router + Server Components
 - 🎭 Framer Motion + tsParticles
 - 🎨 TailwindCSS + Radix UI
-- 🔄 TanStack Query + React Hook Form
+- 🔄 TanStack Query for data fetching
 - 📝 Markdown processing with syntax highlighting
+- 🗃️ Prisma ORM for database management
 
-## 🗃️ Database Schema
+## 👨‍💻 About Me
 
-PostgreSQL with Prisma ORM managing:
+**Marc Stämpfli**  
+[![Website](https://img.shields.io/badge/Website-marcstampfli.com-2ea44f?style=flat)](https://marcstampfli.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Marc_Stämpfli-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/marcstampfli)
+[![GitHub](https://img.shields.io/badge/GitHub-marcstampfli-181717?style=flat&logo=github)](https://github.com/marcstampfli)
 
-\`\`\`prisma
-model Project {
-id String @id
-title String
-description String
-content String
-category String
-tags String[]
-tech_stack String[]
-image_url String
-github_url String?
-live_url String?
-figma_url String?
-}
+I'm a full-stack developer with a passion for creating beautiful, performant web applications. With over 15 years of experience in web development, I specialize in:
 
-model Experience {
-id String @id
-title String
-company String
-description String
-tech_stack String[]
-achievements String[]
-start_date DateTime
-end_date DateTime?
-}
-\`\`\`
+- 🖥️ Modern web development (Next.js, React, TypeScript, WordPress)
+- 🎨 UI/UX design and implementation
+- 🛠️ Full-stack application development
+- 🚀 Performance optimization
+- 🔒 Secure application architecture
 
-## 👨‍💻 Author
+## 📬 Let's Connect
 
-**Marc Stämpfli** • [marcstampfli.com](https://marcstampfli.com)
+I'm always open to interesting projects and collaborations. Feel free to reach out:
 
-_Building digital experiences with passion for design and performance_ ✨
+- 📧 Email: [hello@marcstampfli.com](mailto:hello@marcstampfli.com)
+- 💼 LinkedIn: [Marc Stämpfli](https://www.linkedin.com/in/marc-st%C3%A4mpfli/)
+- 📸 Instagram: [@marcstampfli](https://instagram.com/marcstampfli)
+- 🌐 Website: [marcstampfli.com](https://marcstampfli.com)
