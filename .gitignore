@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# local env files
+.env*.local
+.env
 
 # vercel
 .vercel
@@ -40,8 +41,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# prisma
-prisma
+# Prisma - only ignore specific files
+/prisma/migrations/
+/prisma/*.db
+/prisma/*.db-journal
 
-# csv
-Portfolio-Export-2025-January-15-0330(1).csv
+# CSV data files
+*.csv
