@@ -1,58 +1,63 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { useState, useEffect } from "react"
-import { cn } from "@/lib/utils"
-import { navItems } from "@/data/nav"
-import { Menu, X } from "lucide-react"
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { navItems } from "@/data/nav";
+import { Menu, X } from "lucide-react";
 
 interface ScrollSection {
-  id: string
-  top: number
+  id: string;
+  top: number;
 }
 
 export function FloatingNav() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState<string>("#home")
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("#home");
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Update active section and scroll state
   useEffect(() => {
     const updateState = () => {
       // Update scroll state
-      setIsScrolled(window.scrollY > 100)
+      setIsScrolled(window.scrollY > 100);
 
       // Update active section
       const sections = navItems.map(({ href }) => {
-        const element = document.querySelector(href)
-        if (!element) return { id: href, top: 0 }
-        const rect = element.getBoundingClientRect()
+        const element = document.querySelector(href);
+        if (!element) return { id: href, top: 0 };
+        const rect = element.getBoundingClientRect();
         return {
           id: href,
           top: rect.top + window.scrollY,
-        }
-      })
+        };
+      });
 
-      const currentSection = sections.reduce((closest: ScrollSection, section: ScrollSection) => {
-        if (Math.abs(section.top - window.scrollY) < Math.abs(closest.top - window.scrollY)) {
-          return section
-        }
-        return closest
-      })
+      const currentSection = sections.reduce(
+        (closest: ScrollSection, section: ScrollSection) => {
+          if (
+            Math.abs(section.top - window.scrollY) <
+            Math.abs(closest.top - window.scrollY)
+          ) {
+            return section;
+          }
+          return closest;
+        },
+      );
 
-      setActiveSection(currentSection.id)
-    }
+      setActiveSection(currentSection.id);
+    };
 
-    window.addEventListener('scroll', updateState)
-    return () => window.removeEventListener('scroll', updateState)
-  }, [])
+    window.addEventListener("scroll", updateState);
+    return () => window.removeEventListener("scroll", updateState);
+  }, []);
 
   const handleNavClick = (href: string) => {
     document.querySelector(href)?.scrollIntoView({
       behavior: "smooth",
-    })
-    setMobileMenuOpen(false)
-  }
+    });
+    setMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -69,19 +74,19 @@ export function FloatingNav() {
           aria-label="Main navigation"
         >
           {navItems.map(({ href, label, icon: Icon }) => {
-            const isActive = activeSection === href
+            const isActive = activeSection === href;
             return (
               <a
                 key={href}
                 href={href}
                 onClick={(e) => {
-                  e.preventDefault()
-                  handleNavClick(href)
+                  e.preventDefault();
+                  handleNavClick(href);
                 }}
                 className={cn(
                   "group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:text-primary",
                   isActive && "text-primary",
-                  isScrolled && !isActive && "px-2"
+                  isScrolled && !isActive && "px-2",
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
@@ -94,17 +99,19 @@ export function FloatingNav() {
                 )}
                 <span className="relative flex items-center gap-2">
                   <Icon className="h-4 w-4" aria-hidden="true" />
-                  <span 
+                  <span
                     className={cn(
                       "relative transition-all duration-300",
-                      isScrolled && !isActive && "w-0 overflow-hidden opacity-0 p-0"
+                      isScrolled &&
+                        !isActive &&
+                        "w-0 overflow-hidden opacity-0 p-0",
                     )}
                   >
                     {label}
                   </span>
                 </span>
               </a>
-            )
+            );
           })}
         </nav>
 
@@ -135,24 +142,28 @@ export function FloatingNav() {
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className={cn(
           "fixed inset-x-0 top-0 z-40 bg-background/80 backdrop-blur-md border-b border-primary/10 py-16 shadow-lg",
-          !mobileMenuOpen && "pointer-events-none"
+          !mobileMenuOpen && "pointer-events-none",
         )}
       >
-        <nav className="container px-4" role="navigation" aria-label="Mobile navigation">
+        <nav
+          className="container px-4"
+          role="navigation"
+          aria-label="Mobile navigation"
+        >
           <ul className="flex flex-col space-y-2">
             {navItems.map(({ href, label, icon: Icon }) => {
-              const isActive = activeSection === href
+              const isActive = activeSection === href;
               return (
                 <li key={href}>
                   <a
                     href={href}
                     onClick={(e) => {
-                      e.preventDefault()
-                      handleNavClick(href)
+                      e.preventDefault();
+                      handleNavClick(href);
                     }}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-4 py-3 text-base text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary",
-                      isActive && "bg-primary/10 text-primary"
+                      isActive && "bg-primary/10 text-primary",
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -160,11 +171,11 @@ export function FloatingNav() {
                     {label}
                   </a>
                 </li>
-              )
+              );
             })}
           </ul>
         </nav>
       </motion.div>
     </>
-  )
+  );
 }

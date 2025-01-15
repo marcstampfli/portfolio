@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Github, GitPullRequest, GitCommit, Star } from "lucide-react"
+import { motion } from "framer-motion";
+import { Github, GitPullRequest, GitCommit, Star } from "lucide-react";
 
 // Mock data - replace with actual GitHub API data
 const githubStats = {
   totalContributions: 1243,
   pullRequests: 86,
   commits: 892,
-  stars: 124
-}
+  stars: 124,
+};
 
 export function GitHubActivity() {
   return (
@@ -32,7 +32,9 @@ export function GitHubActivity() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Total Contributions</p>
-            <p className="text-2xl font-semibold">{githubStats.totalContributions}</p>
+            <p className="text-2xl font-semibold font-mono">
+              {githubStats.totalContributions}
+            </p>
           </div>
         </motion.div>
 
@@ -48,7 +50,9 @@ export function GitHubActivity() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Pull Requests</p>
-            <p className="text-2xl font-semibold">{githubStats.pullRequests}</p>
+            <p className="text-2xl font-semibold font-mono">
+              {githubStats.pullRequests}
+            </p>
           </div>
         </motion.div>
 
@@ -64,7 +68,9 @@ export function GitHubActivity() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Commits</p>
-            <p className="text-2xl font-semibold">{githubStats.commits}</p>
+            <p className="text-2xl font-semibold font-mono">
+              {githubStats.commits}
+            </p>
           </div>
         </motion.div>
 
@@ -80,7 +86,9 @@ export function GitHubActivity() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Repository Stars</p>
-            <p className="text-2xl font-semibold">{githubStats.stars}</p>
+            <p className="text-2xl font-semibold font-mono">
+              {githubStats.stars}
+            </p>
           </div>
         </motion.div>
       </div>
@@ -103,5 +111,5 @@ export function GitHubActivity() {
         </a>
       </motion.div>
     </div>
-  )
-} 
+  );
+}

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import React from "react"
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { Github, Linkedin, Instagram } from "lucide-react"
+import React from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Github, Linkedin, Instagram } from "lucide-react";
 
 export function SocialLinks() {
   return (
@@ -14,9 +14,21 @@ export function SocialLinks() {
       className="mt-12 flex items-center justify-center gap-6"
     >
       {[
-        { icon: Github, href: "https://github.com/marcstampfli", label: "GitHub" },
-        { icon: Linkedin, href: "https://www.linkedin.com/in/marc-stämpfli", label: "LinkedIn" },
-        { icon: Instagram, href: "https://instagram.com/marcstampfli", label: "Instagram" },
+        {
+          icon: Github,
+          href: "https://github.com/marcstampfli",
+          label: "GitHub",
+        },
+        {
+          icon: Linkedin,
+          href: "https://www.linkedin.com/in/marc-stämpfli",
+          label: "LinkedIn",
+        },
+        {
+          icon: Instagram,
+          href: "https://instagram.com/marcstampfli",
+          label: "Instagram",
+        },
       ].map(({ icon: Icon, href, label }) => (
         <Link
           key={label}
@@ -32,5 +44,5 @@ export function SocialLinks() {
         </Link>
       ))}
     </motion.div>
-  )
-} 
+  );
+}

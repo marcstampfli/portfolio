@@ -6,7 +6,7 @@ type AnyFunction = (...args: unknown[]) => unknown;
 
 export function useThrottle<T extends AnyFunction>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   const lastRan = useRef<number>(Date.now());
   const timeoutId = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -31,6 +31,6 @@ export function useThrottle<T extends AnyFunction>(
         }, delay);
       }
     },
-    [fn, delay]
+    [fn, delay],
   );
 }

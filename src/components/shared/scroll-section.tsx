@@ -1,74 +1,86 @@
-"use client"
+"use client";
 
-import { motion, useScroll, useTransform } from "framer-motion"
-import { useCallback, useEffect, useRef, useState } from "react"
-import Image from "next/image"
-import { useThrottle } from "@/hooks/use-throttle"
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useThrottle } from "@/hooks/use-throttle";
 
 interface ScrollSectionProps {
-  children: React.ReactNode
-  className?: string
-  onLoadMore?: () => Promise<void>
-  hasMore?: boolean
-  loading?: boolean
-  imageSrc?: string
-  imageAlt?: string
+  children: React.ReactNode;
+  className?: string;
+  onLoadMore?: () => Promise<void>;
+  hasMore?: boolean;
+  loading?: boolean;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
-export function ScrollSection({ 
-  children, 
-  className = "", 
+export function ScrollSection({
+  children,
+  className = "",
   onLoadMore,
   hasMore = false,
   loading = false,
   imageSrc,
-  imageAlt = "Content image"
+  imageAlt = "Content image",
 }: ScrollSectionProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [loadingMore, setLoadingMore] = useState(false)
-  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+
   // Configure scroll animation with container ref
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "center center"]
-  })
+    offset: ["start end", "center center"],
+  });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1])
-  const y = useTransform(scrollYProgress, [0, 0.5], [50, 0])
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.5], [50, 0]);
 
   // Throttled scroll handler to prevent excessive calls
   const handleScroll = useCallback(async () => {
-    if (!containerRef.current || !onLoadMore || !hasMore || loading || loadingMore) return
+    if (
+      !containerRef.current ||
+      !onLoadMore ||
+      !hasMore ||
+      loading ||
+      loadingMore
+    )
+      return;
 
-    const { bottom } = containerRef.current.getBoundingClientRect()
-    const threshold = window.innerHeight + 100
+    const { bottom } = containerRef.current.getBoundingClientRect();
+    const threshold = window.innerHeight + 100;
 
     if (bottom <= threshold) {
-      setLoadingMore(true)
+      setLoadingMore(true);
       try {
-        await onLoadMore()
+        await onLoadMore();
       } finally {
-        setLoadingMore(false)
+        setLoadingMore(false);
       }
     }
-  }, [onLoadMore, hasMore, loading, loadingMore])
+  }, [onLoadMore, hasMore, loading, loadingMore]);
 
-  const throttledScroll = useThrottle(handleScroll, 200)
+  const throttledScroll = useThrottle(handleScroll, 200);
 
   // Attach scroll listener
   useEffect(() => {
-    if (!onLoadMore || !hasMore) return
+    if (!onLoadMore || !hasMore) return;
 
-    window.addEventListener('scroll', throttledScroll)
-    return () => window.removeEventListener('scroll', throttledScroll)
-  }, [onLoadMore, hasMore, throttledScroll])
+    window.addEventListener("scroll", throttledScroll);
+    return () => window.removeEventListener("scroll", throttledScroll);
+  }, [onLoadMore, hasMore, throttledScroll]);
 
   return (
     <motion.div
       ref={containerRef}
       initial={{ opacity: 0, y: 50 }}
-      style={{ opacity, y }}
-      className={`relative w-full ${className}`}
+      style={{
+        opacity,
+        y,
+        position: "relative",
+        ...(imageSrc ? {} : { minHeight: "100vh" }),
+      }}
+      className={`w-full ${className}`}
     >
       {imageSrc && (
         <div className="relative aspect-video w-full overflow-hidden rounded-lg">
@@ -92,5 +104,5 @@ export function ScrollSection({
         </div>
       )}
     </motion.div>
-  )
-} 
+  );
+}

@@ -10,10 +10,10 @@ export interface Project {
   tags: string[];
   tech_stack: string[];
   images: (string | StaticImport)[];
-  client?: string;
-  github_url?: string;
-  live_url?: string;
-  figma_url?: string;
+  client?: string | null;
+  github_url?: string | null;
+  live_url?: string | null;
+  figma_url?: string | null;
   status: string;
   order: number;
   created_at: string;

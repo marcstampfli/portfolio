@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import React from "react"
+import React from "react";
 
 interface ProgressDotsProps {
-  total: number
-  current: number
-  onSelect: (index: number) => void
+  total: number;
+  current: number;
+  onSelect: (index: number) => void;
 }
 
 export function ProgressDots({ total, current, onSelect }: ProgressDotsProps) {
@@ -25,5 +25,5 @@ export function ProgressDots({ total, current, onSelect }: ProgressDotsProps) {
         </button>
       ))}
     </div>
-  )
-} 
+  );
+}

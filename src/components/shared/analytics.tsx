@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export function Analytics() {
   const pathname = usePathname();
@@ -10,9 +10,9 @@ export function Analytics() {
   useEffect(() => {
     // Here you can add your analytics service
     // Example: Google Analytics, Plausible, etc.
-    const url = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+    const url = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
     console.log(`Page view: ${url}`);
   }, [pathname, searchParams]);
 
   return null;
-} 
+}
