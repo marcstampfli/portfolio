@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,17 +14,17 @@ model Project {
   description String
   content     String
   category    String
-  tags        String[]
-  tech_stack  String[]
-  images      String[]
-  client      String?
   github_url  String?
   live_url    String?
   figma_url   String?
-  status      String
-  order       Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  tags        String[]
+  tech_stack  String[]
+  client      String?
+  images      String[]
+  order       Int      @default(0)
+  status      String   @default("published")
 }
 
 model Experience {
@@ -36,12 +33,12 @@ model Experience {
   company      String
   period       String
   description  String
-  tech_stack   String[]
-  achievements String[]
   start_date   DateTime
   end_date     DateTime?
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
+  tech_stack   String[]
+  achievements String[]
 }
 
 model ContactMessage {

@@ -1,6 +1,4 @@
 import type { Config } from "tailwindcss";
-import typography from "@tailwindcss/typography";
-import animate from "tailwindcss-animate";
 
 const config = {
   darkMode: ["class"],
@@ -12,6 +10,11 @@ const config = {
   ],
   prefix: "",
   theme: {
+    fontFamily: {
+      sans: ["Geist Sans", "sans-serif"],
+      mono: ["Geist Mono", "monospace"],
+      base: ["Geist Mono", "monospace"], // Make mono the default
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -20,10 +23,6 @@ const config = {
       },
     },
     extend: {
-      fontFamily: {
-        sans: ["var(--font-outfit)"],
-        heading: ["var(--font-sora)"],
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -64,10 +63,6 @@ const config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      transitionDuration: {
-        "400": "400ms",
-        "500": "500ms",
-      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -85,105 +80,86 @@ const config = {
       typography: {
         DEFAULT: {
           css: {
-            maxWidth: "65ch",
+            maxWidth: "100%",
             color: "hsl(var(--foreground))",
-            '[class~="lead"]': {
-              color: "hsl(var(--muted-foreground))",
-            },
+            fontFamily: "var(--font-geist-mono)",
             a: {
               color: "hsl(var(--primary))",
-              textDecoration: "underline",
+              "&:hover": {
+                color: "hsl(var(--primary))",
+              },
+            },
+            h1: {
+              fontWeight: "700",
+              color: "hsl(var(--foreground))",
+            },
+            h2: {
+              fontWeight: "600",
+              color: "hsl(var(--foreground))",
+            },
+            h3: {
               fontWeight: "500",
+              color: "hsl(var(--foreground))",
+            },
+            h4: {
+              color: "hsl(var(--foreground))",
             },
             strong: {
               color: "hsl(var(--foreground))",
-              fontWeight: "600",
             },
-            'ol[type="A"]': {
-              "--list-counter-style": "upper-alpha",
+            "ol > li::marker": {
+              color: "hsl(var(--muted-foreground))",
             },
-            'ol[type="a"]': {
-              "--list-counter-style": "lower-alpha",
-            },
-            'ol[type="A" s]': {
-              "--list-counter-style": "upper-alpha",
-            },
-            'ol[type="a" s]': {
-              "--list-counter-style": "lower-alpha",
-            },
-            'ol[type="I"]': {
-              "--list-counter-style": "upper-roman",
-            },
-            'ol[type="i"]': {
-              "--list-counter-style": "lower-roman",
-            },
-            'ol[type="I" s]': {
-              "--list-counter-style": "upper-roman",
-            },
-            'ol[type="i" s]': {
-              "--list-counter-style": "lower-roman",
-            },
-            'ol[type="1"]': {
-              "--list-counter-style": "decimal",
-            },
-            "ol > li": {
-              position: "relative",
-            },
-            "ul > li": {
-              position: "relative",
-            },
-            blockquote: {
-              fontWeight: "500",
-              fontStyle: "italic",
-              color: "hsl(var(--foreground))",
-              borderLeftWidth: "0.25rem",
-              borderLeftColor: "hsl(var(--border))",
-              quotes: '"\\201C""\\201D""\\2018""\\2019"',
+            "ul > li::marker": {
+              color: "hsl(var(--muted-foreground))",
             },
             hr: {
               borderColor: "hsl(var(--border))",
-              borderTopWidth: 1,
             },
-            thead: {
-              borderBottomWidth: "1px",
-              borderBottomColor: "hsl(var(--border))",
+            blockquote: {
+              borderLeftColor: "hsl(var(--border))",
+              color: "hsl(var(--muted-foreground))",
             },
-            "thead th": {
-              color: "hsl(var(--foreground))",
-              fontWeight: "600",
-            },
-            "tbody tr": {
-              borderBottomWidth: "1px",
-              borderBottomColor: "hsl(var(--border))",
-            },
-            "tbody td": {
-              verticalAlign: "baseline",
+            "figure figcaption": {
+              color: "hsl(var(--muted-foreground))",
             },
             code: {
-              color: "hsl(var(--foreground))",
-            },
-            "pre code": {
-              backgroundColor: "transparent",
-              borderWidth: "0",
-              borderRadius: "0",
-              padding: "0",
-              fontWeight: "400",
-              color: "inherit",
-              fontSize: "inherit",
-              fontFamily: "inherit",
-              lineHeight: "inherit",
-            },
-            pre: {
+              fontFamily: "var(--font-geist-mono)",
               color: "hsl(var(--foreground))",
               backgroundColor: "hsl(var(--muted))",
-              borderRadius: "var(--radius)",
+              borderRadius: "0.25rem",
+              paddingLeft: "0.25rem",
+              paddingRight: "0.25rem",
+            },
+            "code::before": {
+              content: '""',
+            },
+            "code::after": {
+              content: '""',
+            },
+            pre: {
+              fontFamily: "var(--font-geist-mono)",
+              backgroundColor: "hsl(var(--muted))",
+              code: {
+                backgroundColor: "transparent",
+                color: "inherit",
+                fontSize: "inherit",
+                fontWeight: "inherit",
+                padding: "0",
+              },
+            },
+            thead: {
+              borderBottomColor: "hsl(var(--border))",
+            },
+            "tbody tr": {
+              borderBottomColor: "hsl(var(--border))",
             },
           },
         },
       },
     },
   },
-  plugins: [typography, animate],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
 
 export default config;

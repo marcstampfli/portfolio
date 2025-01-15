@@ -1,4 +1,4 @@
-# ✨ Portfolio
+# ✨ Marc Stampfli Portfolio
 
 Modern portfolio website with interactive elements and dynamic content management. Built with Next.js 15 and PostgreSQL.
 
