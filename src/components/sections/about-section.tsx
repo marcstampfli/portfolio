@@ -1,45 +1,49 @@
-"use client"
+"use client";
 
-import { motion, useReducedMotion } from "framer-motion"
-import { Lightbulb, Heart, Target, Compass } from "lucide-react"
-import Image from "next/image"
+import { motion, useReducedMotion } from "framer-motion";
+import { Lightbulb, Heart, Target, Compass } from "lucide-react";
+import Image from "next/image";
 
 const journey = [
   {
     icon: Lightbulb,
     title: "The Spark",
-    description: "Started coding out of curiosity, quickly fell in love with creating digital experiences that make a difference.",
+    description:
+      "Started coding out of curiosity, quickly fell in love with creating digital experiences that make a difference.",
   },
   {
     icon: Heart,
     title: "The Passion",
-    description: "Found my calling in bridging design and technology, creating solutions that feel both beautiful and intuitive.",
+    description:
+      "Found my calling in bridging design and technology, creating solutions that feel both beautiful and intuitive.",
   },
   {
     icon: Target,
     title: "The Mission",
-    description: "Dedicated to crafting digital products that solve real problems and bring value to people's lives.",
+    description:
+      "Dedicated to crafting digital products that solve real problems and bring value to people's lives.",
   },
   {
     icon: Compass,
     title: "The Journey",
-    description: "Constantly exploring new technologies and approaches, always aiming to push the boundaries of what's possible.",
+    description:
+      "Constantly exploring new technologies and approaches, always aiming to push the boundaries of what's possible.",
   },
-]
+];
 
 export function AboutSection() {
-  const prefersReducedMotion = useReducedMotion()
-  
+  const prefersReducedMotion = useReducedMotion();
+
   const fadeIn = {
     initial: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
-  }
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  };
 
   return (
     <>
-      <section 
-        className="relative overflow-hidden py-24 sm:py-32" 
+      <section
+        className="relative overflow-hidden py-24 sm:py-32"
         id="about"
         aria-label="About Me"
       >
@@ -48,13 +52,13 @@ export function AboutSection() {
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]" aria-hidden="true"></div>
+          <div
+            className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]"
+            aria-hidden="true"
+          ></div>
           <div className="mx-auto max-w-3xl">
             {/* Header */}
-            <motion.div
-              {...fadeIn}
-              className="text-center mb-16"
-            >
+            <motion.div {...fadeIn} className="text-center mb-16">
               <div className="flex items-center justify-center mb-8">
                 {/* Profile Image */}
                 <motion.div
@@ -63,7 +67,17 @@ export function AboutSection() {
                   transition={{ duration: 0.5 }}
                   className="relative"
                 >
-                  <div className="relative h-32 w-32 overflow-hidden rounded-2xl border border-primary/20 bg-primary/5">
+                  <div
+                    className="relative h-32 w-32 overflow-hidden rounded-2xl border border-primary/20 bg-primary/5"
+                    style={{
+                      position: "relative",
+                      height: "128px",
+                      width: "128px",
+                      display: "inline-block",
+                      contain: "layout",
+                      transform: "translate3d(0, 0, 0)",
+                    }}
+                  >
                     <Image
                       src="/profile.jpg"
                       alt="Marc Stämpfli"
@@ -82,21 +96,23 @@ export function AboutSection() {
                   My Journey
                 </span>
               </h2>
-              
-              <motion.p 
+
+              <motion.p
                 className="text-lg text-muted-foreground"
                 {...fadeIn}
                 transition={{ delay: 0.1 }}
               >
-                Driven by curiosity, creativity, and a relentless pursuit of excellence, I believe in the power of technology to transform ideas into reality.
+                Driven by curiosity, creativity, and a relentless pursuit of
+                excellence, I believe in the power of technology to transform
+                ideas into reality.
               </motion.p>
             </motion.div>
 
             {/* Journey Cards */}
-            <motion.div 
+            <motion.div
               className="grid gap-6 sm:grid-cols-2"
               variants={{
-                visible: { transition: { staggerChildren: 0.1 } }
+                visible: { transition: { staggerChildren: 0.1 } },
               }}
               initial="hidden"
               whileInView="visible"
@@ -139,24 +155,25 @@ export function AboutSection() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AboutPage",
-            "mainEntity": {
+            mainEntity: {
               "@type": "Person",
-              "name": "Marc Stämpfli",
-              "description": "I'm a digital creator who believes in the power of technology to transform ideas into reality. My journey is driven by curiosity, creativity, and a relentless pursuit of excellence.",
-              "image": "/profile.jpg",
-              "jobTitle": "Full Stack Developer",
-              "knowsAbout": journey.map(item => item.description),
-              "skills": [
+              name: "Marc Stämpfli",
+              description:
+                "I'm a digital creator who believes in the power of technology to transform ideas into reality. My journey is driven by curiosity, creativity, and a relentless pursuit of excellence.",
+              image: "/profile.jpg",
+              jobTitle: "Full Stack Developer",
+              knowsAbout: journey.map((item) => item.description),
+              skills: [
                 "Web Development",
                 "UI/UX Design",
                 "Problem Solving",
                 "Technical Leadership",
-                "Digital Innovation"
-              ]
-            }
-          })
+                "Digital Innovation",
+              ],
+            },
+          }),
         }}
       />
     </>
-  )
+  );
 }

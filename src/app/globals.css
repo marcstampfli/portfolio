@@ -1,8 +1,15 @@
+@import url("https://fonts.cdnfonts.com/css/geist-sans");
+@import url("https://fonts.cdnfonts.com/css/geist-mono");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --font-geist-sans: "Geist Sans", sans-serif;
+    --font-geist-mono: "Geist Mono", monospace;
+  }
   :root {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -31,9 +38,25 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground antialiased font-mono;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-sans;
+  }
+
+  p {
+    @apply font-mono;
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -118,6 +141,11 @@
 
   .hover-glow {
     @apply transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(var(--primary-rgb),0.3)];
+  }
+
+  /* Typography */
+  .font-mono {
+    font-family: var(--font-geist-mono);
   }
 
   /* Gradients */

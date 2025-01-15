@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { ThemeProvider } from "@/components/layout/theme-provider"
-import { Analytics } from "@/components/analytics"
-import { BackgroundGradient } from "@/components/background/background-gradient"
-import { motion as _motion } from "framer-motion"
+import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Analytics } from "@/components/analytics";
+import { BackgroundGradient } from "@/components/background/background-gradient";
+import { motion as _motion } from "framer-motion";
 
 export function RootLayoutClient({
   children,
   className,
 }: {
-  children: React.ReactNode
-  className: string
+  children: React.ReactNode;
+  className: string;
 }) {
   return (
     <body className={className}>
@@ -21,7 +21,7 @@ export function RootLayoutClient({
         disableTransitionOnChange
       >
         <BackgroundGradient />
-        <_motion.main 
+        <_motion.main
           className="relative min-h-screen"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -33,5 +33,5 @@ export function RootLayoutClient({
         <Analytics />
       </ThemeProvider>
     </body>
-  )
-} 
+  );
+}

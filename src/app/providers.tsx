@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ThemeProvider } from 'next-themes'
-import { PropsWithChildren, useState } from 'react'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
+import { PropsWithChildren, useState } from "react";
 
 export function Providers({ children }: PropsWithChildren) {
   const [queryClient] = useState(
@@ -12,12 +12,13 @@ export function Providers({ children }: PropsWithChildren) {
           queries: {
             staleTime: 1000 * 60 * 5, // 5 minutes
             retry: 3,
-            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+            retryDelay: (attemptIndex) =>
+              Math.min(1000 * 2 ** attemptIndex, 30000),
             refetchOnWindowFocus: false,
           },
         },
-      })
-  )
+      }),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -30,5 +31,5 @@ export function Providers({ children }: PropsWithChildren) {
         {children}
       </ThemeProvider>
     </QueryClientProvider>
-  )
-} 
+  );
+}
