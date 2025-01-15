@@ -2,20 +2,237 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 203 93% 61%;
+    --primary-rgb: 62, 176, 247;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 190 95% 39%;
+    --accent-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 215 25% 27%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 203 93% 61%;
+    --radius: 0.5rem;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-background/50 backdrop-blur-lg border border-border/50 shadow-[0_8px_16px_rgba(0,0,0,0.4)];
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-[#4CC2FF] to-accent bg-clip-text text-transparent;
+  }
+
+  .section-padding {
+    @apply py-20 sm:py-32;
+  }
+
+  .gitkraken-card {
+    @apply relative overflow-hidden rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm transition-all hover:border-primary/50 hover:bg-card/50 hover:shadow-[0_0_30px_-5px_rgba(var(--primary-rgb),0.3)];
+  }
+
+  .gitkraken-button {
+    @apply relative overflow-hidden rounded-lg bg-primary/10 px-4 py-2 text-primary transition-all hover:bg-primary/20 hover:shadow-[0_0_30px_-5px_rgba(var(--primary-rgb),0.3)] active:scale-95;
+  }
+
+  .gitkraken-input {
+    @apply rounded-lg border border-primary/10 bg-primary/5 px-4 py-3 text-foreground ring-1 ring-primary/20 transition-all placeholder:text-muted-foreground/50 focus:border-primary/20 focus:bg-primary/10 focus:outline-none focus:ring-primary/30;
+  }
+
+  .gitkraken-grid {
+    @apply absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] opacity-[0.15];
+  }
+
+  .blue-gradient {
+    @apply bg-gradient-to-r from-primary via-[#4CC2FF] to-[#5CCEFF] bg-clip-text text-transparent;
+  }
+
+  .blue-glow {
+    @apply shadow-[0_0_30px_-5px_rgba(var(--primary-rgb),0.5)];
+  }
+
+  .blue-border {
+    @apply border border-primary/20;
+  }
+}
+
+@layer utilities {
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale {
+    animation: scale 0.3s ease-out forwards;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(var(--primary-rgb),0.3)];
+  }
+
+  /* Gradients */
+  .gradient-border {
+    @apply relative before:absolute before:inset-0 before:p-[1px] before:bg-gradient-to-r before:from-primary before:via-[#4CC2FF] before:to-accent before:rounded-[inherit] before:-z-10;
+  }
+
+  .gradient-mask {
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--primary-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
+  }
+}
+
+/* Text shine animation */
+@keyframes text-shine {
+  from {
+    background-position: 200% center;
+  }
+  to {
+    background-position: -200% center;
+  }
+}
+
+.animate-text-shine {
+  animation: text-shine 8s ease-in-out infinite;
+}
+
+/* Slow pulse animation */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1) rotate(45deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(45deg);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
 }

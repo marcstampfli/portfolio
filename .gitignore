@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma
+prisma
+
+# csv
+Portfolio-Export-2025-January-15-0330(1).csv

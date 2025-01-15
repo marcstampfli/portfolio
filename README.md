@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✨ Portfolio
 
-## Getting Started
+Modern portfolio website with interactive elements and dynamic content management. Built with Next.js 15 and PostgreSQL.
 
-First, run the development server:
+## 🎯 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- 🌟 Interactive particle system with mouse tracking
+- ⚡ Real-time content updates with React Query
+- 📱 Responsive design with dark mode
+- 🎨 Beautiful animations and transitions
+- 💼 Dynamic project showcase with modals
+- 📊 Interactive experience timeline
+- 📬 Contact form with email notifications
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- ⚛️ Next.js 15 App Router + Server Components
+- 🎭 Framer Motion + tsParticles
+- 🎨 TailwindCSS + Radix UI
+- 🔄 TanStack Query + React Hook Form
+- 📝 Markdown processing with syntax highlighting
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗃️ Database Schema
 
-## Learn More
+PostgreSQL with Prisma ORM managing:
 
-To learn more about Next.js, take a look at the following resources:
+\`\`\`prisma
+model Project {
+id String @id
+title String
+description String
+content String
+category String
+tags String[]
+tech_stack String[]
+image_url String
+github_url String?
+live_url String?
+figma_url String?
+}
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+model Experience {
+id String @id
+title String
+company String
+description String
+tech_stack String[]
+achievements String[]
+start_date DateTime
+end_date DateTime?
+}
+\`\`\`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 👨‍💻 Author
 
-## Deploy on Vercel
+**Marc Stämpfli** • [marcstampfli.com](https://marcstampfli.com)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+_Building digital experiences with passion for design and performance_ ✨
