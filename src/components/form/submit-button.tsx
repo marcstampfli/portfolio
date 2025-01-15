@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import React from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Loader2, CheckCircle2, Send } from "lucide-react"
-import { SubmitButtonProps } from "@/types/form"
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, CheckCircle2, Send } from "lucide-react";
+import { SubmitButtonProps } from "@/types/form";
 
 export function SubmitButton({ isSubmitting, isSubmitted }: SubmitButtonProps) {
   return (
@@ -54,5 +54,5 @@ export function SubmitButton({ isSubmitting, isSubmitted }: SubmitButtonProps) {
       </span>
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:250%_250%,100%_100%] bg-[position:-100%_0,0_0] bg-no-repeat transition-[background-position_0s_ease] duration-500 group-hover:bg-[position:200%_0,0_0]" />
     </motion.button>
-  )
-} 
+  );
+}

@@ -1,13 +1,22 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Send, CheckCircle2, AlertCircle, Mail, MapPin, Github, Linkedin, Instagram } from "lucide-react"
-import { type ContactFormData, contactFormSchema } from "@/types/form"
-import { FormField } from "./form-field"
-import { submitContactMessage } from "@/app/actions"
+import { useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  Mail,
+  MapPin,
+  Github,
+  Linkedin,
+  Instagram,
+} from "lucide-react";
+import { type ContactFormData, contactFormSchema } from "@/types/form";
+import { FormField } from "./form-field";
+import { submitContactMessage } from "@/app/actions";
 
 const socialLinks = [
   {
@@ -25,7 +34,7 @@ const socialLinks = [
     href: "https://www.instagram.com/marcstampfli",
     icon: Instagram,
   },
-]
+];
 
 const contactInfo = [
   {
@@ -39,14 +48,16 @@ const contactInfo = [
     label: "Location",
     value: "Trinidad and Tobago",
   },
-]
+];
 
 export function ContactForm() {
-  const prefersReducedMotion = useReducedMotion()
-  const [focusedField, setFocusedField] = useState<keyof ContactFormData | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const prefersReducedMotion = useReducedMotion();
+  const [focusedField, setFocusedField] = useState<
+    keyof ContactFormData | null
+  >(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
@@ -55,36 +66,33 @@ export function ContactForm() {
       email: "",
       message: "",
     },
-  })
+  });
 
   async function onSubmit(data: ContactFormData) {
     try {
-      setIsSubmitting(true)
-      setError(null)
-      await submitContactMessage(data)
-      setIsSubmitted(true)
-      form.reset()
+      setIsSubmitting(true);
+      setError(null);
+      await submitContactMessage(data);
+      setIsSubmitted(true);
+      form.reset();
     } catch {
-      setError("Failed to send message. Please try again later.")
+      setError("Failed to send message. Please try again later.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   const animation = {
     initial: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
-  }
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  };
 
   return (
     <div className="mx-auto mt-16 max-w-6xl">
       <div className="grid gap-12 lg:grid-cols-5">
         {/* Contact Info */}
-        <motion.div
-          className="space-y-8 lg:col-span-2"
-          {...animation}
-        >
+        <motion.div className="space-y-8 lg:col-span-2" {...animation}>
           {/* Contact Details */}
           <div className="space-y-6">
             {contactInfo.map((item) => (
@@ -108,7 +116,9 @@ export function ContactForm() {
                       {item.value}
                     </a>
                   ) : (
-                    <p className="text-sm text-muted-foreground">{item.value}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {item.value}
+                    </p>
                   )}
                 </div>
               </motion.div>
@@ -117,7 +127,9 @@ export function ContactForm() {
 
           {/* Social Links */}
           <div>
-            <h3 className="text-sm font-medium text-foreground">Connect With Me</h3>
+            <h3 className="text-sm font-medium text-foreground">
+              Connect With Me
+            </h3>
             <div className="mt-4 flex gap-4">
               {socialLinks.map((link) => (
                 <motion.a
@@ -172,20 +184,30 @@ export function ContactForm() {
               <textarea
                 {...form.register("message")}
                 aria-invalid={!!form.formState.errors.message}
-                aria-describedby={form.formState.errors.message ? "message-error" : undefined}
+                aria-describedby={
+                  form.formState.errors.message ? "message-error" : undefined
+                }
                 onFocus={() => setFocusedField("message")}
                 onBlur={() => setFocusedField(null)}
                 rows={5}
                 className={`w-full rounded-xl border bg-transparent px-4 py-3 pt-6 text-foreground transition-all duration-300 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary ${
-                  form.formState.errors.message ? "border-destructive" : "border-primary/10"
+                  form.formState.errors.message
+                    ? "border-destructive"
+                    : "border-primary/10"
                 }`}
               />
               <motion.label
                 htmlFor="message"
                 initial={false}
                 animate={{
-                  y: focusedField === "message" || form.getValues().message ? -24 : 0,
-                  scale: focusedField === "message" || form.getValues().message ? 0.85 : 1,
+                  y:
+                    focusedField === "message" || form.getValues().message
+                      ? -24
+                      : 0,
+                  scale:
+                    focusedField === "message" || form.getValues().message
+                      ? 0.85
+                      : 1,
                 }}
                 transition={{ duration: 0.2 }}
                 className={`absolute left-4 origin-left cursor-text text-muted-foreground transition-colors ${
@@ -259,10 +281,16 @@ export function ContactForm() {
           </motion.form>
 
           {/* Decorative corner elements */}
-          <div className="absolute -right-px -top-px h-8 w-8 rounded-bl-xl border-b border-l border-primary/20" aria-hidden="true" />
-          <div className="absolute -bottom-px -left-px h-8 w-8 rounded-tr-xl border-t border-r border-primary/20" aria-hidden="true" />
+          <div
+            className="absolute -right-px -top-px h-8 w-8 rounded-bl-xl border-b border-l border-primary/20"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute -bottom-px -left-px h-8 w-8 rounded-tr-xl border-t border-r border-primary/20"
+            aria-hidden="true"
+          />
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

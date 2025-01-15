@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { type FieldErrors, type UseFormReturn } from "react-hook-form"
-import { type ContactFormData } from "@/types/form"
+import { motion } from "framer-motion";
+import { type FieldErrors, type UseFormReturn } from "react-hook-form";
+import { type ContactFormData } from "@/types/form";
 
 interface FormFieldProps {
-  name: keyof ContactFormData
-  label: string
-  type?: string
-  form: UseFormReturn<ContactFormData>
-  errors: FieldErrors<ContactFormData>
-  focusedField: keyof ContactFormData | null
-  onFocus: (field: keyof ContactFormData) => void
-  onBlur: () => void
+  name: keyof ContactFormData;
+  label: string;
+  type?: string;
+  form: UseFormReturn<ContactFormData>;
+  errors: FieldErrors<ContactFormData>;
+  focusedField: keyof ContactFormData | null;
+  onFocus: (field: keyof ContactFormData) => void;
+  onBlur: () => void;
 }
 
 export function FormField({
@@ -64,5 +64,5 @@ export function FormField({
         </motion.p>
       )}
     </div>
-  )
-} 
+  );
+}
