@@ -47,4 +47,4 @@ next-env.d.ts
 /prisma/*.db-journal
 
 # CSV data files
-*.csv
+#*.csv

@@ -5,8 +5,10 @@ const prisma = new PrismaClient();
 async function main() {
   // Delete existing data
   await prisma.project.deleteMany();
+  await prisma.experience.deleteMany();
 
   const projects = [
+    // Original projects
     {
       title: "Marc Stämpfli UI Design",
       slug: "marc-stampfli-ui-design",
@@ -363,11 +365,138 @@ async function main() {
       created_at: new Date("2021-04-02"),
       updated_at: new Date("2021-04-02"),
     },
+    // New projects from CSV
+    {
+      title: "Vinci's View Website",
+      slug: "vincis-view-website",
+      description: "Website for Vinci's View",
+      content: "Lorem ipsum dolor",
+      category: "Websites",
+      tags: ["Custom Theme", "E-Commerce", "WordPress"],
+      tech_stack: ["WordPress"],
+      images: [
+        "project-vincisview-website.jpg",
+        "project-vincisview-website2.jpg",
+        "project-vincisview-website3.jpg",
+        "project-vincisview-website4.jpg",
+        "project-vincisview-website5.jpg",
+      ],
+      live_url: "https://www.vincisviewtt.com",
+      client: "Vinci's View",
+      status: "published",
+      order: 20,
+      created_at: new Date("2021-04-01"),
+      updated_at: new Date("2021-04-01"),
+    },
   ];
 
   for (const project of projects) {
     await prisma.project.create({
       data: project,
+    });
+  }
+
+  const experiences = [
+    {
+      title: "Web Developer / Designer",
+      company: "WordHerd®",
+      period: "Aug 2021 - Present · 3 yrs 6 mos",
+      description:
+        "Web Developer/Designer at a leading web design and development agency. Expertise in WordPress & React development, and UI/UX design. Remote work.",
+      start_date: new Date("2021-08-01"),
+      end_date: null,
+      tech_stack: ["WordPress", "React", "UI/UX Design"],
+      achievements: [
+        "Developed and maintained client websites using WordPress and React",
+        "Created custom UI/UX designs for web applications",
+        "Collaborated with remote teams on large-scale projects",
+      ],
+    },
+    {
+      title: "UI Designer",
+      company: "Webfx",
+      period: "Apr 2021 - Nov 2021 · 8 mos",
+      description:
+        "Freelance UI Designer specializing in user interface design for a local digital agency. Remote work.",
+      start_date: new Date("2021-04-01"),
+      end_date: new Date("2021-11-30"),
+      tech_stack: ["Figma", "Adobe XD", "UI Design"],
+      achievements: [
+        "Designed user interfaces for web and mobile applications",
+        "Created design systems and style guides",
+        "Collaborated with developers to implement designs",
+      ],
+    },
+    {
+      title: "Web Developer / Designer",
+      company: "Marc Stampfli",
+      period: "Apr 2013 - Oct 2021 · 8 yrs 7 mos",
+      description:
+        "Freelance Web & Graphic Designer/Developer providing design and development services to clients locally and internationally.",
+      start_date: new Date("2013-04-01"),
+      end_date: new Date("2021-10-31"),
+      tech_stack: ["WordPress", "HTML/CSS", "JavaScript", "Graphic Design"],
+      achievements: [
+        "Developed custom websites for various clients",
+        "Created branding and graphic design materials",
+        "Managed full project lifecycle from concept to deployment",
+      ],
+    },
+    {
+      title: "Webmaster",
+      company: "CCN TV6",
+      period: "Oct 2018 - Mar 2019 · 6 mos",
+      description:
+        "Managed content creation, ePaper production, social media strategy, and minor video editing for the 'Beyond the Tape' segment at Trinidad Express Newspaper and CCN TV6. Semi-remote work.",
+      start_date: new Date("2018-10-01"),
+      end_date: new Date("2019-03-31"),
+      tech_stack: ["Content Management", "Social Media", "Video Editing"],
+      achievements: [
+        "Managed website content and updates",
+        "Developed social media strategies",
+        "Produced digital publications and video content",
+      ],
+    },
+    {
+      title: "Web Developer",
+      company: "MACO Magazines",
+      period: "Feb 2017 - Mar 2018 · 1 yr 2 mos",
+      description:
+        "Managed website development, social media strategy, and the digitization of magazines into flip books as the In-house Web Developer for all MACO Magazines. Semi-remote work.",
+      start_date: new Date("2017-02-01"),
+      end_date: new Date("2018-03-31"),
+      tech_stack: ["Web Development", "Social Media", "Digital Publishing"],
+      achievements: [
+        "Developed and maintained magazine websites",
+        "Implemented digital publishing solutions",
+        "Managed social media presence and strategy",
+      ],
+    },
+    {
+      title: "Web Developer",
+      company: "Simply Intense - Si.media - Si.digital - Si.loyalty",
+      period: "Oct 2008 - Mar 2013 · 4 yrs 6 mos",
+      description:
+        "In-house Web Developer with expertise in web development, design, server administration, and database management. Worked in both semi-remote and fully-remote environments.",
+      start_date: new Date("2008-10-01"),
+      end_date: new Date("2013-03-31"),
+      tech_stack: [
+        "Web Development",
+        "Server Administration",
+        "Database Management",
+      ],
+      achievements: [
+        "Developed and maintained company websites",
+        "Managed server infrastructure and databases",
+        "Implemented digital solutions for various business units",
+      ],
+    },
+  ];
+
+  // Seed experiences
+  for (const experience of experiences) {
+    await prisma.experience.create({
+      data: experience,
     });
   }
 
