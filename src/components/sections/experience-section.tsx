@@ -16,6 +16,7 @@ import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import type { PanInfo } from "framer-motion";
 import { BackgroundGradient } from "../background/background-gradient";
+import { DownloadResumeButton } from "../resume/download-resume-button";
 
 export function ExperienceSection() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -118,6 +119,17 @@ export function ExperienceSection() {
               Experienced in web development, design, and digital solutions for
               over a decade.
             </p>
+            {/* Add Download Resume Button */}
+            {!isLoading && !error && experiences.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mt-6"
+              >
+                <DownloadResumeButton experiences={experiences} />
+              </motion.div>
+            )}
           </motion.div>
 
           <div className="relative mt-16">
