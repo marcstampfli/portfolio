@@ -184,7 +184,7 @@ function ImageGallery({ images, title }: ImageGalleryProps) {
                   "h-1.5 rounded-full transition-all",
                   index === currentImage
                     ? "w-3 bg-primary"
-                    : "w-1.5 bg-primary/50 hover:bg-primary/75"
+                    : "w-1.5 bg-primary/50 hover:bg-primary/75",
                 )}
                 aria-label={`Go to image ${index + 1}`}
                 aria-current={index === currentImage}
