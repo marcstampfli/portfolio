@@ -30,6 +30,20 @@ model Project {
   updated_at  DateTime @updatedAt
 }
 
+model Experience {
+  id           String    @id @default(cuid())
+  title        String
+  company      String
+  period       String
+  description  String
+  tech_stack   String[]
+  achievements String[]
+  start_date   DateTime
+  end_date     DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+}
+
 model ContactMessage {
   id         String   @id @default(cuid())
   name       String
