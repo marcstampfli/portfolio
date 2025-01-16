@@ -1,47 +1,53 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo, memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Code2, Palette, Compass, Sparkles } from "lucide-react";
 import { FuturisticBackground } from "../background/futuristic-background";
 import { TypeAnimation } from "react-type-animation";
 
-const highlights = [
-  {
-    icon: Code2,
-    label: "Problem Solver",
-    description: "Turning ideas into reality",
-  },
-  {
-    icon: Palette,
-    label: "Creative Mind",
-    description: "Design-driven approach",
-  },
-  {
-    icon: Compass,
-    label: "Tech Explorer",
-    description: "Always learning, always growing",
-  },
-  {
-    icon: Sparkles,
-    label: "Innovator",
-    description: "Future-focused vision",
-  },
-];
-
-export function HeroSection() {
+export const HeroSection = memo(function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
-  const fadeUpAnimation = {
-    initial: { opacity: 0, y: prefersReducedMotion ? 0 : 10 },
-    animate: { opacity: 1, y: 0 },
-    transition: {
-      duration: 0.5,
-      ease: [0.4, 0, 0.2, 1],
-      delay: 0.1,
-    },
-  };
+  const fadeUpAnimation = useMemo(
+    () => ({
+      initial: { opacity: 0, y: prefersReducedMotion ? 0 : 10 },
+      animate: { opacity: 1, y: 0 },
+      transition: {
+        duration: 0.5,
+        ease: [0.4, 0, 0.2, 1],
+        delay: 0.1,
+      },
+    }),
+    [prefersReducedMotion],
+  );
+
+  const highlights = useMemo(
+    () => [
+      {
+        icon: Code2,
+        label: "Problem Solver",
+        description: "Turning ideas into reality",
+      },
+      {
+        icon: Palette,
+        label: "Creative Mind",
+        description: "Design-driven approach",
+      },
+      {
+        icon: Compass,
+        label: "Tech Explorer",
+        description: "Always learning, always growing",
+      },
+      {
+        icon: Sparkles,
+        label: "Innovator",
+        description: "Future-focused vision",
+      },
+    ],
+    [],
+  );
 
   return (
     <>
@@ -166,4 +172,4 @@ export function HeroSection() {
       />
     </>
   );
-}
+});

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -75,7 +76,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${GeistMono.className} relative`}>
+      <head>
+        <link rel="preload" href="/profile.jpg" as="image" type="image/jpeg" />
+      </head>
+      <body
+        className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}
+      >
         <Providers>
           <Suspense fallback={<Loading />}>{children}</Suspense>
         </Providers>

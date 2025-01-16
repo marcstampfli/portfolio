@@ -9,7 +9,7 @@ import { type Project } from "@/types/prisma";
 import { ProjectModal } from "@/components/shared/project-modal";
 import { getProjects } from "@/app/actions";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/shared/optimized-image";
 import { ProjectTag } from "@/components/shared/project-tag";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Button } from "@/components/ui/button";
@@ -236,15 +236,24 @@ export function ProjectsSection() {
                         className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                       >
                         {/* Project Image with enhanced overlay */}
-                        <div className="absolute inset-0">
+                        <div
+                          className="absolute inset-0 w-full h-full"
+                          style={{
+                            position: "relative",
+                            height: "100%",
+                            width: "100%",
+                          }}
+                        >
                           {project.images?.[0] ? (
-                            <Image
+                            <OptimizedImage
                               src={project.images[0]}
                               alt={`Screenshot of ${project.title}`}
                               fill
                               sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                               className="object-cover transition-transform duration-500 group-hover:scale-105"
                               priority={index < 3}
+                              quality={85}
+                              blurDataURL="/images/placeholder.svg"
                             />
                           ) : (
                             <PlaceholderImage
