@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography";
 
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -11,8 +12,8 @@ const config = {
   prefix: "",
   theme: {
     fontFamily: {
-      sans: ["Geist Sans", "sans-serif"],
-      mono: ["Geist Mono", "monospace"],
+      sans: ["var(--font-geist-sans)"],
+      mono: ["var(--font-geist-mono)"],
       base: ["Geist Mono", "monospace"], // Make mono the default
     },
     container: {
@@ -159,7 +160,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [require("tailwindcss-animate"), typography],
 } satisfies Config;
 
 export default config;

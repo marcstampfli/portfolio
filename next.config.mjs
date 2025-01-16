@@ -8,7 +8,18 @@ const nextConfig = {
     ],
     unoptimized: process.env.NODE_ENV === "development",
   },
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
+  headers: async () => [
+    {
+      source: "/:path*",
+      headers: [
+        {
+          key: "Link",
+          value: "</images/placeholder.svg>; rel=preload; as=image",
+        },
+      ],
+    },
+  ],
   webpack: (config, { isServer, dev }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
