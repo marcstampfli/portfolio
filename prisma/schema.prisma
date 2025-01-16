@@ -22,7 +22,8 @@ model Project {
   tags        String[]
   tech_stack  String[]
   client      String?
-  images      String[]
+  /// Paths to project images relative to public folder
+  images      String[] @default([])
   order       Int      @default(0)
   status      String   @default("published")
 }
