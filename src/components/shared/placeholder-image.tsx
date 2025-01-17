@@ -11,37 +11,42 @@ interface PlaceholderImageProps {
   text?: string;
 }
 
-export function PlaceholderImage({
+export default function PlaceholderImage({
   className,
   size = "md",
   animate = true,
+  text,
 }: PlaceholderImageProps) {
   const sizes = {
     sm: "w-8 h-8 text-xs",
-    md: "w-16 h-16 text-sm",
-    lg: "w-24 h-24 text-base",
+    md: "w-12 h-12 text-sm",
+    lg: "w-16 h-16 text-base",
   };
 
+  const Component = animate ? motion.div : "div";
+
   return (
-    <motion.div
+    <Component
+      initial={animate ? { opacity: 0, scale: 0.95 } : undefined}
+      animate={animate ? { opacity: 1, scale: 1 } : undefined}
+      transition={{ duration: 0.3 }}
       className={cn(
-        "relative overflow-hidden rounded-xl border border-primary/10",
-        "bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5",
-        "flex items-center justify-center font-medium text-primary/70",
+        "relative flex items-center justify-center bg-muted",
         sizes[size],
         className,
       )}
-      initial={animate ? { opacity: 0, scale: 0.9 } : undefined}
-      animate={animate ? { opacity: 1, scale: 1 } : undefined}
-      whileHover={animate ? { scale: 1.05 } : undefined}
     >
-      <Image
-        src="/images/placeholder.svg"
-        alt="Project placeholder"
-        fill
-        className="object-cover"
-        priority
-      />
-    </motion.div>
+      {text ? (
+        <span className="text-muted-foreground">{text}</span>
+      ) : (
+        <Image
+          src="/images/placeholder.svg"
+          alt="Placeholder"
+          width={24}
+          height={24}
+          className="h-1/2 w-1/2 text-muted-foreground"
+        />
+      )}
+    </Component>
   );
 }

@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,38 +11,40 @@ datasource db {
 }
 
 model Project {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  description String
-  content     String
-  category    String
-  github_url  String?
-  live_url    String?
-  figma_url   String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  tags        String[]
-  tech_stack  String[]
-  client      String?
-  /// Paths to project images relative to public folder
-  images      String[] @default([])
-  order       Int      @default(0)
-  status      String   @default("published")
+  id           String    @id @default(cuid())
+  title        String
+  slug         String    @unique
+  description  String
+  content      String
+  project_type String    @default("web")
+  tech_stack   String[]
+  images       String[]
+  live_url     String?
+  github_url   String?
+  figma_url    String?
+  client       String?
+  status       String    @default("published")
+  order        Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  developed_at DateTime?
 }
 
 model Experience {
   id           String    @id @default(cuid())
   title        String
   company      String
+  position     String
   period       String
-  description  String
+  location     String?
+  type         String?
   start_date   DateTime
   end_date     DateTime?
+  description  String
+  achievements String[]
+  tech_stack   String[]
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
-  tech_stack   String[]
-  achievements String[]
 }
 
 model ContactMessage {

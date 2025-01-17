@@ -3,7 +3,7 @@
 import { useRef, useMemo, memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Code2, Palette, Compass, Sparkles } from "lucide-react";
-import { FuturisticBackground } from "../background/futuristic-background";
+import { FuturisticBackground } from "@/components/background/futuristic-background";
 import { TypeAnimation } from "react-type-animation";
 
 export const HeroSection = memo(function HeroSection() {

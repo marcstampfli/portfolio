@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
+import animate from "tailwindcss-animate";
 
 const config: Config = {
   darkMode: ["class"],
@@ -11,11 +12,6 @@ const config: Config = {
   ],
   prefix: "",
   theme: {
-    fontFamily: {
-      sans: ["var(--font-geist-sans)"],
-      mono: ["var(--font-geist-mono)"],
-      base: ["Geist Mono", "monospace"], // Make mono the default
-    },
     container: {
       center: true,
       padding: "2rem",
@@ -73,94 +69,26 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "text-shine": {
+          "0%": {
+            backgroundPosition: "200% center",
+            opacity: "0.5",
+          },
+          "100%": {
+            backgroundPosition: "-200% center",
+            opacity: "1",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-      },
-      typography: {
-        DEFAULT: {
-          css: {
-            maxWidth: "100%",
-            color: "hsl(var(--foreground))",
-            fontFamily: "var(--font-geist-mono)",
-            a: {
-              color: "hsl(var(--primary))",
-              "&:hover": {
-                color: "hsl(var(--primary))",
-              },
-            },
-            h1: {
-              fontWeight: "700",
-              color: "hsl(var(--foreground))",
-            },
-            h2: {
-              fontWeight: "600",
-              color: "hsl(var(--foreground))",
-            },
-            h3: {
-              fontWeight: "500",
-              color: "hsl(var(--foreground))",
-            },
-            h4: {
-              color: "hsl(var(--foreground))",
-            },
-            strong: {
-              color: "hsl(var(--foreground))",
-            },
-            "ol > li::marker": {
-              color: "hsl(var(--muted-foreground))",
-            },
-            "ul > li::marker": {
-              color: "hsl(var(--muted-foreground))",
-            },
-            hr: {
-              borderColor: "hsl(var(--border))",
-            },
-            blockquote: {
-              borderLeftColor: "hsl(var(--border))",
-              color: "hsl(var(--muted-foreground))",
-            },
-            "figure figcaption": {
-              color: "hsl(var(--muted-foreground))",
-            },
-            code: {
-              fontFamily: "var(--font-geist-mono)",
-              color: "hsl(var(--foreground))",
-              backgroundColor: "hsl(var(--muted))",
-              borderRadius: "0.25rem",
-              paddingLeft: "0.25rem",
-              paddingRight: "0.25rem",
-            },
-            "code::before": {
-              content: '""',
-            },
-            "code::after": {
-              content: '""',
-            },
-            pre: {
-              fontFamily: "var(--font-geist-mono)",
-              backgroundColor: "hsl(var(--muted))",
-              code: {
-                backgroundColor: "transparent",
-                color: "inherit",
-                fontSize: "inherit",
-                fontWeight: "inherit",
-                padding: "0",
-              },
-            },
-            thead: {
-              borderBottomColor: "hsl(var(--border))",
-            },
-            "tbody tr": {
-              borderBottomColor: "hsl(var(--border))",
-            },
-          },
-        },
+        "text-shine": "text-shine 3s ease-in-out infinite",
+        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), typography],
-} satisfies Config;
+  plugins: [animate, typography],
+} as const;
 
 export default config;

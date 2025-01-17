@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
-import { type Experience } from "@prisma/client";
+import type { Experience } from "@/types/prisma";
 import { pdf } from "@react-pdf/renderer";
 import { Resume } from "./resume-generator";
 

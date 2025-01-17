@@ -1,25 +1,3 @@
-import { StaticImport } from "next/dist/shared/lib/get-img-props";
-
-export interface Project {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content: string;
-  category: string;
-  tags: string[];
-  tech_stack: string[];
-  images: (string | StaticImport)[];
-  client?: string | null;
-  github_url?: string | null;
-  live_url?: string | null;
-  figma_url?: string | null;
-  status: string;
-  order: number;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface ContactMessage {
   id: string;
   name: string;
@@ -33,12 +11,37 @@ export interface Experience {
   id: string;
   title: string;
   company: string;
+  position: string;
   period: string;
-  description: string;
-  tech_stack: string[];
-  achievements: string[];
+  location?: string;
+  type?: string;
   start_date: string;
-  end_date?: string;
+  end_date: string | null;
+  description: string;
+  achievements: string[];
+  tech_stack: string[];
   created_at: string;
   updated_at: string;
 }
+
+export interface Project {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  project_type: string;
+  tech_stack: string[];
+  images: string[];
+  live_url?: string;
+  github_url?: string;
+  figma_url?: string;
+  client?: string;
+  status: "published" | "draft";
+  order: number;
+  created_at: string;
+  updated_at: string;
+  developed_at: string;
+}
+
+export type PortfolioItem = Experience | Project;

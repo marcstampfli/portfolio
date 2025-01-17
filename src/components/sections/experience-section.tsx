@@ -2,21 +2,23 @@
 
 import { motion, useAnimation } from "framer-motion";
 import { getExperiences } from "@/app/actions";
-import { type Experience } from "@prisma/client";
+import { type Experience } from "@/types/prisma";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Loader2,
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  Building2,
-} from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { PanInfo } from "framer-motion";
-import { BackgroundGradient } from "../background/background-gradient";
-import { DownloadResumeButton } from "../resume/download-resume-button";
+import { BackgroundGradient } from "@/components/background/background-gradient";
+import { DownloadResumeButton } from "@/components/resume/download-resume-button";
+
+const Icons = {
+  Loader2: dynamic(() => import("lucide-react").then((mod) => mod.Loader2)),
+  AlertCircle: dynamic(() => import("lucide-react").then((mod) => mod.AlertCircle)),
+  ChevronLeft: dynamic(() => import("lucide-react").then((mod) => mod.ChevronLeft)),
+  ChevronRight: dynamic(() => import("lucide-react").then((mod) => mod.ChevronRight)),
+  Building2: dynamic(() => import("lucide-react").then((mod) => mod.Building2)),
+};
 
 export function ExperienceSection() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -24,10 +26,10 @@ export function ExperienceSection() {
   const controls = useAnimation();
 
   const {
-    data: experiences = [],
+    data: experiences = [] as Experience[],
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<Experience[]>({
     queryKey: ["experiences"],
     queryFn: getExperiences,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -136,7 +138,7 @@ export function ExperienceSection() {
             {/* Loading State */}
             {isLoading && (
               <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <Icons.Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <p className="mt-4 text-muted-foreground">
                   Loading experiences...
                 </p>
@@ -146,7 +148,7 @@ export function ExperienceSection() {
             {/* Error State */}
             {error && (
               <div className="flex flex-col items-center justify-center py-12 text-destructive">
-                <AlertCircle className="h-8 w-8" />
+                <Icons.AlertCircle className="h-8 w-8" />
                 <p className="mt-4">
                   Failed to load experiences. Please try again later.
                 </p>
@@ -160,8 +162,6 @@ export function ExperienceSection() {
                 <div className="hidden md:block">
                   <div className="absolute -left-16 top-1/2 -translate-y-1/2">
                     <Button
-                      variant="ghost"
-                      size="icon"
                       onClick={() => navigate("prev")}
                       disabled={activeIndex === 0}
                       className={cn(
@@ -171,14 +171,12 @@ export function ExperienceSection() {
                           : "hover:bg-primary/10",
                       )}
                     >
-                      <ChevronLeft className="h-6 w-6" />
+                      <Icons.ChevronLeft className="h-6 w-6" />
                     </Button>
                   </div>
 
                   <div className="absolute -right-16 top-1/2 -translate-y-1/2">
                     <Button
-                      variant="ghost"
-                      size="icon"
                       onClick={() => navigate("next")}
                       disabled={activeIndex === maxIndex}
                       className={cn(
@@ -188,7 +186,7 @@ export function ExperienceSection() {
                           : "hover:bg-primary/10",
                       )}
                     >
-                      <ChevronRight className="h-6 w-6" />
+                      <Icons.ChevronRight className="h-6 w-6" />
                     </Button>
                   </div>
                 </div>
@@ -196,8 +194,6 @@ export function ExperienceSection() {
                 {/* Mobile Navigation */}
                 <div className="flex md:hidden justify-between mb-6">
                   <Button
-                    variant="ghost"
-                    size="icon"
                     onClick={() => navigate("prev")}
                     disabled={activeIndex === 0}
                     className={cn(
@@ -207,12 +203,10 @@ export function ExperienceSection() {
                         : "hover:bg-primary/10",
                     )}
                   >
-                    <ChevronLeft className="h-5 w-5" />
+                    <Icons.ChevronLeft className="h-5 w-5" />
                   </Button>
 
                   <Button
-                    variant="ghost"
-                    size="icon"
                     onClick={() => navigate("next")}
                     disabled={activeIndex === maxIndex}
                     className={cn(
@@ -222,7 +216,7 @@ export function ExperienceSection() {
                         : "hover:bg-primary/10",
                     )}
                   >
-                    <ChevronRight className="h-5 w-5" />
+                    <Icons.ChevronRight className="h-5 w-5" />
                   </Button>
                 </div>
 
@@ -261,7 +255,7 @@ export function ExperienceSection() {
                             {/* Logo */}
                             <div className="mb-6 flex justify-center">
                               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <Building2 className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
+                                <Icons.Building2 className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
                               </div>
                             </div>
 
@@ -330,22 +324,20 @@ export function ExperienceSection() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "ItemList",
-            itemListElement: experiences.map(
-              (exp: Experience, index: number) => ({
-                "@type": "WorkExperience",
-                position: index + 1,
-                name: exp.title,
-                description: exp.description,
-                startDate: exp.period.split(" - ")[0],
-                endDate: exp.period.split(" - ")[1] || "Present",
-                skills: exp.tech_stack,
-                accomplishments: exp.achievements,
-                worksFor: {
-                  "@type": "Organization",
-                  name: exp.company,
-                },
-              }),
-            ),
+            itemListElement: experiences.map((exp, index) => ({
+              "@type": "WorkExperience",
+              position: index + 1,
+              name: exp.title,
+              description: exp.description,
+              startDate: exp.period.split(" - ")[0],
+              endDate: exp.period.split(" - ")[1] || "Present",
+              skills: exp.tech_stack,
+              accomplishments: exp.achievements,
+              worksFor: {
+                "@type": "Organization",
+                name: exp.company,
+              },
+            })),
           }),
         }}
       />

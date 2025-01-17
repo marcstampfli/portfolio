@@ -22,19 +22,18 @@ export function OptimizedImage({
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
-      <Image
-        src={src}
-        alt={alt}
-        {...props}
-        className={cn(
-          "object-cover transition-[filter] duration-500",
-          isLoading && "blur-md",
-        )}
-        onLoad={() => setIsLoading(false)}
-        placeholder={blurDataURL ? "blur" : "empty"}
-        blurDataURL={blurDataURL}
-      />
-    </div>
+    <Image
+      src={src}
+      alt={alt}
+      className={cn(
+        "duration-700 ease-in-out",
+        isLoading ? "scale-110 blur-2xl grayscale" : "scale-100 blur-0 grayscale-0",
+        className,
+      )}
+      onLoadingComplete={() => setIsLoading(false)}
+      placeholder={blurDataURL ? "blur" : "empty"}
+      blurDataURL={blurDataURL}
+      {...props}
+    />
   );
 }

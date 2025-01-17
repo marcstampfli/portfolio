@@ -147,33 +147,6 @@ export function AboutSection() {
           </div>
         </div>
       </section>
-
-      {/* Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "AboutPage",
-            mainEntity: {
-              "@type": "Person",
-              name: "Marc Stämpfli",
-              description:
-                "I'm a digital creator who believes in the power of technology to transform ideas into reality. My journey is driven by curiosity, creativity, and a relentless pursuit of excellence.",
-              image: "/profile.jpg",
-              jobTitle: "Full Stack Developer",
-              knowsAbout: journey.map((item) => item.description),
-              skills: [
-                "Web Development",
-                "UI/UX Design",
-                "Problem Solving",
-                "Technical Leadership",
-                "Digital Innovation",
-              ],
-            },
-          }),
-        }}
-      />
     </>
   );
 }

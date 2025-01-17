@@ -49,3 +49,44 @@ I'm always open to interesting projects and collaborations. Feel free to reach o
 - 💼 LinkedIn: [Marc Stämpfli](https://www.linkedin.com/in/marc-st%C3%A4mpfli/)
 - 📸 Instagram: [@marcstampfli](https://instagram.com/marcstampfli)
 - 🌐 Website: [marcstampfli.com](https://marcstampfli.com)
+
+## 🚀 Getting Started
+
+1. Clone and install dependencies:
+   ```bash
+   git clone https://github.com/marcstampfli/portfolio.git
+   cd portfolio
+   pnpm install
+   ```
+
+2. Set up environment:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Start the database:
+   ```bash
+   docker compose up -d
+   ```
+
+4. Initialize database:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+5. Run development server:
+   ```bash
+   pnpm dev
+   ```
+
+## 🗃️ Database
+
+PostgreSQL database runs in Docker and is configured to:
+- Run on port 5433 (avoiding conflicts)
+- Use persistent volume storage
+- Have isolated credentials
+
+## 📝 License
+
+This project is licensed under the MIT License.

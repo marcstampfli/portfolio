@@ -1,25 +1,16 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { PropsWithChildren, useState } from "react";
+import { type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-export function Providers({ children }: PropsWithChildren) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes
-            retry: 3,
-            retryDelay: (attemptIndex) =>
-              Math.min(1000 * 2 ** attemptIndex, 30000),
-            refetchOnWindowFocus: false,
-          },
-        },
-      }),
-  );
+interface ProvidersProps {
+  children: ReactNode;
+}
 
+const queryClient = new QueryClient();
+
+export function Providers({ children }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider

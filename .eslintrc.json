@@ -1,6 +1,9 @@
 {
   "extends": ["next/core-web-vitals", "prettier", "next"],
   "plugins": ["@typescript-eslint"],
+  "parserOptions": {
+    "ecmaVersion": 2024
+  },
   "rules": {
     "@typescript-eslint/no-unused-vars": [
       "warn",

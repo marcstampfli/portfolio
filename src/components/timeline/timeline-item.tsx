@@ -10,10 +10,10 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { PlaceholderImage } from "../shared/placeholder-image";
-import { ExperienceData } from "@/types/experience";
+import { type Experience } from "../../types/experience";
 
 interface TimelineItemProps {
-  job: ExperienceData;
+  job: Experience;
   index: number;
 }
 
@@ -98,7 +98,7 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
 
         {/* Technologies */}
         <div className="flex flex-wrap gap-2">
-          {job.tech.map((tech, i) => (
+          {job.tech_stack.map((tech: string, i: number) => (
             <motion.span
               key={tech}
               initial={{ opacity: 0, scale: 0.8 }}

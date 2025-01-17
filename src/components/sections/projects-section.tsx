@@ -1,8 +1,7 @@
 "use client";
 
 import { LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
-import { Github, Globe, Figma, AlertCircle, Loader2 } from "lucide-react";
-import { PlaceholderImage } from "@/components/shared/placeholder-image";
+import dynamic from "next/dynamic";
 import { useState, useEffect, useMemo } from "react";
 import { ProjectFilters } from "@/components/shared/project-filters";
 import { type Project } from "@/types/prisma";
@@ -14,12 +13,20 @@ import { ProjectTag } from "@/components/shared/project-tag";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Button } from "@/components/ui/button";
 
+const Icons = {
+  Github: dynamic(() => import("lucide-react").then((mod) => mod.Github)),
+  Globe: dynamic(() => import("lucide-react").then((mod) => mod.Globe)),
+  Figma: dynamic(() => import("lucide-react").then((mod) => mod.Figma)),
+  AlertCircle: dynamic(() => import("lucide-react").then((mod) => mod.AlertCircle)),
+  Loader2: dynamic(() => import("lucide-react").then((mod) => mod.Loader2)),
+};
+
 export function ProjectsSection() {
   const prefersReducedMotion = useReducedMotion();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTech, setActiveTech] = useState<string | null>(null);
+  const [activeType, setActiveType] = useState<string | null>(null);
   const [visibleProjects, setVisibleProjects] = useState(6);
 
   // Debounce search query to avoid too many re-renders
@@ -64,29 +71,20 @@ export function ProjectsSection() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Get unique categories from projects
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(
-      new Set(projects.map((project) => project.category)),
+  // Get unique project types from projects
+  const projectTypes = useMemo(() => {
+    const uniqueTypes = Array.from(
+      new Set(projects.map((project) => project.project_type)),
     );
-    return ["all", ...uniqueCategories.sort()];
+    return ["all", ...uniqueTypes.sort()];
   }, [projects]);
-
-  // Get unique tech stack items from all projects
-  const availableTechs = useMemo(
-    () =>
-      Array.from(
-        new Set(projects.flatMap((project) => project.tech_stack)),
-      ).sort(),
-    [projects],
-  );
 
   // Filter projects based on selected criteria
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
       const matchesFilter =
         selectedFilter === "all" ||
-        project.category.toLowerCase() === selectedFilter.toLowerCase();
+        project.project_type.toLowerCase() === selectedFilter.toLowerCase();
 
       const matchesSearch = !debouncedSearch
         ? true
@@ -96,22 +94,19 @@ export function ProjectsSection() {
             .includes(debouncedSearch.toLowerCase()) ||
           project.tech_stack.some((tech) =>
             tech.toLowerCase().includes(debouncedSearch.toLowerCase()),
-          ) ||
-          project.tags.some((tag) =>
-            tag.toLowerCase().includes(debouncedSearch.toLowerCase()),
           );
 
-      const matchesTech =
-        !activeTech || project.tech_stack.includes(activeTech);
+      const matchesType =
+        !activeType || project.project_type === activeType;
 
-      return matchesFilter && matchesSearch && matchesTech;
+      return matchesFilter && matchesSearch && matchesType;
     });
-  }, [projects, selectedFilter, debouncedSearch, activeTech]);
+  }, [projects, selectedFilter, debouncedSearch, activeType]);
 
   // Reset visible projects when filters change
   useEffect(() => {
     setVisibleProjects(6);
-  }, [selectedFilter, debouncedSearch, activeTech]);
+  }, [selectedFilter, debouncedSearch, activeType]);
 
   const handleLoadMore = () => {
     setVisibleProjects((prev) => prev + 6);
@@ -159,12 +154,11 @@ export function ProjectsSection() {
             <ProjectFilters
               activeFilter={selectedFilter}
               searchQuery={searchQuery}
-              activeTech={activeTech}
+              activeType={activeType}
               onFilterChange={setSelectedFilter}
               onSearchChange={setSearchQuery}
-              onTechChange={setActiveTech}
-              availableTechs={availableTechs}
-              categories={categories}
+              onTypeChange={setActiveType}
+              projectTypes={projectTypes}
               className="space-y-6 sm:space-y-8"
             />
           </m.div>
@@ -180,7 +174,7 @@ export function ProjectsSection() {
                   className="col-span-full flex flex-col items-center justify-center py-12"
                   role="status"
                 >
-                  <Loader2
+                  <Icons.Loader2
                     className="h-8 w-8 animate-spin text-primary"
                     aria-hidden="true"
                   />
@@ -193,7 +187,7 @@ export function ProjectsSection() {
                   className="col-span-full flex flex-col items-center justify-center py-12 text-destructive"
                   role="alert"
                 >
-                  <AlertCircle className="h-8 w-8" aria-hidden="true" />
+                  <Icons.AlertCircle className="h-8 w-8" aria-hidden="true" />
                   <p className="mt-4">
                     Failed to load projects. Please try again later.
                   </p>
@@ -255,13 +249,7 @@ export function ProjectsSection() {
                               quality={85}
                               blurDataURL="/images/placeholder.svg"
                             />
-                          ) : (
-                            <PlaceholderImage
-                              size="lg"
-                              text={project.title}
-                              className="w-full h-full"
-                            />
-                          )}
+                          ) : null}
                           <div
                             className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent"
                             aria-hidden="true"
@@ -277,14 +265,14 @@ export function ProjectsSection() {
                             {project.description}
                           </p>
 
-                          {/* Tags */}
+                          {/* Tech Stack Tags */}
                           <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                            {project.tags.slice(0, 3).map((tag) => (
-                              <ProjectTag key={tag}>{tag}</ProjectTag>
+                            {project.tech_stack.slice(0, 3).map((tech) => (
+                              <ProjectTag key={tech}>{tech}</ProjectTag>
                             ))}
-                            {project.tags.length > 3 && (
+                            {project.tech_stack.length > 3 && (
                               <ProjectTag>
-                                +{project.tags.length - 3}
+                                +{project.tech_stack.length - 3}
                               </ProjectTag>
                             )}
                           </div>
@@ -300,7 +288,7 @@ export function ProjectsSection() {
                                 onClick={(e) => e.stopPropagation()}
                                 aria-label="View Live Demo"
                               >
-                                <Globe
+                                <Icons.Globe
                                   className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                                   aria-hidden="true"
                                 />
@@ -315,7 +303,7 @@ export function ProjectsSection() {
                                 onClick={(e) => e.stopPropagation()}
                                 aria-label="View Source Code"
                               >
-                                <Github
+                                <Icons.Github
                                   className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                                   aria-hidden="true"
                                 />
@@ -330,7 +318,7 @@ export function ProjectsSection() {
                                 onClick={(e) => e.stopPropagation()}
                                 aria-label="View Design"
                               >
-                                <Figma
+                                <Icons.Figma
                                   className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                                   aria-hidden="true"
                                 />
@@ -355,8 +343,6 @@ export function ProjectsSection() {
                   className="flex justify-center mt-8"
                 >
                   <Button
-                    variant="outline"
-                    size="lg"
                     onClick={handleLoadMore}
                     className="group relative overflow-hidden"
                   >
@@ -390,8 +376,8 @@ export function ProjectsSection() {
               name: project.title,
               description: project.description,
               programmingLanguage: project.tech_stack,
-              codeRepository: project.github_url,
-              url: project.live_url,
+              codeRepository: project.github_url || undefined,
+              url: project.live_url || undefined,
               image: project.images[0],
               author: {
                 "@type": "Person",

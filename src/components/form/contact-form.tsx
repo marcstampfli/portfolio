@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { type ContactFormData, contactFormSchema } from "@/types/form";
 import { FormField } from "./form-field";
-import { submitContactMessage } from "@/app/actions";
+import { submitContactMessage } from "../../app/actions";
 
 const socialLinks = [
   {

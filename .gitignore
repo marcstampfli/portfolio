@@ -3,12 +3,7 @@
 # dependencies
 /node_modules
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnp.js
 
 # testing
 /coverage
@@ -28,11 +23,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
 # local env files
-.env*.local
 .env
+.env*.local
 
 # vercel
 .vercel
@@ -41,10 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Prisma - only ignore specific files
-/prisma/migrations/
-/prisma/*.db
-/prisma/*.db-journal
+# IDE
+.idea
+.vscode
 
-# CSV data files
-#*.csv
+# Prisma
+/prisma/migrations/
