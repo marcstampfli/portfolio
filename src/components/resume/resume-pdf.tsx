@@ -1,15 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { type Experience } from "@/types/prisma";
+import { type Experience } from "@/types/experience";
 
-const Resume = dynamic(() => import("./resume-document.js"), { ssr: false });
+const Resume = dynamic(() => import("./resume-document"), { ssr: false });
 
 interface ResumeProps {
   experiences: Experience[];
-  fontBuffer: ArrayBuffer | null;
 }
 
-export default function ResumePDF({ experiences, fontBuffer }: ResumeProps) {
-  return <Resume experiences={experiences} fontBuffer={fontBuffer} />;
-} 
+export default function ResumePDF({ experiences }: ResumeProps) {
+  return <Resume experiences={experiences} />;
+}

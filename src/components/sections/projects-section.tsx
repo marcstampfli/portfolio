@@ -1,12 +1,25 @@
 "use client";
 
-import { LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useState, useEffect, useMemo } from "react";
 import { ProjectFilters } from "@/components/shared/project-filters";
-import { type Project } from "@/types/prisma";
+import type { Project as PrismaProject } from ".prisma/client";
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  project_type: string;
+  live_url: string | null;
+  github_url: string | null;
+  figma_url: string | null;
+  images: string[] | null;
+  tech_stack: string[];
+  created_at: string;
+  updated_at: string;
+}
 import { ProjectModal } from "@/components/shared/project-modal";
-import { getProjects } from "@/app/actions";
 import { useQuery } from "@tanstack/react-query";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { ProjectTag } from "@/components/shared/project-tag";
@@ -17,7 +30,9 @@ const Icons = {
   Github: dynamic(() => import("lucide-react").then((mod) => mod.Github)),
   Globe: dynamic(() => import("lucide-react").then((mod) => mod.Globe)),
   Figma: dynamic(() => import("lucide-react").then((mod) => mod.Figma)),
-  AlertCircle: dynamic(() => import("lucide-react").then((mod) => mod.AlertCircle)),
+  AlertCircle: dynamic(() =>
+    import("lucide-react").then((mod) => mod.AlertCircle),
+  ),
   Loader2: dynamic(() => import("lucide-react").then((mod) => mod.Loader2)),
 };
 
@@ -33,17 +48,17 @@ export function ProjectsSection() {
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   const {
-    data: projects = [],
+    data: projects = [] as Project[],
     isLoading,
     error,
   } = useQuery<Project[]>({
     queryKey: ["projects"],
     queryFn: async () => {
-      const data = await getProjects();
-
-      if (!data) {
+      const response = await fetch("/api/projects");
+      if (!response.ok) {
         throw new Error("Failed to fetch projects");
       }
+      const data: unknown = await response.json();
 
       if (!Array.isArray(data)) {
         throw new Error("Expected array of projects");
@@ -54,21 +69,18 @@ export function ProjectsSection() {
         obj !== null &&
         typeof (obj as Project).id === "string" &&
         typeof (obj as Project).title === "string" &&
-        typeof (obj as Project).slug === "string" &&
         typeof (obj as Project).description === "string" &&
-        typeof (obj as Project).content === "string" &&
+        Array.isArray((obj as Project).tech_stack) &&
         Array.isArray((obj as Project).images);
 
-      return data.map((item) => {
-        if (!isProject(item)) {
-          throw new Error(
-            `Invalid project data structure: ${JSON.stringify(item)}`,
-          );
-        }
-        return item;
-      });
+      const validatedProjects = data.filter(isProject);
+      return validatedProjects;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
   });
 
   // Get unique project types from projects
@@ -80,8 +92,8 @@ export function ProjectsSection() {
   }, [projects]);
 
   // Filter projects based on selected criteria
-  const filteredProjects = useMemo(() => {
-    return projects.filter((project) => {
+  const filteredProjects: Project[] = useMemo(() => {
+    return projects.filter((project: Project) => {
       const matchesFilter =
         selectedFilter === "all" ||
         project.project_type.toLowerCase() === selectedFilter.toLowerCase();
@@ -96,8 +108,7 @@ export function ProjectsSection() {
             tech.toLowerCase().includes(debouncedSearch.toLowerCase()),
           );
 
-      const matchesType =
-        !activeType || project.project_type === activeType;
+      const matchesType = !activeType || project.project_type === activeType;
 
       return matchesFilter && matchesSearch && matchesType;
     });
@@ -113,7 +124,12 @@ export function ProjectsSection() {
   };
 
   return (
-    <LazyMotion features={domAnimation}>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      transition={{ staggerChildren: 0.1 }}
+      className="relative"
+    >
       <section
         id="projects"
         className="relative py-24 sm:py-32"
@@ -121,13 +137,7 @@ export function ProjectsSection() {
       >
         <div className="container relative px-4 sm:px-6 lg:px-8">
           {/* Enhanced header section */}
-          <m.div
-            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto mb-12 sm:mb-20 max-w-2xl text-center"
-          >
+          <div className="relative mx-auto mb-12 sm:mb-20 max-w-2xl text-center">
             <div
               className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]"
               aria-hidden="true"
@@ -141,16 +151,10 @@ export function ProjectsSection() {
               Dive into my portfolio - a collection of web development, design,
               and creative projects.
             </p>
-          </m.div>
+          </div>
 
           {/* Refined filters */}
-          <m.div
-            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-12 sm:mb-16"
-          >
+          <div className="mb-12 sm:mb-16">
             <ProjectFilters
               activeFilter={selectedFilter}
               searchQuery={searchQuery}
@@ -161,7 +165,7 @@ export function ProjectsSection() {
               projectTypes={projectTypes}
               className="space-y-6 sm:space-y-8"
             />
-          </m.div>
+          </div>
 
           {/* Projects grid with loading and error states */}
           <div className="space-y-8">
@@ -169,7 +173,7 @@ export function ProjectsSection() {
               className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3"
               role="list"
             >
-              {isLoading ? (
+              {isLoading && (
                 <div
                   className="col-span-full flex flex-col items-center justify-center py-12"
                   role="status"
@@ -182,7 +186,8 @@ export function ProjectsSection() {
                     Loading projects...
                   </p>
                 </div>
-              ) : error ? (
+              )}
+              {error && (
                 <div
                   className="col-span-full flex flex-col items-center justify-center py-12 text-destructive"
                   role="alert"
@@ -192,155 +197,156 @@ export function ProjectsSection() {
                     Failed to load projects. Please try again later.
                   </p>
                 </div>
-              ) : filteredProjects.length === 0 ? (
+              )}
+              {!isLoading && !error && filteredProjects.length === 0 && (
                 <div className="col-span-full text-center py-12" role="status">
                   <p className="text-muted-foreground">
                     No projects match your filters.
                   </p>
                 </div>
-              ) : (
+              )}
+              {!isLoading &&
+                !error &&
+                filteredProjects.length > 0 &&
                 filteredProjects
                   .slice(0, visibleProjects)
-                  .map((project, index) => (
-                    <m.div
-                      key={project.id}
-                      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-50px" }}
-                      transition={{
-                        duration: 0.5,
-                        delay: prefersReducedMotion ? 0 : index * 0.1,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      className="group relative"
-                      role="listitem"
-                    >
-                      {/* Project card content... */}
+                  .map((project, index) => {
+                    return (
                       <div
-                        onClick={() => setSelectedProject(project)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setSelectedProject(project);
-                          }
+                        key={project.id}
+                        className="group relative opacity-0 animate-fade-in"
+                        style={{
+                          animationDelay: prefersReducedMotion
+                            ? "0ms"
+                            : `${index * 100}ms`,
+                          animationFillMode: "forwards",
                         }}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`View details for ${project.title}`}
-                        className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        role="listitem"
                       >
-                        {/* Project Image with enhanced overlay */}
+                        {/* Project card content... */}
                         <div
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            position: "relative",
-                            height: "100%",
-                            width: "100%",
+                          onClick={() => setSelectedProject(project)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setSelectedProject(project);
+                            }
                           }}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`View details for ${project.title}`}
+                          className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         >
-                          {project.images?.[0] ? (
-                            <OptimizedImage
-                              src={project.images[0]}
-                              alt={`Screenshot of ${project.title}`}
-                              fill
-                              sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                              className="object-cover transition-transform duration-500 group-hover:scale-105"
-                              priority={index < 3}
-                              quality={85}
-                              blurDataURL="/images/placeholder.svg"
+                          {/* Project Image with enhanced overlay */}
+                          <div className="absolute inset-0 w-full h-full relative">
+                            {project.images?.[0] ? (
+                              <OptimizedImage
+                                src={project.images[0]}
+                                alt={`Screenshot of ${project.title}`}
+                                fill
+                                sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                priority={index < 3}
+                                quality={85}
+                                blurDataURL="/images/placeholder.svg"
+                              />
+                            ) : null}
+                            <div
+                              className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent"
+                              aria-hidden="true"
                             />
-                          ) : null}
-                          <div
-                            className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent"
-                            aria-hidden="true"
-                          />
-                        </div>
-
-                        {/* Project Info */}
-                        <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
-                          <h3 className="mb-2 text-lg sm:text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
-                            {project.title}
-                          </h3>
-                          <p className="mb-4 line-clamp-2 text-xs sm:text-sm text-muted-foreground">
-                            {project.description}
-                          </p>
-
-                          {/* Tech Stack Tags */}
-                          <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                            {project.tech_stack.slice(0, 3).map((tech) => (
-                              <ProjectTag key={tech}>{tech}</ProjectTag>
-                            ))}
-                            {project.tech_stack.length > 3 && (
-                              <ProjectTag>
-                                +{project.tech_stack.length - 3}
-                              </ProjectTag>
-                            )}
                           </div>
 
-                          {/* Quick Links */}
-                          <div className="absolute right-2 sm:right-4 top-2 sm:top-4 flex gap-1.5 sm:gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                            {project.live_url && (
-                              <a
-                                href={project.live_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                                onClick={(e) => e.stopPropagation()}
-                                aria-label="View Live Demo"
-                              >
-                                <Icons.Globe
-                                  className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                  aria-hidden="true"
-                                />
-                              </a>
-                            )}
-                            {project.github_url && (
-                              <a
-                                href={project.github_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                                onClick={(e) => e.stopPropagation()}
-                                aria-label="View Source Code"
-                              >
-                                <Icons.Github
-                                  className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                  aria-hidden="true"
-                                />
-                              </a>
-                            )}
-                            {project.figma_url && (
-                              <a
-                                href={project.figma_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                                onClick={(e) => e.stopPropagation()}
-                                aria-label="View Design"
-                              >
-                                <Icons.Figma
-                                  className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                  aria-hidden="true"
-                                />
-                              </a>
-                            )}
+                          {/* Project Info */}
+                          <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
+                            <h3 className="mb-2 text-lg sm:text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
+                              {project.title}
+                            </h3>
+                            <p className="mb-4 line-clamp-2 text-xs sm:text-sm text-muted-foreground">
+                              {project.description}
+                            </p>
+
+                            {/* Tech Stack Tags */}
+                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                              {project.tech_stack
+                                .slice(0, 3)
+                                .map((tech, index) => (
+                                  <ProjectTag
+                                    key={`${project.id}-${tech}-${index}`}
+                                  >
+                                    {tech}
+                                  </ProjectTag>
+                                ))}
+                              {project.tech_stack.length > 3 && (
+                                <ProjectTag key={`${project.id}-tech-more`}>
+                                  +{project.tech_stack.length - 3}
+                                </ProjectTag>
+                              )}
+                            </div>
+
+                            {/* Quick Links */}
+                            <div className="absolute right-2 sm:right-4 top-2 sm:top-4 flex gap-1.5 sm:gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                              {project.live_url && (
+                                <a
+                                  href={project.live_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                                  onClick={(e) => e.stopPropagation()}
+                                  aria-label="View Live Demo"
+                                >
+                                  <Icons.Globe
+                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                                    aria-hidden="true"
+                                  />
+                                </a>
+                              )}
+                              {project.github_url && (
+                                <a
+                                  href={project.github_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                                  onClick={(e) => e.stopPropagation()}
+                                  aria-label="View Source Code"
+                                >
+                                  <Icons.Github
+                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                                    aria-hidden="true"
+                                  />
+                                </a>
+                              )}
+                              {project.figma_url && (
+                                <a
+                                  href={project.figma_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                                  onClick={(e) => e.stopPropagation()}
+                                  aria-label="View Design"
+                                >
+                                  <Icons.Figma
+                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                                    aria-hidden="true"
+                                  />
+                                </a>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </m.div>
-                  ))
-              )}
+                    );
+                  })}
             </div>
-
-            {/* Load More Button */}
             {!isLoading &&
               !error &&
               filteredProjects.length > visibleProjects && (
-                <m.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex justify-center mt-8"
+                <div
+                  className="flex justify-center mt-8 opacity-0 animate-fade-in"
+                  style={{
+                    animationDelay: "300ms",
+                    animationFillMode: "forwards",
+                  }}
                 >
                   <Button
                     onClick={handleLoadMore}
@@ -349,7 +355,7 @@ export function ProjectsSection() {
                     <span className="relative z-10">Load More Projects</span>
                     <div className="absolute inset-0 -z-10 bg-primary opacity-0 transition-opacity group-hover:opacity-10" />
                   </Button>
-                </m.div>
+                </div>
               )}
           </div>
 
@@ -378,7 +384,7 @@ export function ProjectsSection() {
               programmingLanguage: project.tech_stack,
               codeRepository: project.github_url || undefined,
               url: project.live_url || undefined,
-              image: project.images[0],
+              image: project.images?.[0] || undefined,
               author: {
                 "@type": "Person",
                 name: "Marc Stampfli",
@@ -387,6 +393,6 @@ export function ProjectsSection() {
           }),
         }}
       />
-    </LazyMotion>
+    </motion.div>
   );
 }

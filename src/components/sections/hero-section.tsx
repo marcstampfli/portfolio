@@ -57,10 +57,11 @@ export const HeroSection = memo(function HeroSection() {
         aria-label="Introduction"
         role="region"
       >
-        {/* Background with particles */}
-        <FuturisticBackground />
+        <div className="absolute inset-0">
+          <FuturisticBackground />
+        </div>
 
-        <div className="container relative px-4 md:px-6">
+        <div className="container relative z-10 px-4 md:px-6">
           <div className="mx-auto max-w-4xl text-center">
             {/* Main Content */}
             <motion.div {...fadeUpAnimation} className="space-y-8">

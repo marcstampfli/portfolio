@@ -1,20 +1,18 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { type Experience } from "@/types/prisma";
+import type { Experience as PrismaExperience } from ".prisma/client";
 
-const ReactPDF = dynamic(() => import("@react-pdf/renderer"), { ssr: false });
+interface Experience extends PrismaExperience {
+  tech_stack: string[];
+  achievements: string[];
+}
+import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
 interface PDFDocumentProps {
   experiences: Experience[];
-  fontBuffer: ArrayBuffer | null;
 }
 
-export default function PDFDocument({ experiences, fontBuffer }: PDFDocumentProps) {
-  if (!ReactPDF) return null;
-
-  const { Document, Page, Text, View, StyleSheet } = ReactPDF;
-
+export default function PDFDocument({ experiences }: PDFDocumentProps) {
   // Create styles
   const styles = StyleSheet.create({
     page: {
@@ -143,7 +141,7 @@ export default function PDFDocument({ experiences, fontBuffer }: PDFDocumentProp
       borderRadius: 4,
       fontFamily: "Helvetica",
       color: "#2563EB",
-    }
+    },
   });
 
   return (
@@ -195,4 +193,4 @@ export default function PDFDocument({ experiences, fontBuffer }: PDFDocumentProp
       </Page>
     </Document>
   );
-} 
+}

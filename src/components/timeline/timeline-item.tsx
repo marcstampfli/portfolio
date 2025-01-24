@@ -9,8 +9,8 @@ import {
   Award,
   ArrowRight,
 } from "lucide-react";
-import { PlaceholderImage } from "../shared/placeholder-image";
-import { type Experience } from "../../types/experience";
+import PlaceholderImage from "../shared/placeholder-image";
+import { type Experience } from "@/types/experience";
 
 interface TimelineItemProps {
   job: Experience;
@@ -40,7 +40,7 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
         <div className="flex flex-wrap gap-6 items-start justify-between mb-4">
           <div className="flex-1">
             <h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary mb-2">
-              {job.title}
+              {job.position}
             </h3>
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -53,7 +53,7 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
               </div>
               <div className="flex items-center gap-1">
                 <Briefcase className="h-4 w-4" />
-                {job.type}
+                {job.company}
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />

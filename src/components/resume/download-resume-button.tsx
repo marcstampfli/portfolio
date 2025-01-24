@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
-import type { Experience } from "@/types/prisma";
+import type { Experience } from "@/types/experience";
 import { pdf } from "@react-pdf/renderer";
 import { Resume } from "./resume-generator";
 
@@ -27,9 +27,7 @@ export function DownloadResumeButton({
       console.log("Starting PDF generation...");
 
       console.log("Creating PDF instance...");
-      const instance = pdf(
-        <Resume experiences={experiences} fontBuffer={null} />,
-      );
+      const instance = pdf(<Resume experiences={experiences} />);
 
       console.log("PDF instance created, generating blob...");
       const blob = await instance.toBlob();
