@@ -17,6 +17,8 @@ export function PageTransition({ children }: PageTransitionProps) {
         stiffness: 260,
         damping: 20,
       }}
+      style={{ position: "relative" }}
+      className="relative"
     >
       {children}
     </motion.div>

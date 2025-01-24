@@ -12,17 +12,33 @@ interface GridPoint {
   size: number;
   opacity: number;
   hue: number;
+  connections: number;
 }
 
 export function FuturisticBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointsRef = useRef<GridPoint[]>([]);
+  const particleImageRef = useRef<HTMLImageElement | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(
     null,
   );
+  const [imageLoaded, setImageLoaded] = useState(false);
   const animationFrameRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
+
+  // Load particle image
+  useEffect(() => {
+    const image = new Image();
+    image.onload = () => {
+      particleImageRef.current = image;
+      setImageLoaded(true);
+    };
+    image.src = "/images/particle.svg";
+    return () => {
+      image.onload = null;
+    };
+  }, []);
 
   // Handle resize
   useEffect(() => {
@@ -87,6 +103,7 @@ export function FuturisticBackground() {
         size: 1.5 + Math.random() * 1.5,
         opacity: 0.1 + Math.random() * 0.2,
         hue: Math.random() * 40 - 20,
+        connections: 0,
       });
     }
 
@@ -99,7 +116,7 @@ export function FuturisticBackground() {
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
+    if (!ctx || !imageLoaded || !particleImageRef.current) return;
 
     const project3DTo2D = (x: number, y: number, z: number) => {
       const fov = Math.max(dimensions.width, dimensions.height); // Dynamic FOV based on viewport
@@ -111,17 +128,26 @@ export function FuturisticBackground() {
       };
     };
 
-    const drawConnection = (p1: GridPoint, p2: GridPoint) => {
-      const proj1 = project3DTo2D(p1.x, p1.y, p1.z);
-      const proj2 = project3DTo2D(p2.x, p2.y, p2.z);
+    const drawConnection = (point1: GridPoint, point2: GridPoint) => {
+      const proj1 = project3DTo2D(point1.x, point1.y, point1.z);
+      const proj2 = project3DTo2D(point2.x, point2.y, point2.z);
 
       const dx = proj2.x - proj1.x;
       const dy = proj2.y - proj1.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
+      const maxConnectionsPerPoint = 3;
 
-      if (distance < 200) {
+      if (
+        distance < 200 &&
+        point1.connections < maxConnectionsPerPoint &&
+        point2.connections < maxConnectionsPerPoint
+      ) {
         const avgScale = (proj1.scale + proj2.scale) / 2;
         const opacity = (1 - distance / 200) * 0.1 * avgScale;
+
+        // Increment connection count for both points
+        point1.connections++;
+        point2.connections++;
 
         ctx.beginPath();
         ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
@@ -133,6 +159,7 @@ export function FuturisticBackground() {
     };
 
     const animate = (timestamp: number) => {
+      if (!ctx || !canvas) return;
       timeRef.current = timestamp * 0.001;
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
       ctx.setTransform(
@@ -143,6 +170,9 @@ export function FuturisticBackground() {
         0,
         0,
       );
+
+      // Reset connection counts for each point
+      pointsRef.current.forEach((point) => (point.connections = 0));
 
       // Update and draw points
       pointsRef.current = pointsRef.current.map((point) => {
@@ -200,36 +230,20 @@ export function FuturisticBackground() {
         }
       }
 
-      // Draw points
+      // Draw points using the image
       pointsRef.current.forEach((point) => {
         const projected = project3DTo2D(point.x, point.y, point.z);
-        const size = point.size * projected.scale;
+        const size = point.size * projected.scale * 2; // Adjusted size for visibility
 
-        // Point glow
-        const gradient = ctx.createRadialGradient(
-          projected.x,
-          projected.y,
-          0,
-          projected.x,
-          projected.y,
-          size * 2,
+        ctx.globalAlpha = point.opacity * projected.scale;
+        ctx.drawImage(
+          particleImageRef.current!,
+          projected.x - size / 2,
+          projected.y - size / 2,
+          size,
+          size,
         );
-        gradient.addColorStop(
-          0,
-          `hsla(${210 + point.hue}, 100%, 70%, ${point.opacity * projected.scale})`,
-        );
-        gradient.addColorStop(1, "transparent");
-
-        ctx.beginPath();
-        ctx.fillStyle = gradient;
-        ctx.arc(projected.x, projected.y, size * 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Point core
-        ctx.beginPath();
-        ctx.fillStyle = `hsla(${210 + point.hue}, 100%, 70%, ${point.opacity * projected.scale * 2})`;
-        ctx.arc(projected.x, projected.y, size, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.globalAlpha = 1; // Reset alpha
       });
 
       animationFrameRef.current = requestAnimationFrame(animate);

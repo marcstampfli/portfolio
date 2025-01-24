@@ -1,6 +1,11 @@
 "use client";
 
-import { type Project } from "@/types/prisma";
+import type { Project as PrismaProject } from ".prisma/client";
+
+interface Project extends PrismaProject {
+  tech_stack: string[];
+  images: string[] | null;
+}
 import {
   Dialog,
   DialogContent,
@@ -38,7 +43,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           {/* Project Image */}
           <div className="relative aspect-video overflow-hidden rounded-lg">
             <OptimizedImage
-              src={project.images[0]}
+              src={project.images?.[0] || "/images/placeholder.svg"}
               alt={project.title}
               fill
               className="object-cover"
@@ -53,8 +58,10 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             <div className="space-y-2">
               <h3 className="text-sm font-medium">Tech Stack</h3>
               <div className="flex flex-wrap gap-1.5">
-                {project.tech_stack.map((tech) => (
-                  <ProjectTag key={tech}>{tech}</ProjectTag>
+                {project.tech_stack.map((tech, index) => (
+                  <ProjectTag key={`${project.id}-modal-${tech}-${index}`}>
+                    {tech}
+                  </ProjectTag>
                 ))}
               </div>
             </div>
@@ -62,12 +69,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             {/* Project Links */}
             <div className="flex flex-wrap gap-3">
               {project.live_url && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  asChild
-                >
+                <Button variant="outline" size="sm" className="gap-2" asChild>
                   <a
                     href={project.live_url}
                     target="_blank"
@@ -79,12 +81,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 </Button>
               )}
               {project.github_url && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  asChild
-                >
+                <Button variant="outline" size="sm" className="gap-2" asChild>
                   <a
                     href={project.github_url}
                     target="_blank"

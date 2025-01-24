@@ -56,13 +56,15 @@ export function ProjectFilters({
         >
           <Icons.Filter className="h-4 w-4" />
           <span>Filters</span>
-          {activeFilter !== "all" || searchQuery || activeType && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-              {(activeFilter !== "all" ? 1 : 0) +
-                (searchQuery ? 1 : 0) +
-                (activeType ? 1 : 0)}
-            </span>
-          )}
+          {activeFilter !== "all" ||
+            searchQuery ||
+            (activeType && (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                {(activeFilter !== "all" ? 1 : 0) +
+                  (searchQuery ? 1 : 0) +
+                  (activeType ? 1 : 0)}
+              </span>
+            ))}
         </Button>
         <div className="flex-1">
           <Input
@@ -126,67 +128,69 @@ export function ProjectFilters({
 
         {/* Active Filters Summary */}
         <AnimatePresence>
-          {activeFilter !== "all" || searchQuery || activeType && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-3"
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium">Active Filters</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClearFilters}
-                  className="h-auto px-2 py-1 text-xs"
-                >
-                  Clear all
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {activeFilter !== "all" && (
-                  <div
-                    key={`active-filter-${activeFilter}`}
-                    className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs"
+          {activeFilter !== "all" ||
+            searchQuery ||
+            (activeType && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium">Active Filters</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="h-auto px-2 py-1 text-xs"
                   >
-                    <span>Type: {activeFilter}</span>
-                    <button
-                      onClick={() => onFilterChange("all")}
-                      className="text-muted-foreground hover:text-foreground"
+                    Clear all
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {activeFilter !== "all" && (
+                    <div
+                      key={`active-filter-${activeFilter}`}
+                      className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs"
                     >
-                      <Icons.X className="h-3 w-3" />
-                      <span className="sr-only">Remove type filter</span>
-                    </button>
-                  </div>
-                )}
-                {searchQuery && (
-                  <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs">
-                    <span>Search: {searchQuery}</span>
-                    <button
-                      onClick={() => onSearchChange("")}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <Icons.X className="h-3 w-3" />
-                      <span className="sr-only">Clear search</span>
-                    </button>
-                  </div>
-                )}
-                {activeType && (
-                  <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs">
-                    <span>Type: {activeType}</span>
-                    <button
-                      onClick={() => onTypeChange(null)}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <Icons.X className="h-3 w-3" />
-                      <span className="sr-only">Remove type filter</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
+                      <span>Type: {activeFilter}</span>
+                      <button
+                        onClick={() => onFilterChange("all")}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <Icons.X className="h-3 w-3" />
+                        <span className="sr-only">Remove type filter</span>
+                      </button>
+                    </div>
+                  )}
+                  {searchQuery && (
+                    <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs">
+                      <span>Search: {searchQuery}</span>
+                      <button
+                        onClick={() => onSearchChange("")}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <Icons.X className="h-3 w-3" />
+                        <span className="sr-only">Clear search</span>
+                      </button>
+                    </div>
+                  )}
+                  {activeType && (
+                    <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs">
+                      <span>Type: {activeType}</span>
+                      <button
+                        onClick={() => onTypeChange(null)}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <Icons.X className="h-3 w-3" />
+                        <span className="sr-only">Remove type filter</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
         </AnimatePresence>
       </motion.div>
     </div>
