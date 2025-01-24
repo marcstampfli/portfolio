@@ -3,17 +3,9 @@
 import { type ContactFormData } from "@/types/form";
 import { prisma } from "@/lib/prisma";
 import { type Project } from "@/types/project";
-import type { Experience } from "@/types/prisma";
+import { getExperiences as getExperiencesData } from "@/data/experiences";
 
-const parseArrayField = (field: string | string[]) => {
-  if (Array.isArray(field)) return field;
-  try {
-    const parsed = JSON.parse(field);
-    return Array.isArray(parsed) ? parsed : [field];
-  } catch {
-    return field.split(",").map((item) => item.trim());
-  }
-};
+export const getExperiences = getExperiencesData;
 
 export async function getProjects(): Promise<Project[]> {
   try {
@@ -23,20 +15,17 @@ export async function getProjects(): Promise<Project[]> {
       },
     });
 
-    return projects.map((project) => ({
+    return projects.map(({ tech_stack, images, ...project }: Project) => ({
       ...project,
+      tech_stack: JSON.parse(String(tech_stack)) as string[],
+      images: JSON.parse(String(images)) as string[],
+      // Remove duplicate property declarations below
       id: String(project.id),
       title: String(project.title),
       slug: String(project.slug),
       description: String(project.description),
       content: String(project.content),
       project_type: project.project_type ? String(project.project_type) : "web",
-      tech_stack: Array.isArray(project.tech_stack)
-        ? project.tech_stack.map(String)
-        : [],
-      images: Array.isArray(project.images)
-        ? project.images.map((img: string) => `/images/projects/${img}`)
-        : ["/images/placeholder.svg"],
       client: project.client ? String(project.client) : "Unknown",
       github_url: project.github_url ? String(project.github_url) : undefined,
       live_url: project.live_url ? String(project.live_url) : undefined,
@@ -53,7 +42,10 @@ export async function getProjects(): Promise<Project[]> {
         : new Date().toISOString(),
     }));
   } catch (error) {
-    console.error("Error fetching projects:", error);
+    console.error(
+      "Error fetching projects:",
+      error instanceof Error ? error.message : String(error),
+    );
     return [];
   }
 }
@@ -68,17 +60,10 @@ export async function submitContactMessage(data: ContactFormData) {
       },
     });
   } catch (error) {
-    console.error("Failed to submit contact message:", error);
+    console.error(
+      "Failed to submit contact message:",
+      error instanceof Error ? error.message : String(error),
+    );
     throw new Error("Failed to submit contact message");
   }
-}
-
-export async function getExperiences(): Promise<Experience[]> {
-  const experiences = await prisma.experience.findMany({
-    orderBy: {
-      start_date: "desc",
-    },
-  });
-
-  return experiences;
 }

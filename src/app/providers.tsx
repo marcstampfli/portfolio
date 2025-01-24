@@ -19,7 +19,9 @@ export function Providers({ children }: ProvidersProps) {
         enableSystem
         disableTransitionOnChange
       >
-        {children}
+        <div style={{ position: "relative" }} className="relative">
+          {children}
+        </div>
       </ThemeProvider>
     </QueryClientProvider>
   );

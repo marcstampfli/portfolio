@@ -77,9 +77,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preload" href="/profile.jpg" as="image" type="image/jpeg" />
-      </head>
+      <head />
       <body className={`${inter.className} antialiased`}>
         <Providers>
           <Suspense fallback={<Loading />}>{children}</Suspense>

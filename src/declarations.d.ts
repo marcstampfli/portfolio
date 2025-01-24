@@ -52,9 +52,15 @@ declare module "@/components/ui/button" {
   } from "react";
   import { VariantProps } from "class-variance-authority";
 
-  interface ButtonProps
-    extends ButtonHTMLAttributes<HTMLButtonElement>,
-      VariantProps<typeof buttonVariants> {
+  interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?:
+      | "default"
+      | "destructive"
+      | "outline"
+      | "secondary"
+      | "ghost"
+      | "link";
+    size?: "default" | "sm" | "lg" | "icon";
     asChild?: boolean;
   }
 
@@ -89,4 +95,14 @@ declare module "@/lib/prisma" {
   import { PrismaClient } from "@prisma/client";
   const prisma: PrismaClient;
   export { prisma };
+}
+
+declare module "@/data/experiences" {
+  import { Experience } from "@/types/experience";
+  export function getExperiences(): Promise<Experience[]>;
+}
+
+declare module "@/data/projects" {
+  import { Project } from "@/types/project";
+  export function getProjects(): Promise<Project[]>;
 }

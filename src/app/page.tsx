@@ -13,7 +13,7 @@ export default function Home() {
     <PageTransition>
       <FloatingNav />
       <ParallaxBackground>
-        <main className="relative min-h-screen bg-background/50 backdrop-blur-3xl overflow-hidden">
+        <main className="relative min-h-screen bg-background/50 backdrop-blur-3xl">
           <div className="relative">
             <section id="home" className="min-h-screen">
               <HeroSection />
