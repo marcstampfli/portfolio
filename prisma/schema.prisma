@@ -3,11 +3,12 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Project {
@@ -17,8 +18,8 @@ model Project {
   description  String
   content      String
   project_type String    @default("web")
-  tech_stack   String[]
-  images       String[]
+  tech_stack   TechStack[]
+  images       Json
   live_url     String?
   github_url   String?
   figma_url    String?
@@ -31,7 +32,7 @@ model Project {
 }
 
 model Experience {
-  id           String    @id @default(cuid())
+  id           String       @id @default(cuid())
   title        String
   company      String
   position     String
@@ -41,10 +42,29 @@ model Experience {
   start_date   DateTime
   end_date     DateTime?
   description  String
-  achievements String[]
-  tech_stack   String[]
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  achievements Achievement[]
+  tech_stack   TechStack[]
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+
+  @@index([company])
+  @@index([start_date])
+}
+
+model TechStack {
+  id          String      @id @default(cuid())
+  name        String
+  category    String
+  version     String?
+  experiences Experience[]
+  projects    Project[]
+}
+
+model Achievement {
+  id           String     @id @default(cuid())
+  description  String
+  experience   Experience @relation(fields: [experience_id], references: [id])
+  experience_id String
 }
 
 model ContactMessage {

@@ -7,6 +7,8 @@
       "description": "Web Developer/Designer at a leading web design and development agency. Expertise in WordPress & React development, and UI/UX design. Remote work.",
       "start_date": "2021-08-01",
       "end_date": null,
+      "location": null,
+      "type": null,
       "tech_stack": ["WordPress", "React", "UI/UX Design"],
       "achievements": [
         "Developed and maintained client websites using WordPress and React",
@@ -21,6 +23,8 @@
       "description": "Freelance UI Designer specializing in user interface design for a local digital agency. Remote work.",
       "start_date": "2021-04-01",
       "end_date": "2021-11-30",
+      "location": null,
+      "type": null,
       "tech_stack": ["Figma", "Adobe XD", "UI Design"],
       "achievements": [
         "Designed user interfaces for web and mobile applications",
@@ -35,6 +39,8 @@
       "description": "Freelance Web & Graphic Designer/Developer providing design and development services to clients locally and internationally.",
       "start_date": "2013-04-01",
       "end_date": "2021-10-31",
+      "location": null,
+      "type": null,
       "tech_stack": ["WordPress", "HTML/CSS", "JavaScript", "Graphic Design"],
       "achievements": [
         "Developed custom websites for various clients",
@@ -49,6 +55,8 @@
       "description": "Managed content creation, ePaper production, social media strategy, and minor video editing for the 'Beyond the Tape' segment at Trinidad Express Newspaper and CCN TV6. Semi-remote work.",
       "start_date": "2018-10-01",
       "end_date": "2019-03-31",
+      "location": null,
+      "type": null,
       "tech_stack": ["Content Management", "Social Media", "Video Editing"],
       "achievements": [
         "Managed website content and updates",
@@ -63,6 +71,8 @@
       "description": "Managed website development, social media strategy, and the digitization of magazines into flip books as the In-house Web Developer for all MACO Magazines. Semi-remote work.",
       "start_date": "2017-02-01",
       "end_date": "2018-03-31",
+      "location": null,
+      "type": null,
       "tech_stack": ["Web Development", "Social Media", "Digital Publishing"],
       "achievements": [
         "Developed and maintained magazine websites",
@@ -77,6 +87,8 @@
       "description": "In-house Web Developer with expertise in web development, design, server administration, and database management. Worked in both semi-remote and fully-remote environments.",
       "start_date": "2008-10-01",
       "end_date": "2013-03-31",
+      "location": null,
+      "type": null,
       "tech_stack": [
         "Web Development",
         "Server Administration",
