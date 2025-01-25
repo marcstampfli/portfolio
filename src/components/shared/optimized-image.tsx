@@ -26,7 +26,7 @@ export function OptimizedImage({
   const fallbackTried = useRef(false);
 
   return (
-    <div className="inline-block relative">
+    <div className={cn("inline-block relative", props.fill && "w-full h-full")}>
       <Image
         src={error ? fallback : src}
         alt={alt}

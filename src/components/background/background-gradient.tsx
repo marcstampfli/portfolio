@@ -58,8 +58,8 @@ export function BackgroundGradient() {
           }}
         />
       </AnimatePresence>
-      {/* GitKraken-style grid background */}
-      <div className="gitkraken-grid opacity-20" />
+      {/* Grid pattern overlay */}
+      <div className="grid-pattern opacity-20" />
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
     </div>

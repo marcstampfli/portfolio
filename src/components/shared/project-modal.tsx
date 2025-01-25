@@ -14,7 +14,10 @@ import {
 } from "@/components/ui/dialog";
 import { ProjectTag } from "@/components/shared/project-tag";
 import { OptimizedImage } from "@/components/shared/optimized-image";
+import PlaceholderImage from "@/components/shared/placeholder-image";
 import { Button } from "@/components/ui/button";
+import { isValidProjectImage } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 import dynamic from "next/dynamic";
 
 const Icons = {
@@ -34,7 +37,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
   return (
     <Dialog open={!!project} onOpenChange={() => onClose()}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent className="relative max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{project.title}</DialogTitle>
         </DialogHeader>
@@ -42,12 +45,34 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         <div className="mt-4 space-y-6">
           {/* Project Image */}
           <div className="relative aspect-video overflow-hidden rounded-lg">
-            <OptimizedImage
-              src={project.images?.[0] || "/images/placeholder.svg"}
-              alt={project.title}
-              fill
-              className="object-cover"
-            />
+            {(() => {
+              const imagePath = project.images?.[0];
+              const handleImageError = () => {
+                if (imagePath) {
+                  logger.error({
+                    message: "Failed to load project image in modal",
+                    projectId: project.id,
+                    imagePath,
+                  });
+                }
+              };
+
+              return imagePath && isValidProjectImage(imagePath) ? (
+                <OptimizedImage
+                  src={imagePath}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  onError={handleImageError}
+                />
+              ) : (
+                <PlaceholderImage
+                  fill
+                  animate={false}
+                  className="object-cover"
+                />
+              );
+            })()}
           </div>
 
           {/* Project Description */}

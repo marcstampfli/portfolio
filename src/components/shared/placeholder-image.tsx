@@ -9,6 +9,7 @@ interface PlaceholderImageProps {
   size?: "sm" | "md" | "lg";
   animate?: boolean;
   text?: string;
+  fill?: boolean;
 }
 
 export default function PlaceholderImage({
@@ -16,6 +17,7 @@ export default function PlaceholderImage({
   size = "md",
   animate = true,
   text,
+  fill,
 }: PlaceholderImageProps) {
   const sizes = {
     sm: "w-8 h-8 text-xs",
@@ -31,21 +33,31 @@ export default function PlaceholderImage({
       animate={animate ? { opacity: 1, scale: 1 } : undefined}
       transition={{ duration: 0.3 }}
       className={cn(
-        "relative flex items-center justify-center bg-muted",
-        sizes[size],
-        className,
+        "relative flex items-center justify-center",
+        "bg-background/50 backdrop-blur-sm",
+        !fill && sizes[size],
+        fill && "w-full h-full",
+        className
       )}
     >
       {text ? (
         <span className="text-muted-foreground">{text}</span>
       ) : (
-        <Image
-          src="/images/placeholder.svg"
-          alt="Placeholder"
-          width={24}
-          height={24}
-          className="h-1/2 w-1/2 text-muted-foreground"
-        />
+        <div className="relative w-full h-full">
+          <Image
+            src="/images/placeholder.svg"
+            alt="Placeholder"
+            fill={fill}
+            width={!fill ? 24 : undefined}
+            height={!fill ? 24 : undefined}
+            className={cn(
+              "object-contain",
+              !fill && "h-1/2 w-1/2"
+            )}
+            sizes={fill ? "(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw" : undefined}
+            priority
+          />
+        </div>
       )}
     </Component>
   );

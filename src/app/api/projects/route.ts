@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { isValidProjectImage } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 interface DatabaseProject {
   id: string;
@@ -55,17 +57,43 @@ export async function GET() {
     });
 
     const transformedProjects: TransformedProject[] = projects.map(
-      (project: DatabaseProject) => ({
-        ...project,
-        tech_stack: project.tech_stack.map((tech) => tech.name),
-        created_at: project.created_at.toISOString(),
-        updated_at: project.updated_at.toISOString(),
-      }),
+      (project: DatabaseProject) => {
+        const validImages = project.images?.filter((image) => {
+          const isValid = isValidProjectImage(image);
+          if (!isValid) {
+            logger.warn({
+              message: "Invalid project image filtered out",
+              projectId: project.id,
+              path: image
+            });
+          }
+          return isValid;
+        });
+
+        if (project.images?.length && !validImages?.length) {
+          logger.warn({
+            message: "All project images were invalid",
+            projectId: project.id,
+            originalImageCount: project.images.length
+          });
+        }
+
+        return {
+          ...project,
+          images: validImages?.length ? validImages : null,
+          tech_stack: project.tech_stack.map((tech) => tech.name),
+          created_at: project.created_at.toISOString(),
+          updated_at: project.updated_at.toISOString(),
+        };
+      }
     );
 
     return NextResponse.json(transformedProjects);
   } catch (error) {
-    console.error("Failed to fetch projects:", error);
+    logger.error({
+      message: "Failed to fetch projects",
+      error: error instanceof Error ? error.message : String(error)
+    });
     return NextResponse.json(
       { error: "Failed to fetch projects" },
       { status: 500 },
