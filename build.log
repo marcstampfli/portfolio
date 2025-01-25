@@ -1,0 +1,35 @@
+
+> portfolio@0.1.0 build
+> next build
+
+   ▲ Next.js 15.1.5
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+ ⨯ ESLint: Invalid Options: - Unknown options: useEslintrc, extensions - 'extensions' has been removed.
+   Collecting page data ...
+   Generating static pages (0/7) ...
+   Generating static pages (1/7) 
+   Generating static pages (3/7) 
+   Generating static pages (5/7) 
+ ✓ Generating static pages (7/7)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    567 kB          677 kB
+├ ○ /_not-found                          1.03 kB         107 kB
+├ ƒ /api/contact                         142 B           106 kB
+├ ƒ /api/experiences                     142 B           106 kB
+└ ƒ /api/projects                        142 B           106 kB
++ First Load JS shared by all            106 kB
+  ├ chunks/4bd1b696-71abe135b96ab9ee.js  53 kB
+  ├ chunks/517-1499c4fd31610435.js       50.8 kB
+  └ other shared chunks (total)          2.14 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
