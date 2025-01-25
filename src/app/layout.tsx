@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Suspense } from "react";
 import Loading from "@/components/shared/loading";
 
-const inter = Inter({ subsets: ["latin"] });
+// Configure fonts
+const geistSans = GeistSans;
+const geistMono = GeistMono;
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -76,9 +79,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
       <head />
-      <body className={`${inter.className} antialiased`}>
+      <body className="antialiased">
         <Providers>
           <Suspense fallback={<Loading />}>{children}</Suspense>
         </Providers>
