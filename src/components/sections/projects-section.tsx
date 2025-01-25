@@ -5,6 +5,15 @@ import dynamic from "next/dynamic";
 import { useState, useEffect, useMemo } from "react";
 import { ProjectFilters } from "@/components/shared/project-filters";
 import type { Project as PrismaProject } from ".prisma/client";
+import { ProjectModal } from "@/components/shared/project-modal";
+import { useQuery } from "@tanstack/react-query";
+import { OptimizedImage } from "@/components/shared/optimized-image";
+import { ProjectTag } from "@/components/shared/project-tag";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Button } from "@/components/ui/button";
+import PlaceholderImage from "@/components/shared/placeholder-image";
+import { isValidProjectImage } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 interface Project {
   id: string;
@@ -19,12 +28,6 @@ interface Project {
   created_at: string;
   updated_at: string;
 }
-import { ProjectModal } from "@/components/shared/project-modal";
-import { useQuery } from "@tanstack/react-query";
-import { OptimizedImage } from "@/components/shared/optimized-image";
-import { ProjectTag } from "@/components/shared/project-tag";
-import { useDebounce } from "@/hooks/use-debounce";
-import { Button } from "@/components/ui/button";
 
 const Icons = {
   Github: dynamic(() => import("lucide-react").then((mod) => mod.Github)),
@@ -43,9 +46,24 @@ export function ProjectsSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeType, setActiveType] = useState<string | null>(null);
   const [visibleProjects, setVisibleProjects] = useState(6);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   // Debounce search query to avoid too many re-renders
   const debouncedSearch = useDebounce(searchQuery, 300);
+
+  const handleImageError = (projectId: string, imagePath: string | undefined) => {
+    logger.error({
+      message: "Failed to load project image",
+      projectId,
+      imagePath: imagePath || 'no image path',
+      error: new Error().stack
+    });
+    setFailedImages(prev => {
+      const next = new Set(prev);
+      next.add(projectId);
+      return next;
+    });
+  };
 
   const {
     data: projects = [] as Project[],
@@ -135,19 +153,19 @@ export function ProjectsSection() {
         className="relative py-24 sm:py-32"
         aria-label="Projects"
       >
-        <div className="container relative px-4 sm:px-6 lg:px-8">
+        <div className="container relative px-4 sm:px-6 lg:px-8" style={{ position: 'relative' }}>
           {/* Enhanced header section */}
           <div className="relative mx-auto mb-12 sm:mb-20 max-w-2xl text-center">
             <div
               className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]"
               aria-hidden="true"
             />
-            <h2 className="relative mb-4 sm:mb-6 text-3xl sm:text-4xl font-bold tracking-tight font-heading md:text-5xl">
+            <h2 className="relative mb-4 sm:mb-6 text-3xl sm:text-4xl font-bold tracking-tight geist-sans md:text-5xl">
               <span className="bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] animate-text-shine bg-clip-text text-transparent">
                 Work Throughout the Years
               </span>
             </h2>
-            <p className="text-base sm:text-lg text-muted-foreground">
+            <p className="text-base sm:text-lg text-muted-foreground geist-mono">
               Dive into my portfolio - a collection of web development, design,
               and creative projects.
             </p>
@@ -182,7 +200,7 @@ export function ProjectsSection() {
                     className="h-8 w-8 animate-spin text-primary"
                     aria-hidden="true"
                   />
-                  <p className="mt-4 text-muted-foreground">
+                  <p className="mt-4 text-muted-foreground geist-mono">
                     Loading projects...
                   </p>
                 </div>
@@ -193,14 +211,14 @@ export function ProjectsSection() {
                   role="alert"
                 >
                   <Icons.AlertCircle className="h-8 w-8" aria-hidden="true" />
-                  <p className="mt-4">
+                  <p className="mt-4 geist-mono">
                     Failed to load projects. Please try again later.
                   </p>
                 </div>
               )}
               {!isLoading && !error && filteredProjects.length === 0 && (
                 <div className="col-span-full text-center py-12" role="status">
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground geist-mono">
                     No projects match your filters.
                   </p>
                 </div>
@@ -223,7 +241,6 @@ export function ProjectsSection() {
                         }}
                         role="listitem"
                       >
-                        {/* Project card content... */}
                         <div
                           onClick={() => setSelectedProject(project)}
                           onKeyDown={(e) => {
@@ -238,19 +255,35 @@ export function ProjectsSection() {
                           className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         >
                           {/* Project Image with enhanced overlay */}
-                          <div className="absolute inset-0 w-full h-full relative">
-                            {project.images?.[0] ? (
-                              <OptimizedImage
-                                src={project.images[0]}
-                                alt={`Screenshot of ${project.title}`}
-                                fill
-                                sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                priority={index < 3}
-                                quality={85}
-                                blurDataURL="/images/placeholder.svg"
-                              />
-                            ) : null}
+                          <div className="absolute inset-0 w-full h-full">
+                            {(() => {
+                              const imagePath = project.images?.[0];
+                              const shouldShowImage =
+                                !failedImages.has(project.id) &&
+                                imagePath &&
+                                isValidProjectImage(imagePath) &&
+                                imagePath.startsWith('/images/projects/');
+
+                              return shouldShowImage ? (
+                                <OptimizedImage
+                                  src={imagePath}
+                                  alt={`Screenshot of ${project.title}`}
+                                  fill
+                                  sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+                                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                  priority={index < 3}
+                                  quality={85}
+                                  onError={() => handleImageError(project.id, imagePath)}
+                                  blurDataURL="/images/placeholder.svg"
+                                />
+                              ) : (
+                                <PlaceholderImage
+                                  fill
+                                  animate={false}
+                                  className="transition-transform duration-500 group-hover:scale-105"
+                                />
+                              );
+                            })()}
                             <div
                               className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent"
                               aria-hidden="true"
@@ -259,10 +292,10 @@ export function ProjectsSection() {
 
                           {/* Project Info */}
                           <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
-                            <h3 className="mb-2 text-lg sm:text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
+                            <h3 className="mb-2 text-lg sm:text-xl font-semibold text-foreground transition-colors group-hover:text-primary geist-sans">
                               {project.title}
                             </h3>
-                            <p className="mb-4 line-clamp-2 text-xs sm:text-sm text-muted-foreground">
+                            <p className="mb-4 line-clamp-2 text-xs sm:text-sm text-muted-foreground geist-mono">
                               {project.description}
                             </p>
 
@@ -352,7 +385,7 @@ export function ProjectsSection() {
                     onClick={handleLoadMore}
                     className="group relative overflow-hidden"
                   >
-                    <span className="relative z-10">Load More Projects</span>
+                    <span className="relative z-10 geist-mono">Load More Projects</span>
                     <div className="absolute inset-0 -z-10 bg-primary opacity-0 transition-opacity group-hover:opacity-10" />
                   </Button>
                 </div>
