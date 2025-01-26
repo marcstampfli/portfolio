@@ -23,21 +23,40 @@ export function FuturisticBackground() {
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(
     null,
   );
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const animationFrameRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
 
-  // Load particle image
+  // Preload assets and initialize
   useEffect(() => {
-    const image = new Image();
-    image.onload = () => {
-      particleImageRef.current = image;
-      setImageLoaded(true);
+    const preloadAssets = async () => {
+      try {
+        // Preload particle image
+        const image = new Image();
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = reject;
+          image.src = "/images/particle.svg";
+        });
+        particleImageRef.current = image;
+
+        // Initialize canvas and points
+        if (canvasRef.current) {
+          const canvas = canvasRef.current;
+          const { width, height } = canvas.getBoundingClientRect();
+          const dpr = window.devicePixelRatio || 1;
+          canvas.width = width * dpr;
+          canvas.height = height * dpr;
+          setDimensions({ width: canvas.width, height: canvas.height });
+        }
+
+        setIsReady(true);
+      } catch (error) {
+        console.error('Failed to preload assets:', error);
+      }
     };
-    image.src = "/images/particle.svg";
-    return () => {
-      image.onload = null;
-    };
+
+    preloadAssets();
   }, []);
 
   // Handle resize
@@ -85,7 +104,7 @@ export function FuturisticBackground() {
 
     // Create 3D grid of points
     const points: GridPoint[] = [];
-    const numPoints = Math.min(300, Math.max(100, (width * height) / 10000)); // Scale points with viewport size
+    const numPoints = Math.min(500, Math.max(150, (width * height) / 5000)); // Scale points with viewport size
 
     for (let i = 0; i < numPoints; i++) {
       const x = (Math.random() - 0.5) * width * 2;
@@ -97,11 +116,11 @@ export function FuturisticBackground() {
         x,
         y,
         z,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        vz: (Math.random() - 0.5) * 0.3,
-        size: 1.5 + Math.random() * 1.5,
-        opacity: 0.1 + Math.random() * 0.2,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        vz: (Math.random() - 0.5) * 0.5,
+        size: 2.5 + Math.random() * 2.0,
+        opacity: 0.2 + Math.random() * 0.3,
         hue: Math.random() * 40 - 20,
         connections: 0,
       });
@@ -112,11 +131,11 @@ export function FuturisticBackground() {
 
   // Animation loop
   useEffect(() => {
-    if (!canvasRef.current || !pointsRef.current.length) return;
+    if (!canvasRef.current || !pointsRef.current.length || !isReady) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx || !imageLoaded || !particleImageRef.current) return;
+    if (!ctx || !particleImageRef.current) return;
 
     const project3DTo2D = (x: number, y: number, z: number) => {
       const fov = Math.max(dimensions.width, dimensions.height); // Dynamic FOV based on viewport
@@ -138,12 +157,12 @@ export function FuturisticBackground() {
       const maxConnectionsPerPoint = 3;
 
       if (
-        distance < 200 &&
+        distance < 300 &&
         point1.connections < maxConnectionsPerPoint &&
         point2.connections < maxConnectionsPerPoint
       ) {
         const avgScale = (proj1.scale + proj2.scale) / 2;
-        const opacity = (1 - distance / 200) * 0.1 * avgScale;
+        const opacity = (1 - distance / 300) * 0.2 * avgScale;
 
         // Increment connection count for both points
         point1.connections++;
@@ -196,13 +215,13 @@ export function FuturisticBackground() {
           const dx = mousePos.x - projected.x;
           const dy = mousePos.y - projected.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const interactionRadius = Math.min(250, dimensions.width * 0.2); // Responsive interaction radius
+          const interactionRadius = Math.min(400, dimensions.width * 0.3); // Responsive interaction radius
 
           if (distance < interactionRadius) {
-            const force = (1 - distance / interactionRadius) * 0.015;
+            const force = (1 - distance / interactionRadius) * 0.03;
             point.vx -= dx * force;
             point.vy -= dy * force;
-            point.vz += force * Math.min(15, dimensions.height * 0.01);
+            point.vz += force * Math.min(25, dimensions.height * 0.02);
           }
         }
 

@@ -57,8 +57,10 @@ export const HeroSection = memo(function HeroSection() {
         aria-label="Introduction"
         role="region"
       >
-        <div className="absolute inset-0">
-          <FuturisticBackground />
+        <div className="relative">
+          <div className="absolute inset-0">
+            <FuturisticBackground />
+          </div>
         </div>
 
         <div className="container relative z-10 px-4 md:px-6">
