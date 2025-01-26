@@ -80,7 +80,29 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
-      <head />
+      <head>
+        <link
+          rel="preload"
+          href="/_next/static/media/66f30814ff6d7cdf.p.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/_next/static/media/e11418ac562b8ac1-s.p.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/profile.jpg"
+          as="image"
+          type="image/jpeg"
+          media="(min-width: 768px)"
+        />
+      </head>
       <body className="antialiased">
         <Providers>
           <Suspense fallback={<Loading />}>{children}</Suspense>
