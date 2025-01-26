@@ -231,9 +231,9 @@
       "project_type": "website",
       "tech_stack": ["Custom Theme", "WordPress"],
       "images": [
-        "project-breezybrands-website.jpg",
-        "project-breezybrands-website2.jpg",
-        "project-breezybrands3.jpg"
+        "/images/projects/project-breezybrands-website.jpg",
+        "/images/projects/project-breezybrands-website2.jpg",
+        "/images/projects/project-breezybrands-website3.jpg"
       ],
       "live_url": "https://breezybrands.com",
       "github_url": "",
