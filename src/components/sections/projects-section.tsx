@@ -52,11 +52,11 @@ export function ProjectsSection() {
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   const handleImageError = (projectId: string, imagePath: string | undefined) => {
-    logger.error({
-      message: "Failed to load project image",
+    // Log at debug level since fallback to placeholder is expected behavior
+    logger.debug({
+      message: "Project image not found, using placeholder",
       projectId,
-      imagePath: imagePath || 'no image path',
-      error: new Error().stack
+      imagePath: imagePath || 'no image path'
     });
     setFailedImages(prev => {
       const next = new Set(prev);
@@ -153,7 +153,7 @@ export function ProjectsSection() {
         className="relative py-24 sm:py-32"
         aria-label="Projects"
       >
-        <div className="container relative px-4 sm:px-6 lg:px-8" style={{ position: 'relative' }}>
+        <div className="container relative px-4 sm:px-6 lg:px-8">
           {/* Enhanced header section */}
           <div className="relative mx-auto mb-12 sm:mb-20 max-w-2xl text-center">
             <div
@@ -188,7 +188,7 @@ export function ProjectsSection() {
           {/* Projects grid with loading and error states */}
           <div className="space-y-8">
             <div
-              className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              className="relative grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3"
               role="list"
             >
               {isLoading && (
@@ -255,7 +255,7 @@ export function ProjectsSection() {
                           className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         >
                           {/* Project Image with enhanced overlay */}
-                          <div className="absolute inset-0 w-full h-full">
+                          <div className="absolute inset-0 w-full h-full relative">
                             {(() => {
                               const imagePath = project.images?.[0];
                               const shouldShowImage =
@@ -270,11 +270,12 @@ export function ProjectsSection() {
                                   alt={`Screenshot of ${project.title}`}
                                   fill
                                   sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                  className="relative object-cover transition-transform duration-500 group-hover:scale-105"
                                   priority={index < 3}
                                   quality={85}
                                   onError={() => handleImageError(project.id, imagePath)}
-                                  blurDataURL="/images/placeholder.svg"
+                                  placeholder="blur"
+                                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJjdXJyZW50Q29sb3IiLz4="
                                 />
                               ) : (
                                 <PlaceholderImage

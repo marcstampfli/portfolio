@@ -64,8 +64,6 @@ export function TimelineItem({ job, index }: TimelineItemProps) {
 
           {/* Company Logo */}
           <PlaceholderImage
-            text={job.company}
-            size="md"
             className="group-hover:border-primary/20"
           />
         </div>

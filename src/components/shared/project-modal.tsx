@@ -9,6 +9,7 @@ interface Project extends PrismaProject {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -40,6 +41,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
       <DialogContent className="relative max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{project.title}</DialogTitle>
+          <DialogDescription>
+            View details and information about {project.title}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 space-y-6">
