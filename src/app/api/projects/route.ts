@@ -64,7 +64,7 @@ export async function GET() {
             logger.warn({
               message: "Invalid project image filtered out",
               projectId: project.id,
-              path: image
+              path: image,
             });
           }
           return isValid;
@@ -74,7 +74,7 @@ export async function GET() {
           logger.warn({
             message: "All project images were invalid",
             projectId: project.id,
-            originalImageCount: project.images.length
+            originalImageCount: project.images.length,
           });
         }
 
@@ -85,14 +85,14 @@ export async function GET() {
           created_at: project.created_at.toISOString(),
           updated_at: project.updated_at.toISOString(),
         };
-      }
+      },
     );
 
     return NextResponse.json(transformedProjects);
   } catch (error) {
     logger.error({
       message: "Failed to fetch projects",
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     });
     return NextResponse.json(
       { error: "Failed to fetch projects" },

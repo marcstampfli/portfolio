@@ -52,7 +52,7 @@ export function FuturisticBackground() {
 
         setIsReady(true);
       } catch (error) {
-        console.error('Failed to preload assets:', error);
+        console.error("Failed to preload assets:", error);
       }
     };
 

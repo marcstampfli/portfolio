@@ -51,14 +51,17 @@ export function ProjectsSection() {
   // Debounce search query to avoid too many re-renders
   const debouncedSearch = useDebounce(searchQuery, 300);
 
-  const handleImageError = (projectId: string, imagePath: string | undefined) => {
+  const handleImageError = (
+    projectId: string,
+    imagePath: string | undefined,
+  ) => {
     // Log at debug level since fallback to placeholder is expected behavior
     logger.debug({
       message: "Project image not found, using placeholder",
       projectId,
-      imagePath: imagePath || 'no image path'
+      imagePath: imagePath || "no image path",
     });
-    setFailedImages(prev => {
+    setFailedImages((prev) => {
       const next = new Set(prev);
       next.add(projectId);
       return next;
@@ -262,7 +265,7 @@ export function ProjectsSection() {
                                 !failedImages.has(project.id) &&
                                 imagePath &&
                                 isValidProjectImage(imagePath) &&
-                                imagePath.startsWith('/images/projects/');
+                                imagePath.startsWith("/images/projects/");
 
                               return shouldShowImage ? (
                                 <OptimizedImage
@@ -273,7 +276,9 @@ export function ProjectsSection() {
                                   className="relative object-cover transition-transform duration-500 group-hover:scale-105"
                                   priority={index < 3}
                                   quality={85}
-                                  onError={() => handleImageError(project.id, imagePath)}
+                                  onError={() =>
+                                    handleImageError(project.id, imagePath)
+                                  }
                                   placeholder="blur"
                                   blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJjdXJyZW50Q29sb3IiLz4="
                                 />
@@ -386,7 +391,9 @@ export function ProjectsSection() {
                     onClick={handleLoadMore}
                     className="group relative overflow-hidden"
                   >
-                    <span className="relative z-10 geist-mono">Load More Projects</span>
+                    <span className="relative z-10 geist-mono">
+                      Load More Projects
+                    </span>
                     <div className="absolute inset-0 -z-10 bg-primary opacity-0 transition-opacity group-hover:opacity-10" />
                   </Button>
                 </div>
