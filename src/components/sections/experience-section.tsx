@@ -10,9 +10,7 @@ import { TimelineItem } from "@/components/timeline/timeline-item";
 
 const Icons = {
   Loader2: dynamic(() => import("lucide-react").then((mod) => mod.Loader2)),
-  AlertCircle: dynamic(() =>
-    import("lucide-react").then((mod) => mod.AlertCircle),
-  ),
+  AlertCircle: dynamic(() => import("lucide-react").then((mod) => mod.AlertCircle)),
   Building2: dynamic(() => import("lucide-react").then((mod) => mod.Building2)),
 };
 
@@ -39,7 +37,7 @@ export function ExperienceSection() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  const experiencesData = (experiences as ExperienceResponse[]) || [];
+  const experiencesData = experiences || [];
 
   return (
     <section
@@ -69,7 +67,7 @@ export function ExperienceSection() {
             over a decade.
           </p>
 
-          {!isLoading && !error && experiences && experiences.length > 0 && (
+          {!isLoading && !error && experiencesData.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -85,18 +83,14 @@ export function ExperienceSection() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-12">
               <Icons.Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="mt-4 text-muted-foreground">
-                Loading experiences...
-              </p>
+              <p className="mt-4 text-muted-foreground">Loading experiences...</p>
             </div>
           )}
 
           {error && (
             <div className="flex flex-col items-center justify-center py-12 text-destructive">
               <Icons.AlertCircle className="h-8 w-8" />
-              <p className="mt-4">
-                Failed to load experiences. Please try again later.
-              </p>
+              <p className="mt-4">Failed to load experiences. Please try again later.</p>
             </div>
           )}
 
@@ -126,7 +120,7 @@ export function ExperienceSection() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "ItemList",
-            itemListElement: (experiences || []).map((exp, index) => ({
+            itemListElement: experiencesData.map((exp, index) => ({
               "@type": "WorkExperience",
               position: index + 1,
               name: exp.position,
