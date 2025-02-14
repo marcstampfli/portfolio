@@ -3,12 +3,12 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface DropdownMenuProps
+export interface PopoverProps
   extends React.HTMLAttributes<HTMLDivElement> {
   trigger: React.ReactNode;
 }
 
-const DropdownMenu = React.forwardRef<HTMLDivElement, DropdownMenuProps>(
+const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
   ({ className, trigger, children, ...props }, ref) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -20,7 +20,7 @@ const DropdownMenu = React.forwardRef<HTMLDivElement, DropdownMenuProps>(
         {isOpen && (
           <div
             className={cn(
-              "absolute right-0 z-50 mt-2 w-56 rounded-md shadow-lg bg-popover text-popover-foreground",
+              "absolute z-50 mt-2 w-56 rounded-md shadow-lg bg-popover text-popover-foreground",
               "focus:outline-none",
               className
             )}
@@ -35,6 +35,6 @@ const DropdownMenu = React.forwardRef<HTMLDivElement, DropdownMenuProps>(
   }
 );
 
-DropdownMenu.displayName = "DropdownMenu";
+Popover.displayName = "Popover";
 
-export { DropdownMenu };
+export { Popover };
