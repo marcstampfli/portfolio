@@ -5,12 +5,19 @@ import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-interface OptimizedImageProps extends Omit<ImageProps, "src" | "alt"> {
-  src: string | StaticImport;
+interface OptimizedImageProps {
+  src: string;
   alt: string;
+  width?: number;
+  height?: number;
+  fill?: boolean;
   className?: string;
+  sizes?: string;
+  priority?: boolean;
+  quality?: number;
   blurDataURL?: string;
   fallback?: string;
+  onError?: () => void;
 }
 
 export function OptimizedImage({
@@ -19,6 +26,7 @@ export function OptimizedImage({
   className,
   blurDataURL,
   fallback = "/images/placeholder.svg",
+  onError,
   ...props
 }: OptimizedImageProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +54,7 @@ export function OptimizedImage({
           if (!fallbackTried.current) {
             setError(true);
             fallbackTried.current = true;
+            onError?.();
           }
         }}
         placeholder={blurDataURL ? "blur" : "empty"}
