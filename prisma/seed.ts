@@ -1,90 +1,157 @@
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
-import projectsData from "../data/projects.json" assert { type: "json" };
-import experiencesData from "../data/experiences.json" assert { type: "json" };
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+interface Project {
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  project_type: string;
+  tech_stack: string[];
+  images: string[];
+  live_url?: string;
+  github_url?: string;
+  figma_url?: string;
+  client?: string;
+  status: string;
+  order: number;
+  created_at: string;
+  updated_at: string;
+  developed_at?: string;
+}
+
+interface Experience {
+  title: string;
+  company: string;
+  period: string;
+  location?: string;
+  type?: string;
+  description: string;
+  tech_stack: string[];
+  achievements: string[];
+  start_date: string;
+  end_date?: string;
+}
+
+interface ProjectData {
+  projects: Project[];
+}
+
+interface ExperienceData {
+  experiences: Experience[];
+}
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Read JSON files
+const projectsData = JSON.parse(
+  readFileSync(join(__dirname, "../data/projects.json"), "utf-8")
+) as ProjectData;
+
+const experiencesData = JSON.parse(
+  readFileSync(join(__dirname, "../data/experiences.json"), "utf-8")
+) as ExperienceData;
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Delete all existing data in correct order to respect foreign key constraints
-  await prisma.achievement.deleteMany();
-  await prisma.techStack.deleteMany();
-  await prisma.experience.deleteMany();
-  await prisma.project.deleteMany();
+  try {
+    console.log("Starting database seed...");
 
-  // Create unique tech stack items
-  const allTechStacks = new Set<string>();
-  projectsData.projects.forEach((project) => {
-    project.tech_stack.forEach((tech) => allTechStacks.add(tech));
-  });
-  experiencesData.experiences.forEach((experience) => {
-    experience.tech_stack.forEach((tech) => allTechStacks.add(tech));
-  });
+    // Delete all existing data in correct order to respect foreign key constraints
+    console.log("Cleaning existing data...");
+    await prisma.$transaction([
+      prisma.achievement.deleteMany(),
+      prisma.techStack.deleteMany(),
+      prisma.experience.deleteMany(),
+      prisma.project.deleteMany(),
+    ]);
 
-  // Create TechStack records
-  const techStackMap = new Map<string, string>();
-  for (const tech of Array.from(allTechStacks)) {
-    const created = await prisma.techStack.create({
-      data: {
-        name: tech,
-        category: "general", // Default category
-      },
+    // Create unique tech stack items
+    console.log("Creating tech stack items...");
+    const allTechStacks = new Set<string>();
+    projectsData.projects.forEach((project: Project) => {
+      project.tech_stack.forEach((tech: string) => allTechStacks.add(tech));
     });
-    techStackMap.set(tech, created.id);
-  }
-
-  // Seed projects
-  for (const project of projectsData.projects) {
-    await prisma.project.create({
-      data: {
-        ...project,
-        tech_stack: {
-          connect: project.tech_stack.map((tech) => ({
-            id: techStackMap.get(tech),
-          })),
-        },
-        images: project.images.map((img) => `/images/projects/${img}`),
-        created_at: new Date(project.created_at),
-        updated_at: new Date(project.updated_at),
-        developed_at: new Date(project.developed_at),
-      },
+    experiencesData.experiences.forEach((experience: Experience) => {
+      experience.tech_stack.forEach((tech: string) => allTechStacks.add(tech));
     });
-  }
 
-  // Seed experiences
-  for (const experience of experiencesData.experiences) {
-    await prisma.experience.create({
-      data: {
-        title: experience.title.split(" / ")[0],
-        position:
-          experience.title.split(" / ")[1] || experience.title.split(" / ")[0],
-        company: experience.company,
-        period: experience.period,
-        location: experience.location || null,
-        type: experience.type || null,
-        start_date: new Date(experience.start_date),
-        end_date: experience.end_date ? new Date(experience.end_date) : null,
-        description: experience.description,
-        tech_stack: {
-          connect: experience.tech_stack.map((tech) => ({
-            id: techStackMap.get(tech),
-          })),
+    // Create TechStack records
+    const techStackMap = new Map<string, string>();
+    for (const tech of Array.from(allTechStacks)) {
+      const created = await prisma.techStack.create({
+        data: {
+          name: tech,
+          category: "general", // Default category
         },
-        achievements: {
-          create: experience.achievements.map((achievement) => ({
-            description: achievement,
-          })),
-        },
-      },
-    });
-  }
+      });
+      techStackMap.set(tech, created.id);
+    }
+    console.log(`✓ Created ${allTechStacks.size} tech stack items`);
 
-  console.log("Database has been seeded with normalized data structure");
+    // Seed projects
+    console.log("Seeding projects...");
+    for (const project of projectsData.projects) {
+      await prisma.project.create({
+        data: {
+          ...project,
+          tech_stack: {
+            connect: project.tech_stack.map((tech: string) => ({
+              id: techStackMap.get(tech),
+            })),
+          },
+          images: project.images.map((img: string) => `/images/projects/${img}`),
+          created_at: new Date(project.created_at),
+          updated_at: new Date(project.updated_at),
+          developed_at: project.developed_at ? new Date(project.developed_at) : null,
+        },
+      });
+    }
+    console.log(`✓ Seeded ${projectsData.projects.length} projects`);
+
+    // Seed experiences
+    console.log("Seeding experiences...");
+    for (const experience of experiencesData.experiences) {
+      await prisma.experience.create({
+        data: {
+          title: experience.title.split(" / ")[0],
+          position: experience.title.split(" / ")[1] || experience.title.split(" / ")[0],
+          company: experience.company,
+          period: experience.period,
+          location: experience.location || null,
+          type: experience.type || null,
+          start_date: new Date(experience.start_date),
+          end_date: experience.end_date ? new Date(experience.end_date) : null,
+          description: experience.description,
+          tech_stack: {
+            connect: experience.tech_stack.map((tech: string) => ({
+              id: techStackMap.get(tech),
+            })),
+          },
+          achievements: {
+            create: experience.achievements.map((achievement: string) => ({
+              description: achievement,
+            })),
+          },
+        },
+      });
+    }
+    console.log(`✓ Seeded ${experiencesData.experiences.length} experiences`);
+
+    console.log("✨ Database seeding completed successfully!");
+  } catch (error) {
+    console.error("Error seeding database:", error);
+    throw error;
+  }
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("Failed to seed database:", e);
     process.exit(1);
   })
   .finally(async () => {

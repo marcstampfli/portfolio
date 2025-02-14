@@ -1,15 +1,30 @@
-import { PrismaClient } from ".prisma/client";
+import pkg from '@prisma/client';
+const { PrismaClient } = pkg;
 
+/**
+ * Extend global type to include our database client
+ */
 declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
+  var db: undefined | ReturnType<typeof PrismaClient["prototype"]["constructor"]>;
 }
 
-const client = new PrismaClient();
-const prisma = global.prisma || client;
+/**
+ * Create a new PrismaClient instance with environment-specific logging
+ */
+const prismaClientSingleton = () => {
+  return new PrismaClient({
+    log: process.env.NODE_ENV === 'development' 
+      ? ['query', 'error', 'warn'] 
+      : ['error'],
+  });
+};
 
-if (process.env.NODE_ENV !== "production") {
-  global.prisma = prisma;
+// Initialize client as singleton
+const db = globalThis.db ?? prismaClientSingleton();
+
+// Prevent multiple instances during development due to hot reloading
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.db = db;
 }
 
-export { prisma };
+export { db as prisma };
