@@ -16,6 +16,22 @@ function Dialog({
   children,
   className,
 }: DialogProps) {
+  // Lock body scroll when dialog is open
+  React.useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = 'var(--removed-body-scroll-bar-size, 0px)';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -24,17 +40,25 @@ function Dialog({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onOpenChange?.(false);
+    }
+  };
+
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 bg-background/80 backdrop-blur-sm",
+        "fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4",
         className
       )}
       onClick={handleBackdropClick}
+      onKeyDown={handleKeyDown}
       aria-modal="true"
       role="dialog"
+      tabIndex={-1}
     >
-      <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
+      <div className="relative z-50 grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg max-h-[90vh] overflow-y-auto">
         {children}
       </div>
     </div>

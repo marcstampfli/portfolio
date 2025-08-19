@@ -71,13 +71,13 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {project.tech_stack.map((tech, index) => (
+            {project.tech_stack.map((tech: string | { name: string }, index) => (
               <Badge 
-                key={`${tech.name}-${index}`} 
+                key={`${typeof tech === 'string' ? tech : tech.name}-${index}`} 
                 variant="secondary"
                 className="transition-colors dark:bg-muted/30 dark:text-foreground/80"
               >
-                {tech.name}
+                {typeof tech === 'string' ? tech : tech.name}
               </Badge>
             ))}
           </div>

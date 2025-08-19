@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { TimelineItem } from "@/components/timeline/timeline-item";
 import { TimelineProgress } from "@/components/timeline/timeline-progress";
 import { BackgroundEffect } from "@/components/timeline/background-effect";
+import { generatePeriodString } from "@/lib/date-utils";
 import React from 'react';
 
 interface Experience {
@@ -81,10 +82,11 @@ export function ExperienceSection() {
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging) return;
+    e.preventDefault();
     const timeline = timelineRef.current;
     if (!timeline) return;
     const x = e.pageX - timeline.offsetLeft;
-    const walk = (x - startX) * 1; // scroll-fast
+    const walk = (x - startX) * 2; // Increased multiplier for smoother drag
     timeline.scrollLeft = scrollLeft - walk;
   };
 
@@ -121,12 +123,17 @@ export function ExperienceSection() {
         <TimelineProgress isLoading={isLoading} />
         <div
           ref={timelineRef}
-          className="relative z-10 flex gap-8 overflow-x-auto pb-12 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-primary/20 hover:scrollbar-thumb-primary/40"
+          className="relative z-10 flex gap-8 overflow-x-auto pb-12 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-primary/20 hover:scrollbar-thumb-primary/40 scroll-smooth"
           onPointerDown={handlePointerDown}
           onPointerLeave={handlePointerLeave}
           onPointerUp={handlePointerUp}
           onPointerMove={handlePointerMove}
-          style={{ touchAction: 'pan-y', position: 'relative' }}
+          style={{ 
+            touchAction: 'pan-x', 
+            position: 'relative',
+            scrollBehavior: 'smooth',
+            willChange: 'scroll-position'
+          }}
         >
           {isLoading ? (
             // Loading skeletons
@@ -145,21 +152,31 @@ export function ExperienceSection() {
             ))
           ) : (
             experiences?.sort((a, b) => {
-              const dateA = new Date(a.end_date ? a.end_date : a.start_date);
-              const dateB = new Date(b.end_date ? b.end_date : b.start_date);
-              return dateB.getTime() - dateA.getTime(); // Latest first
-            }).map((experience: Experience, index) => (
-              <motion.div
-                key={experience.id}
-                className="flex-none snap-center w-[calc(100vw-3rem)] md:w-[600px] flex-shrink-0"
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <TimelineItem experience={experience} index={index} />
-              </motion.div>
-            ))
+              // Sort by start_date in descending order (most recent first)
+              const dateA = new Date(a.start_date);
+              const dateB = new Date(b.start_date);
+              return dateB.getTime() - dateA.getTime();
+            }).map((experience: Experience, index) => {
+              // Generate dynamic period string
+              const dynamicPeriod = generatePeriodString(experience.start_date, experience.end_date);
+              const enhancedExperience = {
+                ...experience,
+                period: dynamicPeriod
+              };
+              
+              return (
+                <motion.div
+                  key={experience.id}
+                  className="flex-none snap-center w-[calc(100vw-3rem)] md:w-[600px] flex-shrink-0"
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <TimelineItem experience={enhancedExperience} index={index} />
+                </motion.div>
+              );
+            })
           )}
         </div>
       </div>

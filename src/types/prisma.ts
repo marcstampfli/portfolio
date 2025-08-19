@@ -26,7 +26,7 @@ export interface Project {
 }
 
 export interface ProjectWithTechStack extends Omit<Project, "tech_stack"> {
-  tech_stack: Pick<TechStack, "name">[];
+  tech_stack: (Pick<TechStack, "name"> | string)[];
 }
 
 export interface Achievement {

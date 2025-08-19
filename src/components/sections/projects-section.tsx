@@ -1,21 +1,28 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import dynamic from "next/dynamic";
-import { useState, useEffect, useMemo } from "react";
-import { ProjectFilters } from "@/components/shared/project-filters";
-import type { Project as PrismaProject } from ".prisma/client";
-import { ProjectModal } from "@/components/shared/project-modal";
+import { motion, useReducedMotion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { OptimizedImage } from "@/components/shared/optimized-image";
-import { ProjectTag } from "@/components/shared/project-tag";
-import { useDebounce } from "@/hooks/use-debounce";
+import { ProjectWithTechStack } from "@/types/prisma";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
 import { isValidProjectImage } from "@/lib/utils";
-import { logger } from "@/lib/logger";
-
-import { ProjectWithTechStack, TechStack, Project } from "@/types/prisma";
+import { 
+  Github, 
+  ExternalLink, 
+  Figma, 
+  X,
+  Play,
+  Info,
+  Code,
+  Palette,
+  Calendar,
+  User,
+  ArrowRight,
+  Layers
+} from "lucide-react";
 
 interface APIProject {
   id: string;
@@ -36,47 +43,370 @@ interface APIProject {
   developed_at: string | null;
   tech_stack: { name: string }[];
 }
-  
 
-const Icons = {
-  Github: dynamic(() => import("lucide-react").then((mod) => mod.Github)),
-  Globe: dynamic(() => import("lucide-react").then((mod) => mod.Globe)),
-  Figma: dynamic(() => import("lucide-react").then((mod) => mod.Figma)),
-  AlertCircle: dynamic(() =>
-    import("lucide-react").then((mod) => mod.AlertCircle),
-  ),
-  Loader2: dynamic(() => import("lucide-react").then((mod) => mod.Loader2)),
-};
+// 3D Tilt Card Component
+function TiltCard({ 
+  project, 
+  index, 
+  isActive, 
+  onClick 
+}: { 
+  project: ProjectWithTechStack; 
+  index: number; 
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+  
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7.5deg", "-7.5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7.5deg", "7.5deg"]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    
+    x.set(xPct);
+    y.set(yPct);
+  }, [x, y]);
+
+  const handleMouseLeave = useCallback(() => {
+    x.set(0);
+    y.set(0);
+  }, [x, y]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className={`relative cursor-pointer group ${isActive ? 'z-20' : 'z-10'}`}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0,
+        scale: isActive ? 1.05 : 1,
+      }}
+      transition={{ 
+        duration: 0.4, 
+        delay: index * 0.1,
+        type: "spring",
+        stiffness: 260,
+        damping: 20
+      }}
+      whileHover={{ 
+        scale: 1.02,
+        transition: { duration: 0.2 }
+      }}
+    >
+      <div className="relative h-[400px] w-full max-w-sm mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300"
+           style={{ transform: "translateZ(50px)" }}>
+        
+        {/* Project Image */}
+        <div className="relative h-48 overflow-hidden">
+          {isValidProjectImage(project.images?.[0]) ? (
+            <OptimizedImage
+              src={project.images[0]}
+              alt={project.title}
+              width={400}
+              height={200}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+          ) : (
+            <PlaceholderImage className="w-full h-full" />
+          )}
+          
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          {/* Quick Actions */}
+          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {project.live_url && (
+              <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            )}
+            {project.github_url && (
+              <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
+                <Github className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          
+          {/* Project Type Badge */}
+          <div className="absolute top-3 left-3">
+            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+              {project.project_type}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-4">
+          <div>
+            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+              {project.title}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+              {project.description}
+            </p>
+          </div>
+
+          {/* Tech Stack */}
+          <div className="flex flex-wrap gap-1">
+            {project.tech_stack?.slice(0, 3).map((tech, techIndex) => (
+              <Badge key={`${tech}-${techIndex}`} variant="outline" className="text-xs">
+                {typeof tech === 'string' ? tech : tech.name}
+              </Badge>
+            ))}
+            {project.tech_stack?.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{project.tech_stack.length - 3}
+              </Badge>
+            )}
+          </div>
+
+          {/* Client & Status */}
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            {project.client && (
+              <div className="flex items-center gap-1">
+                <User className="h-3 w-3" />
+                <span>{project.client}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1">
+              <div className={`h-2 w-2 rounded-full ${
+                project.status === 'completed' ? 'bg-green-500' : 
+                project.status === 'in_progress' ? 'bg-yellow-500' : 'bg-gray-500'
+              }`} />
+              <span className="capitalize">{project.status.replace('_', ' ')}</span>
+            </div>
+          </div>
+
+          {/* View Details Button */}
+          <Button 
+            variant="ghost" 
+            className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
+          >
+            View Details
+            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Slide-out Modal Component
+function ProjectModal({ 
+  project, 
+  isOpen, 
+  onClose 
+}: { 
+  project: ProjectWithTechStack | null; 
+  isOpen: boolean; 
+  onClose: () => void;
+}) {
+  if (!project) return null;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          
+          {/* Modal */}
+          <motion.div
+            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-background border-l border-border shadow-2xl z-50 overflow-y-auto"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 30 
+            }}
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-border p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">{project.title}</h2>
+                  <p className="text-muted-foreground">{project.project_type}</p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={onClose}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-8">
+              {/* Hero Image */}
+              <div className="relative h-64 rounded-xl overflow-hidden">
+                {isValidProjectImage(project.images?.[0]) ? (
+                  <OptimizedImage
+                    src={project.images[0]}
+                    alt={project.title}
+                    width={800}
+                    height={400}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <PlaceholderImage className="w-full h-full" />
+                )}
+              </div>
+
+              {/* Quick Actions */}
+              <div className="flex gap-3">
+                {project.live_url && (
+                  <Button asChild>
+                    <a href={project.live_url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Live Demo
+                    </a>
+                  </Button>
+                )}
+                {project.github_url && (
+                  <Button variant="outline" asChild>
+                    <a href={project.github_url} target="_blank" rel="noopener noreferrer">
+                      <Github className="mr-2 h-4 w-4" />
+                      Source Code
+                    </a>
+                  </Button>
+                )}
+                {project.figma_url && (
+                  <Button variant="outline" asChild>
+                    <a href={project.figma_url} target="_blank" rel="noopener noreferrer">
+                      <Figma className="mr-2 h-4 w-4" />
+                      Design
+                    </a>
+                  </Button>
+                )}
+              </div>
+
+              {/* Description */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">About This Project</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {project.description}
+                </p>
+                {project.content && (
+                  <div 
+                    className="prose prose-sm max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: project.content }}
+                  />
+                )}
+              </div>
+
+              {/* Project Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Tech Stack */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <Code className="h-4 w-4" />
+                    Technology Stack
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech_stack?.map((tech, index) => (
+                      <Badge key={`modal-${tech}-${index}`} variant="secondary">
+                        {typeof tech === 'string' ? tech : tech.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Project Info */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    Project Details
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    {project.client && (
+                      <div className="flex items-center gap-2">
+                        <User className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground">Client:</span>
+                        <span>{project.client}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-muted-foreground">Status:</span>
+                      <span className="capitalize">{project.status.replace('_', ' ')}</span>
+                    </div>
+                    {project.developed_at && (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground">Developed:</span>
+                        <span>{new Date(project.developed_at).getFullYear()}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Images */}
+              {project.images && project.images.length > 1 && (
+                <div className="space-y-4">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <Layers className="h-4 w-4" />
+                    Project Gallery
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {project.images.slice(1).map((image, index) => (
+                      isValidProjectImage(image) && (
+                        <div key={index} className="relative h-48 rounded-lg overflow-hidden">
+                          <OptimizedImage
+                            src={image}
+                            alt={`${project.title} screenshot ${index + 2}`}
+                            width={400}
+                            height={200}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export function ProjectsSection() {
   const prefersReducedMotion = useReducedMotion();
   const [selectedProject, setSelectedProject] = useState<ProjectWithTechStack | null>(null);
-
-  const [selectedFilter, setSelectedFilter] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeType, setActiveType] = useState<string | null>(null);
-  const [visibleProjects, setVisibleProjects] = useState(6);
-  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
-
-  // Debounce search query to avoid too many re-renders
-  const debouncedSearch = useDebounce(searchQuery, 300);
-
-  const handleImageError = (
-    projectId: string,
-    imagePath: string | undefined,
-  ) => {
-    // Log at debug level since fallback to placeholder is expected behavior
-    logger.debug({
-      message: "Project image not found, using placeholder",
-      projectId,
-      imagePath: imagePath || "no image path",
-    });
-    setFailedImages((prev) => {
-      const next = new Set(prev);
-      next.add(projectId);
-      return next;
-    });
-  };
+  const [activeFilter, setActiveFilter] = useState<string>('all');
 
   const {
     data: projects = [] as ProjectWithTechStack[],
@@ -86,23 +416,16 @@ export function ProjectsSection() {
     queryKey: ["projects"],
     queryFn: async () => {
       const response = await fetch("/api/projects");
-      if (!response.ok) {
-        throw new Error("Failed to fetch projects");
-      }
+      if (!response.ok) throw new Error("Failed to fetch projects");
+      
       const data: unknown = await response.json();
-
-      if (!Array.isArray(data)) {
-        throw new Error("Expected array of projects");
-      }
+      if (!Array.isArray(data)) throw new Error("Expected array of projects");
 
       const isAPIProject = (obj: unknown): obj is APIProject =>
         typeof obj === "object" &&
         obj !== null &&
         typeof (obj as APIProject).id === "string" &&
-        typeof (obj as APIProject).title === "string" &&
-        typeof (obj as APIProject).description === "string" &&
-        Array.isArray((obj as APIProject).tech_stack) &&
-        Array.isArray((obj as APIProject).images);
+        typeof (obj as APIProject).title === "string";
 
       const validatedProjects = data.filter(isAPIProject);
       return validatedProjects.map((project: APIProject): ProjectWithTechStack => ({
@@ -114,343 +437,164 @@ export function ProjectsSection() {
     },
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    retry: false,
   });
 
-  // Get unique project types from projects
+  // Get project types for filtering
   const projectTypes = useMemo(() => {
-    const uniqueTypes = Array.from(
-      new Set(projects.map((project) => project.project_type)),
-    );
-    return ["all", ...uniqueTypes.sort()];
+    const types = new Set(projects.map(p => p.project_type));
+    return Array.from(types).sort();
   }, [projects]);
 
-  // Filter projects based on selected criteria
-  const filteredProjects: ProjectWithTechStack[] = useMemo(() => {
-    return projects.filter((project: ProjectWithTechStack) => {
-      const matchesFilter =
-        selectedFilter === "all" ||
-        project.project_type.toLowerCase() === selectedFilter.toLowerCase();
+  // Filter projects based on active filter
+  const filteredProjects = useMemo(() => {
+    if (activeFilter === 'all') return projects;
+    return projects.filter(project => 
+      project.project_type.toLowerCase() === activeFilter.toLowerCase()
+    );
+  }, [projects, activeFilter]);
 
-      const matchesSearch = !debouncedSearch
-        ? true
-        : project.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-          project.description
-            .toLowerCase()
-            .includes(debouncedSearch.toLowerCase()) ||
-          project.tech_stack.some((tech) =>
-            tech.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
-          );
+  const handleProjectClick = useCallback((project: ProjectWithTechStack) => {
+    setSelectedProject(project);
+  }, []);
 
-      const matchesType = !activeType || project.project_type === activeType;
+  const closeModal = useCallback(() => {
+    setSelectedProject(null);
+  }, []);
 
-      return matchesFilter && matchesSearch && matchesType;
-    });
-  }, [projects, selectedFilter, debouncedSearch, activeType]);
+  if (isLoading) {
+    return (
+      <section className="relative py-24 sm:py-32">
+        <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-muted rounded-md w-48 mx-auto" />
+              <div className="h-4 bg-muted rounded-md w-96 mx-auto" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-  // Reset visible projects when filters change
-  useEffect(() => {
-    setVisibleProjects(6);
-  }, [selectedFilter, debouncedSearch, activeType]);
-
-  const handleLoadMore = () => {
-    setVisibleProjects((prev) => prev + 6);
-  };
+  if (error) {
+    return (
+      <section className="relative py-24 sm:py-32">
+        <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold">Unable to load projects</h2>
+            <p className="text-muted-foreground mt-2">Please try again later.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      transition={{ staggerChildren: 0.1 }}
-      className="relative"
-    >
-      <section
-        id="projects"
-        className="relative py-24 sm:py-32"
-        aria-label="Projects"
-      >
-        <div className="container relative px-4 sm:px-6 lg:px-8">
-          {/* Enhanced header section */}
-          <div className="relative mx-auto mb-12 sm:mb-20 max-w-2xl text-center">
-            <div
-              className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]"
-              aria-hidden="true"
-            />
-            <h2 className="relative mb-4 sm:mb-6 text-3xl sm:text-4xl font-bold tracking-tight geist-sans md:text-5xl">
+    <>
+      <section id="projects" className="relative py-24 sm:py-32 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/3 rounded-full blur-3xl" />
+        </div>
+
+        <div className="container px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
               <span className="bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] animate-text-shine bg-clip-text text-transparent">
-                Work Throughout the Years
+                Featured Projects
               </span>
             </h2>
-            <p className="text-base sm:text-lg text-muted-foreground geist-mono">
-              Dive into my portfolio - a collection of web development, design,
-              and creative projects.
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              A showcase of my latest work in web development, design, and digital experiences.
             </p>
-          </div>
+          </motion.div>
 
-          {/* Refined filters */}
-          <div className="mb-12 sm:mb-16">
-            <ProjectFilters
-              activeFilter={selectedFilter}
-              searchQuery={searchQuery}
-              activeType={activeType}
-              onFilterChange={setSelectedFilter}
-              onSearchChange={setSearchQuery}
-              onTypeChange={setActiveType}
-              projectTypes={projectTypes}
-              className="space-y-6 sm:space-y-8"
-            />
-          </div>
-
-          {/* Projects grid with loading and error states */}
-          <div className="space-y-8">
-            <div
-              className="relative grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3"
-              role="list"
+          {/* Filter Buttons */}
+          <motion.div
+            className="flex flex-wrap justify-center gap-3 mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Button
+              variant={activeFilter === 'all' ? 'default' : 'ghost'}
+              onClick={() => setActiveFilter('all')}
+              className="rounded-full"
             >
-              {isLoading && (
-                <div
-                  className="col-span-full flex flex-col items-center justify-center py-12"
-                  role="status"
-                >
-                  <Icons.Loader2
-                    className="h-8 w-8 animate-spin text-primary"
-                    aria-hidden="true"
+              All Projects
+            </Button>
+            {projectTypes.map((type) => (
+              <Button
+                key={type}
+                variant={activeFilter === type ? 'default' : 'ghost'}
+                onClick={() => setActiveFilter(type)}
+                className="rounded-full capitalize"
+              >
+                {type.replace('_', ' ')}
+              </Button>
+            ))}
+          </motion.div>
+
+          {/* Projects Card Deck */}
+          <div className="relative">
+            {filteredProjects.length === 0 ? (
+              <motion.div
+                className="text-center py-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <h3 className="text-xl font-semibold mb-2">No projects found</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your filter or check back later.
+                </p>
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 perspective-1000">
+                {filteredProjects.map((project, index) => (
+                  <TiltCard
+                    key={project.id}
+                    project={project}
+                    index={index}
+                    isActive={selectedProject?.id === project.id}
+                    onClick={() => handleProjectClick(project)}
                   />
-                  <p className="mt-4 text-muted-foreground geist-mono">
-                    Loading projects...
-                  </p>
-                </div>
-              )}
-              {error && (
-                <div
-                  className="col-span-full flex flex-col items-center justify-center py-12 text-destructive"
-                  role="alert"
-                >
-                  <Icons.AlertCircle className="h-8 w-8" aria-hidden="true" />
-                  <p className="mt-4 geist-mono">
-                    Failed to load projects. Please try again later.
-                  </p>
-                </div>
-              )}
-              {!isLoading && !error && filteredProjects.length === 0 && (
-                <div className="col-span-full text-center py-12" role="status">
-                  <p className="text-muted-foreground geist-mono">
-                    No projects match your filters.
-                  </p>
-                </div>
-              )}
-              {!isLoading &&
-                !error &&
-                filteredProjects.length > 0 &&
-                filteredProjects
-                  .slice(0, visibleProjects)
-                  .map((project: ProjectWithTechStack, index: number) => {
-                    return (
-                      <div
-                        key={project.id}
-                        className="group relative opacity-0 animate-fade-in"
-                        style={{
-                          animationDelay: prefersReducedMotion
-                            ? "0ms"
-                            : `${index * 100}ms`,
-                          animationFillMode: "forwards",
-                        }}
-                        role="listitem"
-                      >
-                        <div
-                          onClick={() => setSelectedProject(project)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              setSelectedProject(project);
-                            }
-                          }}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`View details for ${project.title}`}
-                          className="relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                        >
-                          {/* Project Image with enhanced overlay */}
-                          <div className="absolute inset-0 w-full h-full relative">
-                            {(() => {
-                              const imagePath = project.images?.[0];
-                              const shouldShowImage =
-                                !failedImages.has(project.id) &&
-                                project.images != null &&
-                                project.images.length > 0 &&
-                                imagePath &&
-                                isValidProjectImage(imagePath) &&
-                                imagePath.startsWith("/images/projects/");
-
-                              return shouldShowImage ? (
-                                <OptimizedImage
-                                  src={imagePath}
-                                  alt={`Screenshot of ${project.title}`}
-                                  fill
-                                  sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                                  className="relative object-cover transition-transform duration-500 group-hover:scale-105"
-                                  priority={index < 3}
-                                  quality={85}
-                                  onError={() =>
-                                    handleImageError(project.id, imagePath)
-                                  }
-                                  placeholder="blur"
-                                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJjdXJyZW50Q29sb3IiLz4="
-                                />
-                              ) : (
-                                <PlaceholderImage
-                                  fill
-                                  animate={false}
-                                  className="transition-transform duration-500 group-hover:scale-105"
-                                />
-                              );
-                            })()}
-                            <div
-                              className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent"
-                              aria-hidden="true"
-                            />
-                          </div>
-
-                          {/* Project Info */}
-                          <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
-                            <h3 className="mb-2 text-lg sm:text-xl font-semibold text-foreground transition-colors group-hover:text-primary geist-sans">
-                              {project.title}
-                            </h3>
-                            <p className="mb-4 line-clamp-2 text-xs sm:text-sm text-muted-foreground geist-mono">
-                              {project.description}
-                            </p>
-
-                            {/* Tech Stack Tags */}
-                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                              {project.tech_stack
-                                .slice(0, 3)
-                                .map((tech, index) => (
-                                  <ProjectTag
-                                    key={`${project.id}-${tech.name}-${index}`}
-                                  >
-                                    {tech.name}
-                                  </ProjectTag>
-                                ))}
-                              {project.tech_stack.length > 3 && (
-                                <ProjectTag key={`${project.id}-tech-more`}>
-                                  +{project.tech_stack.length - 3}
-                                </ProjectTag>
-                              )}
-                            </div>
-
-                            {/* Quick Links */}
-                            <div className="absolute right-2 sm:right-4 top-2 sm:top-4 flex gap-1.5 sm:gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                              {project.live_url && (
-                                <a
-                                  href={project.live_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                                  onClick={(e) => e.stopPropagation()}
-                                  aria-label="View Live Demo"
-                                >
-                                  <Icons.Globe
-                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                    aria-hidden="true"
-                                  />
-                                </a>
-                              )}
-                              {project.github_url && (
-                                <a
-                                  href={project.github_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                                  onClick={(e) => e.stopPropagation()}
-                                  aria-label="View Source Code"
-                                >
-                                  <Icons.Github
-                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                    aria-hidden="true"
-                                  />
-                                </a>
-                              )}
-                              {project.figma_url && (
-                                <a
-                                  href={project.figma_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="rounded-full bg-background/80 p-1.5 sm:p-2 text-muted-foreground backdrop-blur-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                                  onClick={(e) => e.stopPropagation()}
-                                  aria-label="View Design"
-                                >
-                                  <Icons.Figma
-                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                    aria-hidden="true"
-                                  />
-                                </a>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-            </div>
-            {!isLoading &&
-              !error &&
-              filteredProjects.length > visibleProjects && (
-                <div
-                  className="flex justify-center mt-8 opacity-0 animate-fade-in"
-                  style={{
-                    animationDelay: "300ms",
-                    animationFillMode: "forwards",
-                  }}
-                >
-                  <Button
-                    onClick={handleLoadMore}
-                    className="group relative overflow-hidden"
-                  >
-                    <span className="relative z-10 geist-mono">
-                      Load More Projects
-                    </span>
-                    <div className="absolute inset-0 -z-10 bg-primary opacity-0 transition-opacity group-hover:opacity-10" />
-                  </Button>
-                </div>
-              )}
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Project Modal */}
-          {selectedProject && (
-            <ProjectModal
-              project={selectedProject}
-              onClose={() => setSelectedProject(null)}
-            />
+          {/* View All Projects CTA */}
+          {filteredProjects.length > 6 && (
+            <motion.div
+              className="text-center mt-16"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              <Button variant="outline" size="lg" className="rounded-full">
+                View All {projects.length} Projects
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </motion.div>
           )}
         </div>
       </section>
 
-      {/* Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            itemListElement: projects.map((project: ProjectWithTechStack, index: number) => ({
-              "@type": "SoftwareSourceCode",
-              position: index + 1,
-              name: project.title,
-              description: project.description,
-              programmingLanguage: project.tech_stack,
-              codeRepository: project.github_url || undefined,
-              url: project.live_url || undefined,
-              image: project.images?.[0] || undefined,
-              author: {
-                "@type": "Person",
-                name: "Marc Stampfli",
-              },
-            })),
-          }),
-        }}
+      {/* Slide-out Modal */}
+      <ProjectModal
+        project={selectedProject}
+        isOpen={!!selectedProject}
+        onClose={closeModal}
       />
-    </motion.div>
+    </>
   );
 }
+
+export default ProjectsSection;

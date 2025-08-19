@@ -1,12 +1,15 @@
 import { HeroSection } from "@/components/sections/hero-section";
 import { AboutSection } from "@/components/sections/about-section";
-import { ProjectsSection } from "@/components/sections/projects-section";
 import { ContactForm } from "@/components/form/contact-form";
 import { ScrollToTop } from "@/components/shared/scroll-to-top";
 import { FloatingNav } from "@/components/shared/floating-nav";
-import { ExperienceSection } from "@/components/sections/experience-section";
 import { ParallaxBackground } from "@/components/background/parallax-background";
 import { PageTransition } from "@/components/shared/page-transition";
+import { Suspense, lazy } from "react";
+
+// Lazy load heavy components properly
+const ProjectsSection = lazy(() => import("@/components/sections/projects-section"));
+const ExperienceSection = lazy(() => import("@/components/sections/experience-section").then(mod => ({ default: mod.ExperienceSection })));
 
 export default function Home() {
   return (
@@ -21,9 +24,13 @@ export default function Home() {
 
             <AboutSection />
 
-            <ExperienceSection />
+            <Suspense fallback={<div className="w-full h-96 bg-muted/30 animate-pulse rounded-lg mx-auto max-w-4xl" />}>
+              <ExperienceSection />
+            </Suspense>
 
-            <ProjectsSection />
+            <Suspense fallback={<div className="w-full h-96 bg-muted/30 animate-pulse rounded-lg mx-auto max-w-6xl" />}>
+              <ProjectsSection />
+            </Suspense>
 
             {/* Contact Section */}
             <section
