@@ -15,19 +15,28 @@ import PlaceholderImage from "@/components/shared/placeholder-image";
 import { isValidProjectImage } from "@/lib/utils";
 import { logger } from "@/lib/logger";
 
-interface Project {
+import { ProjectWithTechStack, TechStack, Project } from "@/types/prisma";
+
+interface APIProject {
   id: string;
   title: string;
+  slug: string;
   description: string;
+  content: string;
   project_type: string;
+  images: string[];
   live_url: string | null;
   github_url: string | null;
   figma_url: string | null;
-  images: string[] | null;
-  tech_stack: string[];
+  client: string | null;
+  status: string;
+  order: number;
   created_at: string;
   updated_at: string;
+  developed_at: string | null;
+  tech_stack: { name: string }[];
 }
+  
 
 const Icons = {
   Github: dynamic(() => import("lucide-react").then((mod) => mod.Github)),
@@ -41,7 +50,8 @@ const Icons = {
 
 export function ProjectsSection() {
   const prefersReducedMotion = useReducedMotion();
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectWithTechStack | null>(null);
+
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeType, setActiveType] = useState<string | null>(null);
@@ -69,10 +79,10 @@ export function ProjectsSection() {
   };
 
   const {
-    data: projects = [] as Project[],
+    data: projects = [] as ProjectWithTechStack[],
     isLoading,
     error,
-  } = useQuery<Project[]>({
+  } = useQuery<ProjectWithTechStack[]>({
     queryKey: ["projects"],
     queryFn: async () => {
       const response = await fetch("/api/projects");
@@ -85,17 +95,22 @@ export function ProjectsSection() {
         throw new Error("Expected array of projects");
       }
 
-      const isProject = (obj: unknown): obj is Project =>
+      const isAPIProject = (obj: unknown): obj is APIProject =>
         typeof obj === "object" &&
         obj !== null &&
-        typeof (obj as Project).id === "string" &&
-        typeof (obj as Project).title === "string" &&
-        typeof (obj as Project).description === "string" &&
-        Array.isArray((obj as Project).tech_stack) &&
-        Array.isArray((obj as Project).images);
+        typeof (obj as APIProject).id === "string" &&
+        typeof (obj as APIProject).title === "string" &&
+        typeof (obj as APIProject).description === "string" &&
+        Array.isArray((obj as APIProject).tech_stack) &&
+        Array.isArray((obj as APIProject).images);
 
-      const validatedProjects = data.filter(isProject);
-      return validatedProjects;
+      const validatedProjects = data.filter(isAPIProject);
+      return validatedProjects.map((project: APIProject): ProjectWithTechStack => ({
+        ...project,
+        created_at: new Date(project.created_at),
+        updated_at: new Date(project.updated_at),
+        developed_at: project.developed_at ? new Date(project.developed_at) : null,
+      }));
     },
     staleTime: Infinity,
     gcTime: Infinity,
@@ -113,8 +128,8 @@ export function ProjectsSection() {
   }, [projects]);
 
   // Filter projects based on selected criteria
-  const filteredProjects: Project[] = useMemo(() => {
-    return projects.filter((project: Project) => {
+  const filteredProjects: ProjectWithTechStack[] = useMemo(() => {
+    return projects.filter((project: ProjectWithTechStack) => {
       const matchesFilter =
         selectedFilter === "all" ||
         project.project_type.toLowerCase() === selectedFilter.toLowerCase();
@@ -126,7 +141,7 @@ export function ProjectsSection() {
             .toLowerCase()
             .includes(debouncedSearch.toLowerCase()) ||
           project.tech_stack.some((tech) =>
-            tech.toLowerCase().includes(debouncedSearch.toLowerCase()),
+            tech.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
           );
 
       const matchesType = !activeType || project.project_type === activeType;
@@ -231,7 +246,7 @@ export function ProjectsSection() {
                 filteredProjects.length > 0 &&
                 filteredProjects
                   .slice(0, visibleProjects)
-                  .map((project, index) => {
+                  .map((project: ProjectWithTechStack, index: number) => {
                     return (
                       <div
                         key={project.id}
@@ -263,6 +278,8 @@ export function ProjectsSection() {
                               const imagePath = project.images?.[0];
                               const shouldShowImage =
                                 !failedImages.has(project.id) &&
+                                project.images != null &&
+                                project.images.length > 0 &&
                                 imagePath &&
                                 isValidProjectImage(imagePath) &&
                                 imagePath.startsWith("/images/projects/");
@@ -311,9 +328,9 @@ export function ProjectsSection() {
                                 .slice(0, 3)
                                 .map((tech, index) => (
                                   <ProjectTag
-                                    key={`${project.id}-${tech}-${index}`}
+                                    key={`${project.id}-${tech.name}-${index}`}
                                   >
-                                    {tech}
+                                    {tech.name}
                                   </ProjectTag>
                                 ))}
                               {project.tech_stack.length > 3 && (
@@ -417,7 +434,7 @@ export function ProjectsSection() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "ItemList",
-            itemListElement: projects.map((project, index) => ({
+            itemListElement: projects.map((project: ProjectWithTechStack, index: number) => ({
               "@type": "SoftwareSourceCode",
               position: index + 1,
               name: project.title,

@@ -1,22 +1,25 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MotionValue } from "framer-motion";
 
-interface TimelineProgressProps {
-  scrollYProgress: MotionValue<number>;
+export interface TimelineProgressProps {
+  isLoading: boolean;
 }
 
-export function TimelineProgress({ scrollYProgress }: TimelineProgressProps) {
+export function TimelineProgress({ isLoading }: TimelineProgressProps) {
   return (
-    <motion.div
-      className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/50 via-primary/20 to-transparent"
-      style={{
-        scaleY: scrollYProgress,
-        originY: 0,
-      }}
-    >
-      <div className="absolute inset-0 w-full animate-glow bg-primary/20" />
-    </motion.div>
+    <div className="absolute left-0 right-0 top-[-1px] h-[2px]">
+      <motion.div
+        initial={{ width: "0%" }}
+        animate={{ width: "100%" }}
+        transition={{ duration: 1, ease: "easeInOut" }}
+        className={`h-full w-full ${
+          isLoading 
+            ? "animate-pulse bg-muted/50" 
+            : "bg-gradient-to-r from-primary/50 via-primary/30 to-transparent"
+        }`}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background" />
+    </div>
   );
 }

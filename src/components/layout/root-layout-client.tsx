@@ -1,7 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "@/components/layout/theme-provider";
-import { Analytics } from "@/components/analytics";
+import { Analytics } from "@/components/shared/analytics";
 import { BackgroundGradient } from "@/components/background/background-gradient";
 import { motion as _motion } from "framer-motion";
 

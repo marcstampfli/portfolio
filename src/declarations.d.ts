@@ -17,10 +17,10 @@ declare module "@/components/shared/project-filters" {
 
 declare module "@/components/shared/project-modal" {
   import { ComponentType } from "react";
-  import { Project } from "@/types/prisma";
+  import { ProjectWithTechStack } from "@/types/prisma";
 
   interface ProjectModalProps {
-    project: Project | null;
+    project: ProjectWithTechStack | null;
     onClose: () => void;
   }
 
@@ -71,8 +71,8 @@ declare module "@/components/ui/button" {
 }
 
 declare module "@/app/actions" {
-  import { Project } from "@/types/prisma";
-  const getProjects: () => Promise<Project[]>;
+  import { ProjectWithTechStack } from "@/types/prisma";
+  const getProjects: () => Promise<ProjectWithTechStack[]>;
   export { getProjects };
 }
 
@@ -87,8 +87,8 @@ declare module "@prisma/client" {
 }
 
 declare module "@/types/project" {
-  import { Project } from "@/types/prisma";
-  export type { Project };
+  import { ProjectWithTechStack } from "@/types/prisma";
+  export type { ProjectWithTechStack as Project };
 }
 
 declare module "@/lib/prisma" {
@@ -103,6 +103,6 @@ declare module "@/data/experiences" {
 }
 
 declare module "@/data/projects" {
-  import { Project } from "@/types/project";
-  export function getProjects(): Promise<Project[]>;
+  import { ProjectWithTechStack } from "@/types/prisma";
+  export function getProjects(): Promise<ProjectWithTechStack[]>;
 }
