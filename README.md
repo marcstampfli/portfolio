@@ -95,3 +95,4 @@ PostgreSQL database runs in Docker and is configured to:
 ## 📝 License
 
 This project is licensed under the MIT License.
+# Force rebuild
