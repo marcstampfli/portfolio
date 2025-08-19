@@ -197,7 +197,7 @@ function TiltCard({
                 project.status === 'completed' ? 'bg-green-500' : 
                 project.status === 'in_progress' ? 'bg-yellow-500' : 'bg-gray-500'
               }`} />
-              <span className="capitalize">{project.status.replace('_', ' ')}</span>
+              <span className="capitalize">{project.status?.replace('_', ' ') || 'Unknown'}</span>
             </div>
           </div>
 
@@ -358,7 +358,7 @@ function ProjectModal({
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3 text-muted-foreground" />
                       <span className="text-muted-foreground">Status:</span>
-                      <span className="capitalize">{project.status.replace('_', ' ')}</span>
+                      <span className="capitalize">{project.status?.replace('_', ' ') || 'Unknown'}</span>
                     </div>
                     {project.developed_at && (
                       <div className="flex items-center gap-2">
@@ -441,7 +441,7 @@ export function ProjectsSection() {
 
   // Get project types for filtering
   const projectTypes = useMemo(() => {
-    const types = new Set(projects.map(p => p.project_type));
+    const types = new Set(projects.map(p => p.project_type).filter(Boolean));
     return Array.from(types).sort();
   }, [projects]);
 
@@ -537,7 +537,7 @@ export function ProjectsSection() {
                 onClick={() => setActiveFilter(type)}
                 className="rounded-full capitalize"
               >
-                {type.replace('_', ' ')}
+                {type?.replace('_', ' ') || type}
               </Button>
             ))}
           </motion.div>
