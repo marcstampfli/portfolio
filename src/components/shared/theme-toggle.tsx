@@ -25,7 +25,7 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="fixed right-4 top-16 z-50 bg-background/80 backdrop-blur-sm transition-colors hover:bg-accent dark:bg-background/50 dark:hover:bg-accent/10"
+      className="fixed right-4 top-16 md:top-4 md:right-16 z-50 bg-background/80 backdrop-blur-sm transition-colors hover:bg-accent dark:bg-background/50 dark:hover:bg-accent/10"
       onClick={() => {
         const newTheme = currentTheme === "dark" ? "light" : "dark";
         setTheme(newTheme);
