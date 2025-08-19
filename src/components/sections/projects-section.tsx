@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, useReducedMotion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ProjectWithTechStack } from "@/types/prisma";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
 import { isValidProjectImage } from "@/lib/utils";
+import { safeGetYear } from "@/lib/date-utils";
 import { 
   Github, 
   ExternalLink, 
@@ -23,6 +25,26 @@ import {
   ArrowRight,
   Layers
 } from "lucide-react";
+
+// Project type display names mapping
+const getProjectTypeDisplayName = (slug: string): string => {
+  const displayNames: Record<string, string> = {
+    'bizcard': 'Business Card',
+    'web': 'Web App',
+    'website': 'Website',
+    'flyer': 'Flyer',
+    'logo': 'Logo',
+    'ui': 'UI Design',
+    'branding': 'Branding',
+    'print': 'Print Design',
+    'mobile': 'Mobile App',
+    'desktop': 'Desktop App',
+    'design': 'Design',
+    'development': 'Development',
+  };
+  
+  return displayNames[slug.toLowerCase()] || slug.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
 
 interface APIProject {
   id: string;
@@ -60,11 +82,11 @@ function TiltCard({
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 40 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 40 });
   
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7.5deg", "-7.5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7.5deg", "7.5deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
@@ -109,19 +131,19 @@ function TiltCard({
         duration: 0.4, 
         delay: index * 0.1,
         type: "spring",
-        stiffness: 260,
-        damping: 20
+        stiffness: 150,
+        damping: 25
       }}
       whileHover={{ 
-        scale: 1.02,
+        scale: 1.01,
         transition: { duration: 0.2 }
       }}
     >
-      <div className="relative h-[400px] w-full max-w-sm mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300"
+      <div className="relative h-[480px] w-full max-w-sm mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300 flex flex-col"
            style={{ transform: "translateZ(50px)" }}>
         
         {/* Project Image */}
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-48 overflow-hidden flex-shrink-0">
           {isValidProjectImage(project.images?.[0]) ? (
             <OptimizedImage
               src={project.images[0]}
@@ -154,61 +176,65 @@ function TiltCard({
           {/* Project Type Badge */}
           <div className="absolute top-3 left-3">
             <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
-              {project.project_type}
+              {getProjectTypeDisplayName(project.project_type)}
             </Badge>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
-          <div>
-            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-              {project.title}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              {project.description}
-            </p>
-          </div>
+        <div className="p-6 flex-1 flex flex-col">
+          <div className="flex-1 space-y-4">
+            <div>
+              <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+                {project.title}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-3">
+                {project.description}
+              </p>
+            </div>
 
-          {/* Tech Stack */}
-          <div className="flex flex-wrap gap-1">
-            {project.tech_stack?.slice(0, 3).map((tech, techIndex) => (
-              <Badge key={`${tech}-${techIndex}`} variant="outline" className="text-xs">
-                {typeof tech === 'string' ? tech : tech.name}
-              </Badge>
-            ))}
-            {project.tech_stack?.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{project.tech_stack.length - 3}
-              </Badge>
-            )}
-          </div>
+            {/* Tech Stack */}
+            <div className="flex flex-wrap gap-1">
+              {project.tech_stack?.slice(0, 3).map((tech, techIndex) => (
+                <Badge key={`${tech}-${techIndex}`} variant="outline" className="text-xs">
+                  {typeof tech === 'string' ? tech : tech.name}
+                </Badge>
+              ))}
+              {project.tech_stack?.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{project.tech_stack.length - 3}
+                </Badge>
+              )}
+            </div>
 
-          {/* Client & Status */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            {project.client && (
+            {/* Client & Status */}
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              {project.client && (
+                <div className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  <span>{project.client}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1">
-                <User className="h-3 w-3" />
-                <span>{project.client}</span>
+                <div className={`h-2 w-2 rounded-full ${
+                  project.status === 'completed' ? 'bg-green-500' : 
+                  project.status === 'in_progress' ? 'bg-yellow-500' : 'bg-gray-500'
+                }`} />
+                <span className="capitalize">{project.status?.replace('_', ' ') || 'Unknown'}</span>
               </div>
-            )}
-            <div className="flex items-center gap-1">
-              <div className={`h-2 w-2 rounded-full ${
-                project.status === 'completed' ? 'bg-green-500' : 
-                project.status === 'in_progress' ? 'bg-yellow-500' : 'bg-gray-500'
-              }`} />
-              <span className="capitalize">{project.status?.replace('_', ' ') || 'Unknown'}</span>
             </div>
           </div>
 
-          {/* View Details Button */}
-          <Button 
-            variant="ghost" 
-            className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
-          >
-            View Details
-            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-          </Button>
+          {/* View Details Button - Fixed at bottom */}
+          <div className="mt-4 pt-4">
+            <Button 
+              variant="ghost" 
+              className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
+            >
+              View Details
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -225,15 +251,37 @@ function ProjectModal({
   isOpen: boolean; 
   onClose: () => void;
 }) {
-  if (!project) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px'; // Compensate for scrollbar
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+  }, [isOpen]);
+
+  if (!project || !mounted) return null;
+
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -242,7 +290,7 @@ function ProjectModal({
           
           {/* Modal */}
           <motion.div
-            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-background border-l border-border shadow-2xl z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-background border-l border-border shadow-2xl z-[101] flex flex-col overflow-hidden"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -251,22 +299,26 @@ function ProjectModal({
               stiffness: 300, 
               damping: 30 
             }}
+            style={{ maxHeight: '100vh' }}
           >
-            {/* Header */}
-            <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-border p-6">
+            {/* Header - Fixed */}
+            <div className="flex-shrink-0 bg-background/95 backdrop-blur-sm border-b border-border p-6 sticky top-0 z-10">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold">{project.title}</h2>
-                  <p className="text-muted-foreground">{project.project_type}</p>
+                  <h2 className="text-2xl font-bold text-foreground">{project.title}</h2>
+                  <p className="text-muted-foreground">{getProjectTypeDisplayName(project.project_type)}</p>
                 </div>
-                <Button variant="ghost" size="sm" onClick={onClose}>
+                <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-muted">
                   <X className="h-5 w-5" />
                 </Button>
               </div>
             </div>
 
-            {/* Content */}
-            <div className="p-6 space-y-8">
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border"
+                 style={{ maxHeight: 'calc(100vh - 120px)' }}
+            >
+              <div className="p-6 space-y-8">
               {/* Hero Image */}
               <div className="relative h-64 rounded-xl overflow-hidden">
                 {isValidProjectImage(project.images?.[0]) ? (
@@ -364,7 +416,7 @@ function ProjectModal({
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-muted-foreground" />
                         <span className="text-muted-foreground">Developed:</span>
-                        <span>{new Date(project.developed_at).getFullYear()}</span>
+                        <span>{safeGetYear(project.developed_at)}</span>
                       </div>
                     )}
                   </div>
@@ -395,18 +447,22 @@ function ProjectModal({
                   </div>
                 </div>
               )}
+              </div>
             </div>
           </motion.div>
         </>
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }
 
 export function ProjectsSection() {
   const prefersReducedMotion = useReducedMotion();
   const [selectedProject, setSelectedProject] = useState<ProjectWithTechStack | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [displayCount, setDisplayCount] = useState<number>(6);
 
   const {
     data: projects = [] as ProjectWithTechStack[],
@@ -453,6 +509,13 @@ export function ProjectsSection() {
     );
   }, [projects, activeFilter]);
 
+  // Projects to display based on pagination
+  const displayedProjects = useMemo(() => {
+    return filteredProjects.slice(0, displayCount);
+  }, [filteredProjects, displayCount]);
+
+  const hasMoreProjects = filteredProjects.length > displayCount;
+
   const handleProjectClick = useCallback((project: ProjectWithTechStack) => {
     setSelectedProject(project);
   }, []);
@@ -460,6 +523,15 @@ export function ProjectsSection() {
   const closeModal = useCallback(() => {
     setSelectedProject(null);
   }, []);
+
+  const loadMoreProjects = useCallback(() => {
+    setDisplayCount(prev => prev + 6);
+  }, []);
+
+  // Reset display count when filter changes
+  useEffect(() => {
+    setDisplayCount(6);
+  }, [activeFilter]);
 
   if (isLoading) {
     return (
@@ -508,17 +580,17 @@ export function ProjectsSection() {
           >
             <h2 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
               <span className="bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] animate-text-shine bg-clip-text text-transparent">
-                Featured Projects
+                Projects
               </span>
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              A showcase of my latest work in web development, design, and digital experiences.
+              A showcase of my work in web development, design, and digital experiences.
             </p>
           </motion.div>
 
           {/* Filter Buttons */}
           <motion.div
-            className="flex flex-wrap justify-center gap-3 mb-12"
+            className="flex flex-wrap justify-center gap-3 mb-16 relative z-30"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -535,15 +607,15 @@ export function ProjectsSection() {
                 key={type}
                 variant={activeFilter === type ? 'default' : 'ghost'}
                 onClick={() => setActiveFilter(type)}
-                className="rounded-full capitalize"
+                className="rounded-full"
               >
-                {type?.replace('_', ' ') || type}
+                {getProjectTypeDisplayName(type)}
               </Button>
             ))}
           </motion.div>
 
           {/* Projects Card Deck */}
-          <div className="relative">
+          <div className="relative z-10">
             {filteredProjects.length === 0 ? (
               <motion.div
                 className="text-center py-16"
@@ -556,8 +628,8 @@ export function ProjectsSection() {
                 </p>
               </motion.div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 perspective-1000">
-                {filteredProjects.map((project, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 perspective-1000">
+                {displayedProjects.map((project, index) => (
                   <TiltCard
                     key={project.id}
                     project={project}
@@ -570,18 +642,38 @@ export function ProjectsSection() {
             )}
           </div>
 
-          {/* View All Projects CTA */}
-          {filteredProjects.length > 6 && (
+          {/* Load More Button */}
+          {hasMoreProjects && (
             <motion.div
               className="text-center mt-16"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
             >
-              <Button variant="outline" size="lg" className="rounded-full">
-                View All {projects.length} Projects
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="rounded-full"
+                onClick={loadMoreProjects}
+              >
+                Load More Projects
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
+            </motion.div>
+          )}
+
+          {/* Projects Counter */}
+          {filteredProjects.length > 0 && (
+            <motion.div
+              className="text-center mt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
+              <p className="text-sm text-muted-foreground">
+                Showing {displayedProjects.length} of {filteredProjects.length} projects
+                {activeFilter !== 'all' && ` in ${getProjectTypeDisplayName(activeFilter)}`}
+              </p>
             </motion.div>
           )}
         </div>

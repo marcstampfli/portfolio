@@ -86,3 +86,28 @@ export function generatePeriodString(startDate: string | Date, endDate: string |
   
   return `${dateRange} · ${duration}`;
 }
+
+/**
+ * Safely extracts year from a date string or Date object
+ * This prevents hydration mismatches by using consistent parsing
+ * @param date - The date string or Date object
+ * @returns Year as string or fallback
+ */
+export function safeGetYear(date: string | Date | null | undefined): string {
+  if (!date) return 'Unknown';
+  
+  try {
+    // Parse the date consistently for both server and client
+    const parsedDate = typeof date === 'string' ? new Date(date) : date;
+    
+    // Validate the date is valid
+    if (isNaN(parsedDate.getTime())) {
+      return 'Unknown';
+    }
+    
+    return parsedDate.getFullYear().toString();
+  } catch (error) {
+    console.warn('Error parsing date:', error);
+    return 'Unknown';
+  }
+}

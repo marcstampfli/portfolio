@@ -24,12 +24,20 @@ export function FuturisticBackground() {
     null,
   );
   const [isReady, setIsReady] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const animationFrameRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
   const lastFrameTimeRef = useRef<number>(0);
 
+  // Mount state effect
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Preload assets and initialize
   useEffect(() => {
+    if (!isMounted) return;
+    
     const preloadAssets = async () => {
       try {
         // Preload particle image
@@ -58,7 +66,7 @@ export function FuturisticBackground() {
     };
 
     preloadAssets();
-  }, []);
+  }, [isMounted]);
 
   // Handle resize
   useEffect(() => {
@@ -94,7 +102,7 @@ export function FuturisticBackground() {
 
   // Initialize grid points
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !isMounted) return;
     const canvas = canvasRef.current;
     const { width, height } = canvas.getBoundingClientRect();
 
@@ -103,32 +111,44 @@ export function FuturisticBackground() {
     canvas.height = height * dpr;
     setDimensions({ width: canvas.width, height: canvas.height });
 
-    // Create 3D grid of points
+    // Create 3D grid of points - using seeded random for consistency
     const points: GridPoint[] = [];
     const numPoints = Math.min(200, Math.max(50, (width * height) / 8000)); // Reduced number of points for better performance
 
+    // Use deterministic seed-based values to avoid hydration issues
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    };
+
     for (let i = 0; i < numPoints; i++) {
-      const x = (Math.random() - 0.5) * width * 2;
-      const y = (Math.random() - 0.5) * height * 2;
-      const z =
-        Math.random() * Math.min(width, height) - Math.min(width, height) / 2;
+      const seed1 = i * 123.456;
+      const seed2 = i * 789.123;
+      const seed3 = i * 456.789;
+      const seed4 = i * 321.654;
+      const seed5 = i * 987.321;
+      const seed6 = i * 654.987;
+      
+      const x = (seededRandom(seed1) - 0.5) * width * 2;
+      const y = (seededRandom(seed2) - 0.5) * height * 2;
+      const z = seededRandom(seed3) * Math.min(width, height) - Math.min(width, height) / 2;
 
       points.push({
         x,
         y,
         z,
-        vx: (Math.random() - 0.5) * 0.3, // Reduced velocity for performance
-        vy: (Math.random() - 0.5) * 0.3,
-        vz: (Math.random() - 0.5) * 0.3,
-        size: 3.0 + Math.random() * 2.0, // Larger particles for visibility
-        opacity: 0.4 + Math.random() * 0.4, // Increased opacity for visibility
-        hue: Math.random() * 40 - 20,
+        vx: (seededRandom(seed4) - 0.5) * 0.3, // Reduced velocity for performance
+        vy: (seededRandom(seed5) - 0.5) * 0.3,
+        vz: (seededRandom(seed6) - 0.5) * 0.3,
+        size: 3.0 + seededRandom(seed1 + 100) * 2.0, // Larger particles for visibility
+        opacity: 0.4 + seededRandom(seed2 + 100) * 0.4, // Increased opacity for visibility
+        hue: seededRandom(seed3 + 100) * 40 - 20,
         connections: 0,
       });
     }
 
     pointsRef.current = points;
-  }, []);
+  }, [isMounted]);
 
   // Animation loop
   useEffect(() => {
@@ -255,10 +275,11 @@ export function FuturisticBackground() {
         point.vy *= 0.99;
         point.vz *= 0.99;
 
-        // Add subtle flow
-        point.vx += (Math.random() - 0.5) * 0.05;
-        point.vy += (Math.random() - 0.5) * 0.05;
-        point.vz += (Math.random() - 0.5) * 0.05;
+        // Add subtle flow using time-based noise for deterministic behavior
+        const timeNoise = timeRef.current * 0.001;
+        point.vx += (Math.sin(point.x * 0.01 + timeNoise) - 0.5) * 0.05;
+        point.vy += (Math.cos(point.y * 0.01 + timeNoise) - 0.5) * 0.05;
+        point.vz += (Math.sin(point.z * 0.01 + timeNoise * 0.5) - 0.5) * 0.05;
 
         return point;
       });

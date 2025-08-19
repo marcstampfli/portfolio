@@ -1,32 +1,52 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useReducedMotion } from "framer-motion";
 
 export function AnimatedGradientBackground() {
   const prefersReducedMotion = useReducedMotion();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Mount state effect
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   // Significantly reduce particles for better performance
   const particles = useMemo(() => {
-    if (prefersReducedMotion) return [];
+    if (prefersReducedMotion || !isMounted) return [];
+    
+    // Use deterministic seed-based values to avoid hydration issues
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    };
     
     return Array.from({ length: 15 }, (_, i) => ({
       id: i,
-      size: Math.random() * 3 + 2, // 2-5px (smaller)
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      animationDelay: Math.random() * 15,
-      animationDuration: Math.random() * 8 + 12, // Shorter duration
+      size: seededRandom(i * 123) * 3 + 2, // 2-5px (smaller)
+      left: seededRandom(i * 456) * 100,
+      top: seededRandom(i * 789) * 100,
+      animationDelay: seededRandom(i * 321) * 15,
+      animationDuration: seededRandom(i * 654) * 8 + 12, // Shorter duration
     }));
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, isMounted]);
 
   // Reduce connections for better performance
   const connections = useMemo(() => {
-    if (prefersReducedMotion || particles.length === 0) return [];
+    if (prefersReducedMotion || particles.length === 0 || !isMounted) return [];
+    
+    // Use deterministic seed-based values to avoid hydration issues
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    };
     
     return Array.from({ length: 8 }, (_, i) => {
-      const particle1 = particles[Math.floor(Math.random() * particles.length)];
-      const particle2 = particles[Math.floor(Math.random() * particles.length)];
+      const particle1Index = Math.floor(seededRandom(i * 111) * particles.length);
+      const particle2Index = Math.floor(seededRandom(i * 222) * particles.length);
+      const particle1 = particles[particle1Index];
+      const particle2 = particles[particle2Index];
       
       const dx = particle2.left - particle1.left;
       const dy = particle2.top - particle1.top;
@@ -40,11 +60,11 @@ export function AnimatedGradientBackground() {
         width: distance,
         angle,
         opacity: Math.max(0.1, 0.6 - distance / 60),
-        animationDelay: Math.random() * 8,
-        animationDuration: Math.random() * 4 + 6,
+        animationDelay: seededRandom(i * 333) * 8,
+        animationDuration: seededRandom(i * 444) * 4 + 6,
       };
     });
-  }, [particles, prefersReducedMotion]);
+  }, [particles, prefersReducedMotion, isMounted]);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
