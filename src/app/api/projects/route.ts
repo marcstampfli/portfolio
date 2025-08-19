@@ -15,15 +15,21 @@ type ProjectWithTechStack = Prisma.ProjectGetPayload<{
 interface ProjectResponse {
   id: string;
   title: string;
+  slug: string;
   description: string;
+  content: string;
   project_type: string;
   tech_stack: string[];
   images: string[] | null;
   live_url: string | null;
   github_url: string | null;
   figma_url: string | null;
+  client: string | null;
+  status: string;
+  order: number;
   created_at: Date;
   updated_at: Date;
+  developed_at: Date | null;
 }
 
 export async function GET() {
@@ -64,15 +70,21 @@ export async function GET() {
       return {
         id: project.id,
         title: project.title,
+        slug: project.slug,
         description: project.description,
+        content: project.content,
         project_type: project.project_type,
         tech_stack: project.tech_stack.map((tech) => tech.name),
         images,
         live_url: project.live_url,
         github_url: project.github_url,
         figma_url: project.figma_url,
+        client: project.client,
+        status: project.status,
+        order: project.order,
         created_at: project.created_at,
         updated_at: project.updated_at,
+        developed_at: project.developed_at,
       };
     });
 
