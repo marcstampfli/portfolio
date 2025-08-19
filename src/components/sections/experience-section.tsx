@@ -1,142 +1,168 @@
 "use client";
 
-import { motion } from "framer-motion";
-import type { ExperienceResponse } from "@/types/experience";
-import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
-import { BackgroundGradient } from "@/components/background/background-gradient";
-import { DownloadResumeButton } from "@/components/resume/download-resume-button";
+import { useRef, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { TimelineItem } from "@/components/timeline/timeline-item";
+import { TimelineProgress } from "@/components/timeline/timeline-progress";
+import { BackgroundEffect } from "@/components/timeline/background-effect";
+import React from 'react';
 
-const Icons = {
-  Loader2: dynamic(() => import("lucide-react").then((mod) => mod.Loader2)),
-  AlertCircle: dynamic(() => import("lucide-react").then((mod) => mod.AlertCircle)),
-  Building2: dynamic(() => import("lucide-react").then((mod) => mod.Building2)),
-};
+interface Experience {
+  id: string;
+  title: string;
+  company: string;
+  position: string;
+  period: string;
+  description: string;
+  tech_stack: string[];
+  achievements: string[];
+  start_date: string;
+  end_date: string | null;
+}
+
+async function fetchExperiences(): Promise<Experience[]> {
+  const response = await fetch("/api/experiences", {
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch experiences");
+  }
+  
+  const experiences = await response.json();
+    return experiences.map((experience: Experience) => ({
+      ...experience,
+      start_date: new Date(experience.start_date).toISOString(),
+      end_date: experience.end_date ? new Date(experience.end_date).toISOString() : null,
+    }));
+}
 
 export function ExperienceSection() {
-  const {
-    data: experiences = [],
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: experiences, isLoading, error } = useQuery<Experience[]>({ 
     queryKey: ["experiences"],
-    queryFn: async () => {
-      try {
-        const response = await fetch("/api/experiences");
-        if (!response.ok) {
-          throw new Error("Failed to fetch experiences");
-        }
-        const data = await response.json();
-        return data as ExperienceResponse[];
-      } catch (error) {
-        console.error("Error fetching experiences:", error);
-        throw error;
-      }
-    },
+    queryFn: fetchExperiences,
+    refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  const experiencesData = experiences || [];
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const containerVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0 },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1 },
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+    setStartX(e.pageX - timeline.offsetLeft);
+    setScrollLeft(timeline.scrollLeft);
+  };
+
+  const handlePointerLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handlePointerUp = () => {
+    setIsDragging(false);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+    const x = e.pageX - timeline.offsetLeft;
+    const walk = (x - startX) * 1; // scroll-fast
+    timeline.scrollLeft = scrollLeft - walk;
+  };
+
+  if (error) {
+    return (
+      <div className="flex h-[50vh] w-full items-center justify-center">
+        <p className="text-destructive dark:text-destructive/90">
+          {error instanceof Error ? error.message : "Failed to load experiences"}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <section
       id="experience"
-      className="relative py-24 sm:py-32"
-      aria-label="Work Experience"
+      className="container relative mt-32 px-4 sm:px-6 lg:px-8"
+      style={{ perspective: "1000px" }}
     >
-      <BackgroundGradient />
-      <div className="container px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="relative text-center"
+      <BackgroundEffect />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10"
+      >
+        <h2 className="text-3xl font-bold sm:text-4xl">Experience</h2>
+        <p className="mt-4 text-muted-foreground">
+          My professional journey and work experience.
+        </p>
+      </motion.div>
+
+      <div className="relative mt-16 overflow-hidden">
+        <TimelineProgress isLoading={isLoading} />
+        <div
+          ref={timelineRef}
+          className="relative z-10 flex gap-8 overflow-x-auto pb-12 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-primary/20 hover:scrollbar-thumb-primary/40"
+          onPointerDown={handlePointerDown}
+          onPointerLeave={handlePointerLeave}
+          onPointerUp={handlePointerUp}
+          onPointerMove={handlePointerMove}
+          style={{ touchAction: 'pan-y', position: 'relative' }}
         >
-          <div
-            className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]"
-            aria-hidden="true"
-          />
-          <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            <span className="bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] animate-text-shine bg-clip-text text-transparent">
-              Experience Highlights
-            </span>
-          </h2>
-          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            Experienced in web development, design, and digital solutions for
-            over a decade.
-          </p>
-
-          {!isLoading && !error && experiencesData.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mt-6"
-            >
-              <DownloadResumeButton experiences={experiencesData} />
-            </motion.div>
-          )}
-        </motion.div>
-
-        <div className="relative mt-16">
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Icons.Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="mt-4 text-muted-foreground">Loading experiences...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="flex flex-col items-center justify-center py-12 text-destructive">
-              <Icons.AlertCircle className="h-8 w-8" />
-              <p className="mt-4">Failed to load experiences. Please try again later.</p>
-            </div>
-          )}
-
-          {!isLoading && !error && experiencesData.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12">
-              <p className="text-muted-foreground">No experiences found.</p>
-            </div>
-          )}
-
-          {!isLoading && !error && experiencesData.length > 0 && (
-            <div className="relative max-w-7xl mx-auto">
-              {experiencesData.map((experience, index) => (
-                <TimelineItem
-                  key={experience.id}
-                  job={experience}
-                  index={index}
-                />
-              ))}
-            </div>
+          {isLoading ? (
+            // Loading skeletons
+            Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex-none animate-pulse opacity-60 snap-center w-[calc(100vw-3rem)] md:w-[600px]"
+              >
+                <div className="w-full space-y-4">
+                  <div className="h-6 w-32 rounded bg-muted dark:bg-muted/40" />
+                  <div className="h-6 w-full rounded bg-muted dark:bg-muted/40" />
+                  <div className="h-24 w-full rounded bg-muted dark:bg-muted/40" />
+                  <div className="h-6 w-32 rounded bg-muted dark:bg-muted/40" />
+                </div>
+              </div>
+            ))
+          ) : (
+            experiences?.sort((a, b) => {
+              const dateA = new Date(a.end_date ? a.end_date : a.start_date);
+              const dateB = new Date(b.end_date ? b.end_date : b.start_date);
+              return dateB.getTime() - dateA.getTime(); // Latest first
+            }).map((experience: Experience, index) => (
+              <motion.div
+                key={experience.id}
+                className="flex-none snap-center w-[calc(100vw-3rem)] md:w-[600px] flex-shrink-0"
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <TimelineItem experience={experience} index={index} />
+              </motion.div>
+            ))
           )}
         </div>
       </div>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            itemListElement: experiencesData.map((exp, index) => ({
-              "@type": "WorkExperience",
-              position: index + 1,
-              name: exp.position,
-              description: exp.description,
-              startDate: exp.period.split(" - ")[0],
-              endDate: exp.period.split(" - ")[1] || "Present",
-              skills: exp.tech_stack,
-              accomplishments: exp.achievements,
-              worksFor: {
-                "@type": "Organization",
-                name: exp.company,
-              },
-            })),
-          }),
-        }}
-      />
     </section>
   );
 }

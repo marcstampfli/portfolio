@@ -71,38 +71,39 @@ export function ScrollSection({
   }, [onLoadMore, hasMore, throttledScroll]);
 
   return (
-    <motion.div
-      ref={containerRef}
-      initial={{ opacity: 0, y: 50 }}
-      style={{
-        opacity,
-        y,
-        position: "relative",
-        ...(imageSrc ? {} : { minHeight: "100vh" }),
-      }}
-      className={`w-full ${className}`}
-    >
-      {imageSrc && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-          <Image
-            src={imageSrc}
-            alt={imageAlt}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            placeholder="blur"
-            blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23333333'/%3E%3C/svg%3E"
-          />
-        </div>
-      )}
+    <div className="relative w-full">
+      <motion.div
+        ref={containerRef}
+        initial={{ opacity: 0, y: 50 }}
+        style={{
+          opacity,
+          y,
+          ...(imageSrc ? {} : { minHeight: "100vh" }),
+        }}
+        className={`w-full ${className}`}
+      >
+        {imageSrc && (
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+            <Image
+              src={imageSrc}
+              alt={imageAlt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              placeholder="blur"
+              blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23333333'/%3E%3C/svg%3E"
+            />
+          </div>
+        )}
 
-      {children}
+        {children}
 
-      {(loading || loadingMore) && hasMore && (
-        <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-      )}
-    </motion.div>
+        {(loading || loadingMore) && hasMore && (
+          <div className="mt-8 flex justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        )}
+      </motion.div>
+    </div>
   );
 }

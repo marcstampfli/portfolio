@@ -275,7 +275,7 @@ export function FuturisticBackground() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [dimensions, mousePos]);
+  }, [dimensions, mousePos, isReady]); // Added isReady to dependency array
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;

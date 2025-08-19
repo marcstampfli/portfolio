@@ -39,10 +39,7 @@ export async function GET() {
     });
 
     // Log raw data for debugging
-    console.log(
-      "Raw experiences data:",
-      JSON.stringify(rawExperiences, null, 2),
-    );
+    
 
     // Transform the data to match the expected format
     const transformedExperiences = rawExperiences.map(

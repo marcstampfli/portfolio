@@ -1,11 +1,6 @@
 "use client";
 
-import type { Project as PrismaProject } from ".prisma/client";
-
-interface Project extends PrismaProject {
-  tech_stack: string[];
-  images: string[] | null;
-}
+import { ProjectWithTechStack } from "@/types/prisma";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +24,7 @@ const Icons = {
 };
 
 interface ProjectModalProps {
-  project: Project | null;
+  project: ProjectWithTechStack | null;
   onClose: () => void;
 }
 
@@ -50,7 +45,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           {/* Project Image */}
           <div className="relative aspect-video overflow-hidden rounded-lg">
             {(() => {
-              const imagePath = project.images?.[0];
+               const imagePath = project.images?.[0];
               const handleImageError = () => {
                 if (imagePath) {
                   logger.error({
@@ -87,9 +82,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             <div className="space-y-2">
               <h3 className="text-sm font-medium">Tech Stack</h3>
               <div className="flex flex-wrap gap-1.5">
-                {project.tech_stack.map((tech, index) => (
-                  <ProjectTag key={`${project.id}-modal-${tech}-${index}`}>
-                    {tech}
+                {project.tech_stack.map((tech: { name: string }, index: number) => (
+                  <ProjectTag key={`${project.id}-modal-${tech.name}-${index}`}>
+                    {tech.name}
                   </ProjectTag>
                 ))}
               </div>
