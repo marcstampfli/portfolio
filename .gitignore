@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
@@ -14,6 +15,7 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -27,6 +29,9 @@ yarn-error.log*
 # local env files
 .env
 .env*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
 .vercel
@@ -38,6 +43,51 @@ next-env.d.ts
 # IDE
 .idea
 .vscode
+*.swp
+*.swo
 
 # Prisma
 /prisma/migrations/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+tmp/
+temp/
+
+# Build artifacts
+*.tar.gz
+
+# Package manager lock files (keep package-lock.json but ignore others if using different managers)
+yarn.lock
+pnpm-lock.yaml
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Performance and testing files
+lighthouse-report.html
+cypress/videos/
+cypress/screenshots/
+.nyc_output/
+
+# Storybook build outputs
+storybook-static/
+
+# Cache directories
+.cache/
+.parcel-cache/

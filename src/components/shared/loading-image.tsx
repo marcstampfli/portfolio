@@ -60,8 +60,8 @@ export function LoadingImage({ src, alt, priority = false }: LoadingImageProps) 
                 "(max-width: 1280px) 25vw, " +
                 "20vw";
 
-  // Show a static placeholder during SSR
-  if (!mounted) {
+  // Show a static placeholder during SSR or initial load
+  if (!mounted || isLoading) {
     return (
       <div className="absolute inset-0 bg-muted/50 dark:bg-muted/20">
         <div className="absolute inset-0 flex items-center justify-center">

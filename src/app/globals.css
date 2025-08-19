@@ -52,9 +52,9 @@
 /* Custom utilities */
 @layer utilities {
   .will-change-safe {
-    will-change: opacity, transform;
+    will-change: transform, opacity;
     backface-visibility: hidden;
-    transform: translateZ(0);
+    transform: translate3d(0, 0, 0);
     perspective: 1000px;
   }
 
@@ -77,6 +77,117 @@
   .border-3 {
     border-width: 3px;
   }
+
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Performance-optimized animations that respect user preferences */
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-float-particle {
+      animation: float-particle-optimized 12s ease-in-out infinite;
+      will-change: transform;
+    }
+    
+    .animate-connection-pulse {
+      animation: connection-pulse-optimized 8s ease-in-out infinite;
+      will-change: opacity;
+    }
+    
+    .animate-pulse-slow {
+      animation: pulse-slow-optimized 6s ease-in-out infinite;
+      will-change: opacity;
+    }
+    
+    .animate-pulse-slower {
+      animation: pulse-slower-optimized 8s ease-in-out infinite;
+      will-change: opacity;
+    }
+    
+    .animate-text-shine {
+      animation: text-shine 3s ease-in-out infinite;
+      will-change: background-position;
+    }
+  }
+
+  /* Disable animations for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-float-particle,
+    .animate-connection-pulse,
+    .animate-pulse-slow,
+    .animate-pulse-slower,
+    .animate-text-shine {
+      animation: none;
+    }
+  }
+
+  /* 3D Perspective utilities for projects section */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  /* Custom scrollbar improvements */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary), 0.2);
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--primary), 0.4);
+  }
+
+  /* Animation improvements */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  @keyframes text-shine {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-text-shine {
+    animation: text-shine 3s ease-in-out infinite;
+  }
+
+  /* 3D Perspective utilities for projects section */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
 }
  
 @layer base {
@@ -94,4 +205,308 @@
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
   }
+}
+
+/* Performance-optimized keyframes */
+@keyframes float-particle-optimized {
+  0%, 100% { 
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% { 
+    transform: translate3d(10px, -8px, 0) scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+@keyframes connection-pulse-optimized {
+  0%, 100% { 
+    opacity: 0.1;
+  }
+  50% { 
+    opacity: 0.3;
+  }
+}
+
+@keyframes pulse-slow-optimized {
+  0%, 100% { 
+    opacity: 0.3;
+  }
+  50% { 
+    opacity: 0.5;
+  }
+}
+
+@keyframes pulse-slower-optimized {
+  0%, 100% { 
+    opacity: 0.2;
+  }
+  50% { 
+    opacity: 0.4;
+  }
+}
+
+@keyframes float-particle {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  25% { 
+    transform: translate(20px, -15px) scale(1.1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translate(-10px, 20px) scale(0.9);
+    opacity: 1;
+  }
+  75% { 
+    transform: translate(-20px, -10px) scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+@keyframes connection-pulse {
+  0%, 100% { 
+    opacity: 0.1;
+    transform: scaleX(0.8);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scaleX(1.2);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+@keyframes pulse-slower {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  50% { 
+    transform: scale(0.9);
+    opacity: 0.4;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { 
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translate(10px, -5px) rotate(1deg);
+    opacity: 0.5;
+  }
+  50% { 
+    transform: translate(-5px, 10px) rotate(-0.5deg);
+    opacity: 0.4;
+  }
+  75% { 
+    transform: translate(-10px, -10px) rotate(0.5deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes gradient-shift-reverse {
+  0%, 100% { 
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.2;
+  }
+  25% { 
+    transform: translate(-8px, 8px) rotate(-0.8deg);
+    opacity: 0.4;
+  }
+  50% { 
+    transform: translate(8px, -8px) rotate(0.8deg);
+    opacity: 0.3;
+  }
+  75% { 
+    transform: translate(5px, 5px) rotate(-0.3deg);
+    opacity: 0.5;
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: translate(20px, -30px) scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.4;
+  }
+  33% { 
+    transform: translate(-15px, 20px) scale(0.9) rotate(120deg);
+    opacity: 0.3;
+  }
+  66% { 
+    transform: translate(25px, 10px) scale(1.1) rotate(240deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes float-slower {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
+  }
+  50% { 
+    transform: translate(-25px, 20px) scale(0.95);
+    opacity: 0.4;
+  }
+}
+
+@keyframes shimmer {
+  0% { 
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% { 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer-reverse {
+  0% { 
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  50% { 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer-vertical {
+  0% { 
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% { 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer-vertical-reverse {
+  0% { 
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  50% { 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes grid-move {
+  0% { 
+    transform: translate(0, 0);
+  }
+  100% { 
+    transform: translate(50px, 50px);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.1;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.2;
+  }
+}
+
+/* Animation utility classes */
+.animate-float-particle {
+  animation: float-particle 15s ease-in-out infinite;
+}
+
+.animate-connection-pulse {
+  animation: connection-pulse 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+.animate-pulse-slower {
+  animation: pulse-slower 12s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 15s ease-in-out infinite;
+}
+
+.animate-gradient-shift-reverse {
+  animation: gradient-shift-reverse 18s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 16s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float-slower 25s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 8s ease-in-out infinite;
+}
+
+.animate-shimmer-reverse {
+  animation: shimmer-reverse 10s ease-in-out infinite;
+}
+
+.animate-shimmer-vertical {
+  animation: shimmer-vertical 12s ease-in-out infinite;
+}
+
+.animate-shimmer-vertical-reverse {
+  animation: shimmer-vertical-reverse 14s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 8s ease-in-out infinite;
+}
+
+/* Gradient utilities */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
 }

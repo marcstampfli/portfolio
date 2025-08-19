@@ -26,6 +26,7 @@ export function FuturisticBackground() {
   const [isReady, setIsReady] = useState(false);
   const animationFrameRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
+  const lastFrameTimeRef = useRef<number>(0);
 
   // Preload assets and initialize
   useEffect(() => {
@@ -104,7 +105,7 @@ export function FuturisticBackground() {
 
     // Create 3D grid of points
     const points: GridPoint[] = [];
-    const numPoints = Math.min(500, Math.max(150, (width * height) / 5000)); // Scale points with viewport size
+    const numPoints = Math.min(200, Math.max(50, (width * height) / 8000)); // Reduced number of points for better performance
 
     for (let i = 0; i < numPoints; i++) {
       const x = (Math.random() - 0.5) * width * 2;
@@ -116,11 +117,11 @@ export function FuturisticBackground() {
         x,
         y,
         z,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        vz: (Math.random() - 0.5) * 0.5,
-        size: 2.5 + Math.random() * 2.0,
-        opacity: 0.2 + Math.random() * 0.3,
+        vx: (Math.random() - 0.5) * 0.3, // Reduced velocity for performance
+        vy: (Math.random() - 0.5) * 0.3,
+        vz: (Math.random() - 0.5) * 0.3,
+        size: 3.0 + Math.random() * 2.0, // Larger particles for visibility
+        opacity: 0.4 + Math.random() * 0.4, // Increased opacity for visibility
         hue: Math.random() * 40 - 20,
         connections: 0,
       });
@@ -154,23 +155,23 @@ export function FuturisticBackground() {
       const dx = proj2.x - proj1.x;
       const dy = proj2.y - proj1.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      const maxConnectionsPerPoint = 3;
+      const maxConnectionsPerPoint = 2; // Reduced connections per point
 
       if (
-        distance < 300 &&
+        distance < 200 && // Reduced connection distance for performance
         point1.connections < maxConnectionsPerPoint &&
         point2.connections < maxConnectionsPerPoint
       ) {
         const avgScale = (proj1.scale + proj2.scale) / 2;
-        const opacity = (1 - distance / 300) * 0.2 * avgScale;
+        const opacity = (1 - distance / 200) * 0.3 * avgScale; // Increased opacity for visibility
 
         // Increment connection count for both points
         point1.connections++;
         point2.connections++;
 
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-        ctx.lineWidth = avgScale * 0.5;
+        ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`; // Blue color for better visibility
+        ctx.lineWidth = avgScale * 1.0; // Increased line width
         ctx.moveTo(proj1.x, proj1.y);
         ctx.lineTo(proj2.x, proj2.y);
         ctx.stroke();
@@ -179,8 +180,32 @@ export function FuturisticBackground() {
 
     const animate = (timestamp: number) => {
       if (!ctx || !canvas) return;
+      
+      // Throttle to ~30 FPS for better performance
+      const targetFPS = 30;
+      const frameInterval = 1000 / targetFPS;
+      
+      if (timestamp - lastFrameTimeRef.current < frameInterval) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      
+      lastFrameTimeRef.current = timestamp;
       timeRef.current = timestamp * 0.001;
+      
+      // Clear with a subtle dark background for visibility
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+      
+      // Add a very subtle gradient background to make sure canvas is visible
+      const gradient = ctx.createRadialGradient(
+        dimensions.width / 2, dimensions.height / 2, 0,
+        dimensions.width / 2, dimensions.height / 2, Math.max(dimensions.width, dimensions.height) / 2
+      );
+      gradient.addColorStop(0, 'rgba(59, 130, 246, 0.03)'); // Very subtle blue center
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 0.01)'); // Almost transparent edges
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, dimensions.width, dimensions.height);
+      
       ctx.setTransform(
         window.devicePixelRatio || 1,
         0,
@@ -238,30 +263,43 @@ export function FuturisticBackground() {
         return point;
       });
 
-      // Draw connections
+      // Draw connections (optimized - only check nearby points)
       for (let i = 0; i < pointsRef.current.length; i++) {
-        for (let j = i + 1; j < pointsRef.current.length; j++) {
+        // Only check the next 5 points to reduce computation
+        const maxChecks = Math.min(5, pointsRef.current.length - i - 1);
+        for (let j = 1; j <= maxChecks; j++) {
           const point1 = pointsRef.current[i];
-          const point2 = pointsRef.current[j];
+          const point2 = pointsRef.current[i + j];
           if (point1 && point2) {
             drawConnection(point1, point2);
           }
         }
       }
 
-      // Draw points using the image
+      // Draw points using the image or fallback to circles
       pointsRef.current.forEach((point) => {
         const projected = project3DTo2D(point.x, point.y, point.z);
-        const size = point.size * projected.scale * 2; // Adjusted size for visibility
+        const size = point.size * projected.scale * 3; // Increased size for better visibility
 
         ctx.globalAlpha = point.opacity * projected.scale;
-        ctx.drawImage(
-          particleImageRef.current!,
-          projected.x - size / 2,
-          projected.y - size / 2,
-          size,
-          size,
-        );
+        
+        if (particleImageRef.current) {
+          // Draw with image
+          ctx.drawImage(
+            particleImageRef.current!,
+            projected.x - size / 2,
+            projected.y - size / 2,
+            size,
+            size,
+          );
+        } else {
+          // Fallback to blue circles if image fails to load
+          ctx.beginPath();
+          ctx.arc(projected.x, projected.y, size / 2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(59, 130, 246, ${point.opacity * projected.scale})`;
+          ctx.fill();
+        }
+        
         ctx.globalAlpha = 1; // Reset alpha
       });
 
@@ -295,7 +333,13 @@ export function FuturisticBackground() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full"
-      style={{ cursor: "none" }}
+      style={{ 
+        cursor: "none",
+        backgroundColor: "transparent",
+        minHeight: "100vh",
+        minWidth: "100vw",
+        zIndex: 1
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     />

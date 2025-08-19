@@ -6,6 +6,7 @@ import {
   useScroll,
   useTransform,
   useSpring,
+  useReducedMotion,
 } from "framer-motion";
 
 interface ParallaxBackgroundProps {
@@ -14,37 +15,55 @@ interface ParallaxBackgroundProps {
 
 export function ParallaxBackground({ children }: ParallaxBackgroundProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
-  const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
+  const springConfig = { stiffness: 60, damping: 30, restDelta: 0.001 };
 
   const y1 = useSpring(
-    useTransform(scrollYProgress, [0, 1], ["0%", "50%"]),
+    useTransform(scrollYProgress, [0, 1], ["0%", "30%"]),
     springConfig,
   );
   const y2 = useSpring(
-    useTransform(scrollYProgress, [0, 1], ["0%", "-50%"]),
+    useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]),
     springConfig,
   );
   const rotate1 = useSpring(
-    useTransform(scrollYProgress, [0, 1], [0, 45]),
+    useTransform(scrollYProgress, [0, 1], [0, 30]),
     springConfig,
   );
   const rotate2 = useSpring(
-    useTransform(scrollYProgress, [0, 1], [0, -45]),
+    useTransform(scrollYProgress, [0, 1], [0, -30]),
     springConfig,
   );
   const scale = useSpring(
-    useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.2, 1]),
+    useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.1, 1]),
     springConfig,
   );
   const opacity = useSpring(
-    useTransform(scrollYProgress, [0, 0.5, 1], [0.5, 0.3, 0.5]),
+    useTransform(scrollYProgress, [0, 0.5, 1], [0.4, 0.2, 0.4]),
     springConfig,
   );
+
+  // Disable parallax for reduced motion preference
+  if (prefersReducedMotion) {
+    return (
+      <div ref={ref} className="relative">
+        {children}
+        
+        {/* Static background for reduced motion */}
+        <div className="fixed inset-0 -z-10 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-30" />
+          <div className="absolute top-1/4 left-1/3 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-primary/3 rounded-full blur-2xl" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} className="relative">

@@ -33,7 +33,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
   return (
     <Dialog open={!!project} onOpenChange={() => onClose()}>
-      <DialogContent className="relative max-h-[90vh] overflow-y-auto">
+      <DialogContent className="relative">
         <DialogHeader>
           <DialogTitle>{project.title}</DialogTitle>
           <DialogDescription>
@@ -42,34 +42,69 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         </DialogHeader>
 
         <div className="mt-4 space-y-6">
-          {/* Project Image */}
-          <div className="relative aspect-video overflow-hidden rounded-lg">
+          {/* Project Images */}
+          <div className="space-y-4">
             {(() => {
-               const imagePath = project.images?.[0];
+              // Handle both string and string array for images
+              const imageArray = Array.isArray(project.images) 
+                ? project.images 
+                : project.images 
+                  ? [project.images]
+                  : [];
+              
+              const primaryImage = imageArray[0];
+              
+              if (!primaryImage || !isValidProjectImage(primaryImage)) {
+                return (
+                  <div className="relative aspect-video overflow-hidden rounded-lg">
+                    <PlaceholderImage
+                      fill
+                      animate={false}
+                      className="object-cover"
+                    />
+                  </div>
+                );
+              }
+
               const handleImageError = () => {
-                if (imagePath) {
-                  logger.error({
-                    message: "Failed to load project image in modal",
-                    projectId: project.id,
-                    imagePath,
-                  });
-                }
+                logger.error({
+                  message: "Failed to load project image in modal",
+                  projectId: project.id,
+                  imagePath: primaryImage,
+                });
               };
 
-              return imagePath && isValidProjectImage(imagePath) ? (
-                <OptimizedImage
-                  src={imagePath}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                  onError={handleImageError}
-                />
-              ) : (
-                <PlaceholderImage
-                  fill
-                  animate={false}
-                  className="object-cover"
-                />
+              return (
+                <>
+                  {/* Primary Image */}
+                  <div className="relative aspect-video overflow-hidden rounded-lg">
+                    <OptimizedImage
+                      src={primaryImage}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                      onError={handleImageError}
+                    />
+                  </div>
+                  
+                  {/* Additional Images */}
+                  {imageArray.length > 1 && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {imageArray.slice(1).map((imagePath: string, index: number) => (
+                        isValidProjectImage(imagePath) && (
+                          <div key={index} className="relative aspect-video overflow-hidden rounded-lg">
+                            <OptimizedImage
+                              src={imagePath}
+                              alt={`${project.title} - Image ${index + 2}`}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  )}
+                </>
               );
             })()}
           </div>
@@ -82,9 +117,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             <div className="space-y-2">
               <h3 className="text-sm font-medium">Tech Stack</h3>
               <div className="flex flex-wrap gap-1.5">
-                {project.tech_stack.map((tech: { name: string }, index: number) => (
-                  <ProjectTag key={`${project.id}-modal-${tech.name}-${index}`}>
-                    {tech.name}
+                {project.tech_stack.map((tech: string | { name: string }, index: number) => (
+                  <ProjectTag key={`${project.id}-modal-${typeof tech === 'string' ? tech : tech.name}-${index}`}>
+                    {typeof tech === 'string' ? tech : tech.name}
                   </ProjectTag>
                 ))}
               </div>

@@ -3,7 +3,7 @@
 import { useRef, useMemo, memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Code2, Palette, Compass, Sparkles } from "lucide-react";
-import { FuturisticBackground } from "@/components/background/futuristic-background";
+import { AnimatedGradientBackground } from "@/components/background/animated-gradient-background";
 import { TypeAnimation } from "react-type-animation";
 
 export const HeroSection = memo(function HeroSection() {
@@ -15,9 +15,9 @@ export const HeroSection = memo(function HeroSection() {
       initial: { opacity: 0, y: prefersReducedMotion ? 0 : 10 },
       animate: { opacity: 1, y: 0 },
       transition: {
-        duration: 0.5,
+        duration: prefersReducedMotion ? 0.1 : 0.5,
         ease: [0.4, 0, 0.2, 1],
-        delay: 0.1,
+        delay: prefersReducedMotion ? 0 : 0.1,
       },
     }),
     [prefersReducedMotion],
@@ -52,15 +52,14 @@ export const HeroSection = memo(function HeroSection() {
   return (
     <>
       <section
-        className="relative flex min-h-[90vh] items-center justify-center overflow-hidden"
+        className="relative flex min-h-[100vh] items-center justify-center overflow-hidden"
         ref={containerRef}
         aria-label="Introduction"
         role="region"
       >
-        <div className="relative">
-          <div className="absolute inset-0">
-            <FuturisticBackground />
-          </div>
+        {/* Background with proper z-index */}
+        <div className="absolute inset-0 z-0">
+          <AnimatedGradientBackground />
         </div>
 
         <div className="container relative z-10 px-4 md:px-6">
