@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -19,7 +19,7 @@ model Project {
   content      String
   project_type String    @default("web")
   tech_stack   TechStack[]
-  images       Json
+  images       String    // Store JSON string that we'll parse in the application
   live_url     String?
   github_url   String?
   figma_url    String?
