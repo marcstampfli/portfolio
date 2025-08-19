@@ -57,6 +57,12 @@ const experiencesData = JSON.parse(
 
 const prisma = new PrismaClient();
 
+function ensureImagePath(imagePath: string): string {
+  // Remove any existing /images/projects/ or /projects/ prefix
+  const cleanPath = imagePath.replace(/^\/?(images\/)?projects\//, "");
+  return `/projects/${cleanPath}`;
+}
+
 async function main() {
   try {
     console.log("Starting database seed...");
@@ -98,13 +104,23 @@ async function main() {
     for (const project of projectsData.projects) {
       await prisma.project.create({
         data: {
-          ...project,
+          title: project.title,
+          slug: project.slug,
+          description: project.description,
+          content: project.content,
+          project_type: project.project_type,
           tech_stack: {
             connect: project.tech_stack.map((tech: string) => ({
               id: techStackMap.get(tech),
             })),
           },
-          images: project.images.map((img: string) => `/images/projects/${img}`),
+          images: JSON.stringify(project.images.map(img => ensureImagePath(img))),
+          live_url: project.live_url || null,
+          github_url: project.github_url || null,
+          figma_url: project.figma_url || null,
+          client: project.client || null,
+          status: project.status,
+          order: project.order,
           created_at: new Date(project.created_at),
           updated_at: new Date(project.updated_at),
           developed_at: project.developed_at ? new Date(project.developed_at) : null,

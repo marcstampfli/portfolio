@@ -224,16 +224,16 @@
       "developed_at": "2021-04-10T00:00:00.000Z"
     },
     {
-      "title": "Breezy Brands Website",
+      "title": "Breezy Brands Website - FIXED",
       "slug": "breezy-brands-website",
       "description": "",
       "content": "",
       "project_type": "website",
       "tech_stack": ["Custom Theme", "WordPress"],
       "images": [
-        "/images/projects/project-breezybrands-website.jpg",
-        "/images/projects/project-breezybrands-website2.jpg",
-        "/images/projects/project-breezybrands-website3.jpg"
+        "project-breezybrands-website.jpg",
+        "project-breezybrands-website2.jpg",
+        "project-breezybrands-website3.jpg"
       ],
       "live_url": "https://breezybrands.com",
       "github_url": "",
@@ -748,13 +748,13 @@
       "developed_at": "2021-04-05T00:00:00.000Z"
     },
     {
-      "title": "Breezy Brands UI Design",
+      "title": "Breezy Brands Website",
       "slug": "breezy-brands-ui-design",
       "description": "",
       "content": "",
       "project_type": "design",
       "tech_stack": ["Adobe XD"],
-      "images": ["project-breezybrands.jpg"],
+      "images": [],
       "live_url": "",
       "github_url": "",
       "figma_url": "",
