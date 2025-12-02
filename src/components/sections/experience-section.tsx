@@ -1,94 +1,60 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { TimelineItem } from "@/components/timeline/timeline-item";
-import { TimelineProgress } from "@/components/timeline/timeline-progress";
+import { TimelineItem } from "@/components/timeline/timeline-item-vertical";
 import { BackgroundEffect } from "@/components/timeline/background-effect";
 import { generatePeriodString } from "@/lib/date-utils";
-import React from 'react';
+import { getExperiences } from "@/lib/actions";
+import { type Experience } from "@/types";
+import { Briefcase } from "lucide-react";
 
-interface Experience {
-  id: string;
-  title: string;
-  company: string;
-  position: string;
-  period: string;
-  description: string;
-  tech_stack: string[];
-  achievements: string[];
-  start_date: string;
-  end_date: string | null;
-}
-
-async function fetchExperiences(): Promise<Experience[]> {
-  const response = await fetch("/api/experiences", {
-    headers: {
-      "Accept": "application/json",
-    },
-  });
-  
-  if (!response.ok) {
-    throw new Error("Failed to fetch experiences");
-  }
-  
-  const experiences = await response.json();
-    return experiences.map((experience: Experience) => ({
-      ...experience,
-      start_date: new Date(experience.start_date).toISOString(),
-      end_date: experience.end_date ? new Date(experience.end_date).toISOString() : null,
-    }));
+// Loading skeleton for vertical timeline
+function TimelineSkeleton() {
+  return (
+    <div className="space-y-8">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="relative grid gap-4 md:gap-8 md:grid-cols-[1fr_auto_1fr] grid-cols-[auto_1fr]">
+          {/* Left placeholder */}
+          <div className="hidden md:block" />
+          
+          {/* Center dot */}
+          <div className="relative flex flex-col items-center">
+            <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-4 border-muted/30 bg-background animate-pulse">
+              <Briefcase className="h-5 w-5 text-muted" />
+            </div>
+            {index < 2 && <div className="w-px flex-1 bg-muted/20" />}
+          </div>
+          
+          {/* Right content skeleton */}
+          <div className="pb-12 md:pb-16">
+            <div className="rounded-2xl border bg-card p-6 space-y-4 animate-pulse">
+              <div className="h-4 w-24 rounded bg-muted/30" />
+              <div className="h-6 w-3/4 rounded bg-muted/40" />
+              <div className="h-4 w-1/2 rounded bg-muted/30" />
+              <div className="space-y-2 pt-2">
+                <div className="h-4 w-full rounded bg-muted/20" />
+                <div className="h-4 w-5/6 rounded bg-muted/20" />
+              </div>
+              <div className="flex gap-2 pt-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-6 w-16 rounded-full bg-muted/20" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function ExperienceSection() {
-  const { data: experiences, isLoading, error } = useQuery<Experience[]>({ 
+  const { data: experiences, isLoading, error } = useQuery<Experience[]>({
     queryKey: ["experiences"],
-    queryFn: fetchExperiences,
-    refetchOnWindowFocus: false,
+    queryFn: () => getExperiences(),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
-
-  const timelineRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const containerVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1 },
-  };
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    const timeline = timelineRef.current;
-    if (!timeline) return;
-    setStartX(e.pageX - timeline.offsetLeft);
-    setScrollLeft(timeline.scrollLeft);
-  };
-
-  const handlePointerLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handlePointerUp = () => {
-    setIsDragging(false);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const timeline = timelineRef.current;
-    if (!timeline) return;
-    const x = e.pageX - timeline.offsetLeft;
-    const walk = (x - startX) * 2; // Increased multiplier for smoother drag
-    timeline.scrollLeft = scrollLeft - walk;
-  };
 
   if (error) {
     return (
@@ -100,85 +66,73 @@ export function ExperienceSection() {
     );
   }
 
+  const sortedExperiences = experiences?.sort((a, b) => {
+    const dateA = new Date(a.start_date).getTime();
+    const dateB = new Date(b.start_date).getTime();
+    return dateB - dateA; // Most recent first
+  });
+
   return (
     <section
       id="experience"
-      className="container relative mt-32 px-4 sm:px-6 lg:px-8"
-      style={{ perspective: "1000px" }}
+      className="container relative py-24 sm:py-32 px-4 sm:px-6 lg:px-8"
+      aria-labelledby="experience-heading"
     >
       <BackgroundEffect />
+      
+      {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="relative z-10"
+        className="relative z-10 text-center mb-16"
       >
-        <h2 className="text-3xl font-bold sm:text-4xl">Experience</h2>
-        <p className="mt-4 text-muted-foreground">
-          My professional journey and work experience.
+        <div className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-4">
+          <Briefcase className="h-4 w-4" />
+          <span>Career Journey</span>
+        </div>
+        <h2 
+          id="experience-heading"
+          className="text-3xl font-bold sm:text-4xl md:text-5xl"
+        >
+          <span className="bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text">
+            Professional Experience
+          </span>
+        </h2>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+          A journey through my career, highlighting key roles and achievements 
+          that have shaped my expertise.
         </p>
       </motion.div>
 
-      <div className="relative mt-16 overflow-hidden">
-        <TimelineProgress isLoading={isLoading} />
-        <div
-          ref={timelineRef}
-          className="relative z-10 flex gap-8 overflow-x-auto pb-12 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-primary/20 hover:scrollbar-thumb-primary/40 scroll-smooth"
-          onPointerDown={handlePointerDown}
-          onPointerLeave={handlePointerLeave}
-          onPointerUp={handlePointerUp}
-          onPointerMove={handlePointerMove}
-          style={{ 
-            touchAction: 'pan-x', 
-            position: 'relative',
-            scrollBehavior: 'smooth',
-            willChange: 'scroll-position'
-          }}
-        >
-          {isLoading ? (
-            // Loading skeletons
-            Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="flex-none animate-pulse opacity-60 snap-center w-[calc(100vw-3rem)] md:w-[600px]"
-              >
-                <div className="w-full space-y-4">
-                  <div className="h-6 w-32 rounded bg-muted dark:bg-muted/40" />
-                  <div className="h-6 w-full rounded bg-muted dark:bg-muted/40" />
-                  <div className="h-24 w-full rounded bg-muted dark:bg-muted/40" />
-                  <div className="h-6 w-32 rounded bg-muted dark:bg-muted/40" />
-                </div>
-              </div>
-            ))
-          ) : (
-            experiences?.sort((a, b) => {
-              // Sort by start_date in descending order (most recent first)
-              const dateA = new Date(a.start_date);
-              const dateB = new Date(b.start_date);
-              return dateB.getTime() - dateA.getTime();
-            }).map((experience: Experience, index) => {
-              // Generate dynamic period string
-              const dynamicPeriod = generatePeriodString(experience.start_date, experience.end_date);
+      {/* Timeline */}
+      <div className="relative max-w-4xl mx-auto">
+        {isLoading ? (
+          <TimelineSkeleton />
+        ) : (
+          <div className="relative">
+            {sortedExperiences?.map((experience, index) => {
+              const dynamicPeriod = generatePeriodString(
+                experience.start_date, 
+                experience.end_date
+              );
               const enhancedExperience = {
                 ...experience,
                 period: dynamicPeriod
               };
               
               return (
-                <motion.div
+                <TimelineItem 
                   key={experience.id}
-                  className="flex-none snap-center w-[calc(100vw-3rem)] md:w-[600px] flex-shrink-0"
-                  variants={itemVariants}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <TimelineItem experience={enhancedExperience} index={index} />
-                </motion.div>
+                  experience={enhancedExperience} 
+                  index={index}
+                  isLast={index === (sortedExperiences?.length ?? 0) - 1}
+                />
               );
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -14,9 +14,9 @@ import {
   Linkedin,
   Instagram,
 } from "lucide-react";
-import { type ContactFormData, contactFormSchema } from "@/types/form";
+import { type ContactFormData, contactFormSchema } from "@/types";
 import { FormField } from "./form-field";
-import { submitContactMessage } from "../../app/actions";
+import { submitContactMessage } from "@/lib/actions";
 
 const socialLinks = [
   {
@@ -72,11 +72,18 @@ export function ContactForm() {
     try {
       setIsSubmitting(true);
       setError(null);
-      await submitContactMessage(data);
+      const result = await submitContactMessage(data);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
       setIsSubmitted(true);
       form.reset();
-    } catch {
-      setError("Failed to send message. Please try again later.");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to send message. Please try again later."
+      );
     } finally {
       setIsSubmitting(false);
     }

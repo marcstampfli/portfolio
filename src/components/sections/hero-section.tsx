@@ -110,7 +110,7 @@ export const HeroSection = memo(function HeroSection() {
 
               {/* Highlight Cards */}
               <motion.div
-                className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4"
+                className="mt-8 sm:mt-12 grid grid-cols-2 gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto sm:grid-cols-4"
                 initial={false}
                 animate="animate"
                 transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
@@ -121,20 +121,20 @@ export const HeroSection = memo(function HeroSection() {
                     key={item.label}
                     {...fadeUpAnimation}
                     transition={{ delay: 0.2 + index * 0.1 }}
-                    className="group relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/5 p-4 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10"
+                    className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-primary/10 bg-primary/5 p-3 sm:p-4 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10"
                   >
-                    <div className="mb-3 inline-flex rounded-xl bg-primary/10 p-2.5 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/20 group-hover:ring-primary/30">
-                      <item.icon className="h-5 w-5" aria-hidden="true" />
+                    <div className="mb-2 sm:mb-3 inline-flex rounded-lg sm:rounded-xl bg-primary/10 p-2 sm:p-2.5 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/20 group-hover:ring-primary/30">
+                      <item.icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                     </div>
-                    <h3 className="text-sm font-medium text-foreground">
+                    <h3 className="text-xs sm:text-sm font-medium text-foreground">
                       {item.label}
                     </h3>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground leading-tight">
                       {item.description}
                     </p>
                     {/* Decorative corner elements */}
-                    <div className="absolute -right-px -top-px h-8 w-8 rounded-bl-xl border-b border-l border-primary/20 transition-colors group-hover:border-primary/30" />
-                    <div className="absolute -bottom-px -left-px h-8 w-8 rounded-tr-xl border-t border-r border-primary/20 transition-colors group-hover:border-primary/30" />
+                    <div className="absolute -right-px -top-px h-6 w-6 sm:h-8 sm:w-8 rounded-bl-lg sm:rounded-bl-xl border-b border-l border-primary/20 transition-colors group-hover:border-primary/30" />
+                    <div className="absolute -bottom-px -left-px h-6 w-6 sm:h-8 sm:w-8 rounded-tr-lg sm:rounded-tr-xl border-t border-r border-primary/20 transition-colors group-hover:border-primary/30" />
                   </motion.div>
                 ))}
               </motion.div>

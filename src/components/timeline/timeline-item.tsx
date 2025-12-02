@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
 export interface TimelineItemProps {
@@ -13,20 +14,32 @@ export interface TimelineItemProps {
     description: string;
     tech_stack: string[];
     achievements: string[];
-    start_date: string;
-    end_date: string | null;
+    start_date: Date | string;
+    end_date: Date | string | null;
+    logo?: string | null;
   };
   index: number;
 }
 
-export function TimelineItem({ experience, index }: TimelineItemProps) {
+export function TimelineItem({ experience }: TimelineItemProps) {
   return (
     <motion.div
       className="group relative h-full rounded-xl border bg-card p-6 shadow-sm transition-colors hover:bg-accent/5"
     >
       <div className="relative z-10 flex h-full flex-col">
-        <div className="mb-4">
+        <div className="mb-4 flex items-start justify-between gap-4">
           <p className="font-medium text-muted-foreground">{experience.period}</p>
+          {experience.logo ? (
+            <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg">
+              <Image
+                src={experience.logo}
+                alt={`${experience.company} logo`}
+                fill
+                className="object-contain"
+                sizes="56px"
+              />
+            </div>
+          ) : null}
         </div>
 
         <h3 className="text-xl font-semibold">{experience.title}</h3>

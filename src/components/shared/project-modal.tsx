@@ -1,6 +1,6 @@
 "use client";
 
-import { ProjectWithTechStack } from "@/types/prisma";
+import { type ProjectWithTechStack } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,6 @@ import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { isValidProjectImage } from "@/lib/utils";
-import { logger } from "@/lib/logger";
 import dynamic from "next/dynamic";
 
 const Icons = {
@@ -66,14 +65,6 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 );
               }
 
-              const handleImageError = () => {
-                logger.error({
-                  message: "Failed to load project image in modal",
-                  projectId: project.id,
-                  imagePath: primaryImage,
-                });
-              };
-
               return (
                 <>
                   {/* Primary Image */}
@@ -83,7 +74,6 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                       alt={project.title}
                       fill
                       className="object-cover"
-                      onError={handleImageError}
                     />
                   </div>
                   

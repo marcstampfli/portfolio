@@ -1,69 +1,55 @@
 "use client";
 
-import { motion, useReducedMotion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ProjectWithTechStack } from "@/types/prisma";
+import {
+  type ProjectWithTechStack,
+  type ProjectResponse,
+  getProjectTypeDisplayName,
+} from "@/types";
+import { getProjects } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
 import { isValidProjectImage } from "@/lib/utils";
 import { safeGetYear } from "@/lib/date-utils";
-import { 
-  Github, 
-  ExternalLink, 
-  Figma, 
+import {
+  Github,
+  ExternalLink,
+  Figma,
   X,
-  Play,
   Info,
   Code,
-  Palette,
   Calendar,
   User,
   ArrowRight,
-  Layers
+  Layers,
 } from "lucide-react";
 
-// Project type display names mapping
-const getProjectTypeDisplayName = (slug: string): string => {
-  const displayNames: Record<string, string> = {
-    'bizcard': 'Business Card',
-    'web': 'Web App',
-    'website': 'Website',
-    'flyer': 'Flyer',
-    'logo': 'Logo',
-    'ui': 'UI Design',
-    'branding': 'Branding',
-    'print': 'Print Design',
-    'mobile': 'Mobile App',
-    'desktop': 'Desktop App',
-    'design': 'Design',
-    'development': 'Development',
-  };
-  
-  return displayNames[slug.toLowerCase()] || slug.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-};
+// Hook to detect if device is touch/mobile
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
 
-interface APIProject {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  content: string;
-  project_type: string;
-  images: string[];
-  live_url: string | null;
-  github_url: string | null;
-  figma_url: string | null;
-  client: string | null;
-  status: string;
-  order: number;
-  created_at: string;
-  updated_at: string;
-  developed_at: string | null;
-  tech_stack: { name: string }[];
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
 }
 
 // 3D Tilt Card Component
@@ -79,6 +65,7 @@ function TiltCard({
   onClick: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   
@@ -89,7 +76,8 @@ function TiltCard({
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+    // Disable 3D effect on mobile
+    if (isMobile || !ref.current) return;
     
     const rect = ref.current.getBoundingClientRect();
     const width = rect.width;
@@ -102,7 +90,7 @@ function TiltCard({
     
     x.set(xPct);
     y.set(yPct);
-  }, [x, y]);
+  }, [x, y, isMobile]);
 
   const handleMouseLeave = useCallback(() => {
     x.set(0);
@@ -113,7 +101,7 @@ function TiltCard({
     <motion.div
       ref={ref}
       className={`relative cursor-pointer group ${isActive ? 'z-20' : 'z-10'}`}
-      style={{
+      style={isMobile ? {} : {
         rotateX,
         rotateY,
         transformStyle: "preserve-3d",
@@ -121,74 +109,74 @@ function TiltCard({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ 
         opacity: 1, 
         y: 0,
-        scale: isActive ? 1.05 : 1,
+        scale: isActive ? 1.02 : 1,
       }}
       transition={{ 
         duration: 0.4, 
-        delay: index * 0.1,
+        delay: index * 0.05,
         type: "spring",
         stiffness: 150,
         damping: 25
       }}
-      whileHover={{ 
+      whileHover={isMobile ? {} : { 
         scale: 1.01,
         transition: { duration: 0.2 }
       }}
     >
-      <div className="relative h-[480px] w-full max-w-sm mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300 flex flex-col"
-           style={{ transform: "translateZ(50px)" }}>
+      <div className="relative h-auto min-h-[360px] md:h-[420px] w-full bg-card border border-border/50 rounded-xl md:rounded-2xl overflow-hidden shadow-md md:shadow-lg group-hover:shadow-xl md:group-hover:shadow-2xl transition-all duration-300 flex flex-col"
+           style={isMobile ? {} : { transform: "translateZ(50px)" }}>
         
         {/* Project Image */}
-        <div className="relative h-48 overflow-hidden flex-shrink-0">
+        <div className="relative h-36 md:h-44 overflow-hidden flex-shrink-0">
           {isValidProjectImage(project.images?.[0]) ? (
             <OptimizedImage
               src={project.images[0]}
               alt={project.title}
               width={400}
               height={200}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              className="w-full h-full object-cover md:group-hover:scale-110 transition-transform duration-500"
             />
           ) : (
             <PlaceholderImage className="w-full h-full" />
           )}
           
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Overlay - only on desktop */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 hidden md:block" />
           
-          {/* Quick Actions */}
-          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* Quick Actions - only visible on hover for desktop */}
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
             {project.live_url && (
-              <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
-                <ExternalLink className="h-4 w-4" />
+              <Button size="sm" variant="secondary" className="h-7 w-7 md:h-8 md:w-8 p-0">
+                <ExternalLink className="h-3.5 w-3.5 md:h-4 md:w-4" />
               </Button>
             )}
             {project.github_url && (
-              <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
-                <Github className="h-4 w-4" />
+              <Button size="sm" variant="secondary" className="h-7 w-7 md:h-8 md:w-8 p-0">
+                <Github className="h-3.5 w-3.5 md:h-4 md:w-4" />
               </Button>
             )}
           </div>
           
           {/* Project Type Badge */}
-          <div className="absolute top-3 left-3">
-            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+          <div className="absolute top-2 left-2 md:top-3 md:left-3">
+            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-xs">
               {getProjectTypeDisplayName(project.project_type)}
             </Badge>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 flex-1 flex flex-col">
-          <div className="flex-1 space-y-4">
+        <div className="p-4 md:p-5 flex-1 flex flex-col">
+          <div className="flex-1 space-y-2 md:space-y-3">
             <div>
-              <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+              <h3 className="text-base md:text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-1">
                 {project.title}
               </h3>
-              <p className="text-sm text-muted-foreground mt-1 line-clamp-3">
+              <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">
                 {project.description}
               </p>
             </div>
@@ -196,27 +184,27 @@ function TiltCard({
             {/* Tech Stack */}
             <div className="flex flex-wrap gap-1">
               {project.tech_stack?.slice(0, 3).map((tech, techIndex) => (
-                <Badge key={`${tech}-${techIndex}`} variant="outline" className="text-xs">
+                <Badge key={`${tech}-${techIndex}`} variant="outline" className="text-[10px] md:text-xs px-1.5 py-0">
                   {typeof tech === 'string' ? tech : tech.name}
                 </Badge>
               ))}
               {project.tech_stack?.length > 3 && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-[10px] md:text-xs px-1.5 py-0">
                   +{project.tech_stack.length - 3}
                 </Badge>
               )}
             </div>
 
             {/* Client & Status */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center justify-between text-[10px] md:text-xs text-muted-foreground">
               {project.client && (
                 <div className="flex items-center gap-1">
                   <User className="h-3 w-3" />
-                  <span>{project.client}</span>
+                  <span className="truncate max-w-[80px] md:max-w-none">{project.client}</span>
                 </div>
               )}
               <div className="flex items-center gap-1">
-                <div className={`h-2 w-2 rounded-full ${
+                <div className={`h-1.5 w-1.5 md:h-2 md:w-2 rounded-full ${
                   project.status === 'completed' ? 'bg-green-500' : 
                   project.status === 'in_progress' ? 'bg-yellow-500' : 'bg-gray-500'
                 }`} />
@@ -226,13 +214,14 @@ function TiltCard({
           </div>
 
           {/* View Details Button - Fixed at bottom */}
-          <div className="mt-4 pt-4">
+          <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-border/30">
             <Button 
               variant="ghost" 
-              className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300"
+              size="sm"
+              className="w-full h-8 md:h-9 text-xs md:text-sm md:group-hover:bg-primary md:group-hover:text-primary-foreground transition-all duration-300"
             >
               View Details
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+              <ArrowRight className="ml-2 h-3.5 w-3.5 md:h-4 md:w-4 md:group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </div>
         </div>
@@ -459,9 +448,9 @@ function ProjectModal({
 }
 
 export function ProjectsSection() {
-  const prefersReducedMotion = useReducedMotion();
-  const [selectedProject, setSelectedProject] = useState<ProjectWithTechStack | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [selectedProject, setSelectedProject] =
+    useState<ProjectWithTechStack | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>("all");
   const [displayCount, setDisplayCount] = useState<number>(6);
 
   const {
@@ -471,33 +460,24 @@ export function ProjectsSection() {
   } = useQuery<ProjectWithTechStack[]>({
     queryKey: ["projects"],
     queryFn: async () => {
-      const response = await fetch("/api/projects");
-      if (!response.ok) throw new Error("Failed to fetch projects");
-      
-      const data: unknown = await response.json();
-      if (!Array.isArray(data)) throw new Error("Expected array of projects");
-
-      const isAPIProject = (obj: unknown): obj is APIProject =>
-        typeof obj === "object" &&
-        obj !== null &&
-        typeof (obj as APIProject).id === "string" &&
-        typeof (obj as APIProject).title === "string";
-
-      const validatedProjects = data.filter(isAPIProject);
-      return validatedProjects.map((project: APIProject): ProjectWithTechStack => ({
-        ...project,
-        created_at: new Date(project.created_at),
-        updated_at: new Date(project.updated_at),
-        developed_at: project.developed_at ? new Date(project.developed_at) : null,
-      }));
+      const data = await getProjects();
+      return data.map(
+        (project: ProjectResponse): ProjectWithTechStack => ({
+          ...project,
+          created_at: new Date(project.created_at),
+          updated_at: new Date(project.updated_at),
+          developed_at: project.developed_at
+            ? new Date(project.developed_at)
+            : null,
+        })
+      );
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   // Get project types for filtering
   const projectTypes = useMemo(() => {
-    const types = new Set(projects.map(p => p.project_type).filter(Boolean));
+    const types = new Set(projects.map((p) => p.project_type).filter(Boolean));
     return Array.from(types).sort();
   }, [projects]);
 

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { type FieldErrors, type UseFormReturn } from "react-hook-form";
-import { type ContactFormData } from "@/types/form";
+import { type ContactFormData } from "@/types";
 
 interface FormFieldProps {
   name: keyof ContactFormData;
@@ -11,7 +11,7 @@ interface FormFieldProps {
   form: UseFormReturn<ContactFormData>;
   errors: FieldErrors<ContactFormData>;
   focusedField: keyof ContactFormData | null;
-  onFocus: (field: keyof ContactFormData) => void;
+  onFocus: (_field: keyof ContactFormData) => void;
   onBlur: () => void;
 }
 

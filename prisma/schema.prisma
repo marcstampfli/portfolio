@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -39,6 +38,7 @@ model Experience {
   period       String
   location     String?
   type         String?
+  logo         String?
   start_date   DateTime
   end_date     DateTime?
   description  String

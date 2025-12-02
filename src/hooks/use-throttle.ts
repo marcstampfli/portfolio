@@ -2,12 +2,12 @@
 
 import { useCallback, useRef } from "react";
 
-type AnyFunction = (...args: unknown[]) => unknown;
+type AnyFunction = (..._args: unknown[]) => unknown;
 
 export function useThrottle<T extends AnyFunction>(
   fn: T,
   delay: number,
-): (...args: Parameters<T>) => void {
+): (..._args: Parameters<T>) => void {
   const lastRan = useRef<number>(Date.now());
   const timeoutId = useRef<NodeJS.Timeout | undefined>(undefined);
 

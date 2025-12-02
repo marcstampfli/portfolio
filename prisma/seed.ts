@@ -29,6 +29,7 @@ interface Experience {
   period: string;
   location?: string;
   type?: string;
+  logo?: string;
   description: string;
   tech_stack: string[];
   achievements: string[];
@@ -140,6 +141,7 @@ async function main() {
           period: experience.period,
           location: experience.location || null,
           type: experience.type || null,
+          logo: experience.logo || null,
           start_date: new Date(experience.start_date),
           end_date: experience.end_date ? new Date(experience.end_date) : null,
           description: experience.description,

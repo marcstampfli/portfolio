@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { navItems } from "@/data/nav";
+import { navItems } from "@/lib/nav";
 import { Menu, X } from "lucide-react";
 
 interface ScrollSection {
@@ -15,6 +15,49 @@ export function FloatingNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("#home");
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Navigate to section by index
+  const navigateToSection = useCallback((direction: 'next' | 'prev') => {
+    const currentIndex = navItems.findIndex(item => item.href === activeSection);
+    let newIndex = currentIndex;
+    
+    if (direction === 'next' && currentIndex < navItems.length - 1) {
+      newIndex = currentIndex + 1;
+    } else if (direction === 'prev' && currentIndex > 0) {
+      newIndex = currentIndex - 1;
+    }
+    
+    if (newIndex !== currentIndex) {
+      const targetHref = navItems[newIndex].href;
+      document.querySelector(targetHref)?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [activeSection]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle if not in an input or textarea
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      if (e.key === 'ArrowDown' || e.key === 'j') {
+        e.preventDefault();
+        navigateToSection('next');
+      } else if (e.key === 'ArrowUp' || e.key === 'k') {
+        e.preventDefault();
+        navigateToSection('prev');
+      } else if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigateToSection, mobileMenuOpen]);
 
   // Update active section and scroll state
   useEffect(() => {
@@ -119,15 +162,15 @@ export function FloatingNav() {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden fixed top-4 right-4 rounded-full p-2 bg-background/40 border border-primary/10 backdrop-blur-md"
+          className="md:hidden fixed top-3 right-3 h-10 w-10 flex items-center justify-center rounded-full bg-background/40 border border-primary/10 backdrop-blur-md"
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-menu"
           aria-label="Toggle menu"
         >
           {mobileMenuOpen ? (
-            <X className="h-6 w-6 text-primary" aria-hidden="true" />
+            <X className="h-5 w-5 text-primary" aria-hidden="true" />
           ) : (
-            <Menu className="h-6 w-6 text-primary" aria-hidden="true" />
+            <Menu className="h-5 w-5 text-primary" aria-hidden="true" />
           )}
         </button>
       </motion.div>

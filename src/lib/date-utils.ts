@@ -4,39 +4,41 @@
  * @param endDate - The end date (null for current position)
  * @returns Formatted duration string like "2 yrs 3 mos" or "3 mos"
  */
-export function calculateDuration(startDate: string | Date, endDate: string | Date | null): string {
+export function calculateDuration(
+  startDate: string | Date,
+  endDate: string | Date | null
+): string {
   try {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : new Date();
-    
+
     // Validate dates
     if (isNaN(start.getTime()) || (endDate && isNaN(end.getTime()))) {
       return "Duration unavailable";
     }
-    
+
     const diffTime = end.getTime() - start.getTime();
-    const diffMonths = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30.44)); // Average month length
-    
+    const diffMonths = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+
     const years = Math.floor(diffMonths / 12);
     const months = diffMonths % 12;
-    
+
     const parts: string[] = [];
-    
+
     if (years > 0) {
-      parts.push(`${years} yr${years !== 1 ? 's' : ''}`);
+      parts.push(`${years} yr${years !== 1 ? "s" : ""}`);
     }
-    
+
     if (months > 0) {
-      parts.push(`${months} mo${months !== 1 ? 's' : ''}`);
+      parts.push(`${months} mo${months !== 1 ? "s" : ""}`);
     }
-    
+
     if (parts.length === 0) {
       return "Less than 1 mo";
     }
-    
-    return parts.join(' ');
-  } catch (error) {
-    console.error('Error calculating duration:', error);
+
+    return parts.join(" ");
+  } catch {
     return "Duration unavailable";
   }
 }
@@ -47,29 +49,31 @@ export function calculateDuration(startDate: string | Date, endDate: string | Da
  * @param endDate - The end date (null for current position)
  * @returns Formatted date range like "Aug 2021 - Present" or "Apr 2021 - Nov 2021"
  */
-export function formatDateRange(startDate: string | Date, endDate: string | Date | null): string {
+export function formatDateRange(
+  startDate: string | Date,
+  endDate: string | Date | null
+): string {
   try {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : null;
-    
+
     // Validate dates
     if (isNaN(start.getTime()) || (endDate && end && isNaN(end.getTime()))) {
       return "Date range unavailable";
     }
-    
+
     const formatDate = (date: Date) => {
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        year: 'numeric'
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
       });
     };
-    
+
     const startFormatted = formatDate(start);
-    const endFormatted = end ? formatDate(end) : 'Present';
-    
+    const endFormatted = end ? formatDate(end) : "Present";
+
     return `${startFormatted} - ${endFormatted}`;
-  } catch (error) {
-    console.error('Error formatting date range:', error);
+  } catch {
     return "Date range unavailable";
   }
 }
@@ -94,20 +98,19 @@ export function generatePeriodString(startDate: string | Date, endDate: string |
  * @returns Year as string or fallback
  */
 export function safeGetYear(date: string | Date | null | undefined): string {
-  if (!date) return 'Unknown';
-  
+  if (!date) return "Unknown";
+
   try {
     // Parse the date consistently for both server and client
-    const parsedDate = typeof date === 'string' ? new Date(date) : date;
-    
+    const parsedDate = typeof date === "string" ? new Date(date) : date;
+
     // Validate the date is valid
     if (isNaN(parsedDate.getTime())) {
-      return 'Unknown';
+      return "Unknown";
     }
-    
+
     return parsedDate.getFullYear().toString();
-  } catch (error) {
-    console.warn('Error parsing date:', error);
-    return 'Unknown';
+  } catch {
+    return "Unknown";
   }
 }

@@ -1,5 +1,4 @@
-import { Home, User, Briefcase, FolderGit2, Mail } from "lucide-react";
-import { type LucideIcon } from "lucide-react";
+import { Home, User, Briefcase, FolderOpen, Mail, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   href: string;
@@ -11,6 +10,6 @@ export const navItems: NavItem[] = [
   { href: "#home", label: "Home", icon: Home },
   { href: "#about", label: "About", icon: User },
   { href: "#experience", label: "Experience", icon: Briefcase },
-  { href: "#projects", label: "Projects", icon: FolderGit2 },
+  { href: "#projects", label: "Projects", icon: FolderOpen },
   { href: "#contact", label: "Contact", icon: Mail },
 ];

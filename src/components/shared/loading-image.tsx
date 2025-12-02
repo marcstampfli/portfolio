@@ -41,8 +41,6 @@ export function LoadingImage({ src, alt, priority = false }: LoadingImageProps) 
       setRetryCount(prev => prev + 1);
       // Add a small delay before retry
       setTimeout(() => {
-        const timestamp = new Date().getTime();
-        const retryUrl = `${src}?retry=${timestamp}`;
         setRetryCount(prev => prev + 1);
         // Force re-render of Image component
         setIsLoading(true);
@@ -51,7 +49,7 @@ export function LoadingImage({ src, alt, priority = false }: LoadingImageProps) 
       setError(true);
       setIsLoading(false);
     }
-  }, [retryCount, src]);
+  }, [retryCount]);
 
   // Generate sizes based on breakpoints
   const sizes = "(max-width: 640px) 100vw, " + 

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface TabContextType {
   activeTab: string | undefined;
-  setActiveTab: (value: string) => void;
+  setActiveTab: (_value: string) => void;
 }
 
 const TabContext = React.createContext<TabContextType>({

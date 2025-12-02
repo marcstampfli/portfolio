@@ -5,8 +5,9 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 declare global {
+  // eslint-disable-next-line no-unused-vars
   interface Window {
-    gtag: (command: string, targetId: string, config?: Record<string, unknown>) => void;
+    gtag: (_command: string, _targetId: string, _config?: Record<string, unknown>) => void;
   }
 }
 

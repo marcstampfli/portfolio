@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 export interface DialogProps {
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: (_open: boolean) => void;
   children: React.ReactNode;
   className?: string;
 }

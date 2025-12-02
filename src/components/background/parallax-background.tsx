@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   motion as _motion,
   useScroll,
@@ -13,9 +13,27 @@ interface ParallaxBackgroundProps {
   children: React.ReactNode;
 }
 
+// Hook to detect mobile devices
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+}
+
 export function ParallaxBackground({ children }: ParallaxBackgroundProps) {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
   
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -60,6 +78,27 @@ export function ParallaxBackground({ children }: ParallaxBackgroundProps) {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-30" />
           <div className="absolute top-1/4 left-1/3 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
           <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-primary/3 rounded-full blur-2xl" />
+        </div>
+      </div>
+    );
+  }
+
+  // Simplified background for mobile (better performance)
+  if (isMobile) {
+    return (
+      <div ref={ref} className="relative">
+        {children}
+        
+        {/* Static background for mobile - no animations */}
+        <div className="fixed inset-0 -z-10 pointer-events-none">
+          <div className="absolute -top-1/4 -right-1/4 w-[50vw] h-[50vw] rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-1/4 -left-1/4 w-[60vw] h-[60vw] rounded-full bg-primary/10 blur-3xl" />
+          <div
+            className="absolute inset-0 opacity-50"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='rgba(168,85,247,0.05)' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
         </div>
       </div>
     );

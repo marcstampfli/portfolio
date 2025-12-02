@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
-import type { Experience } from "@/types/experience";
+import type { Experience } from "@/types";
 import { pdf } from "@react-pdf/renderer";
 import { Resume } from "./resume-generator";
 
@@ -24,14 +24,8 @@ export function DownloadResumeButton({
   const handleDownload = async () => {
     setIsLoading(true);
     try {
-      console.log("Starting PDF generation...");
-
-      console.log("Creating PDF instance...");
       const instance = pdf(<Resume experiences={experiences} />);
-
-      console.log("PDF instance created, generating blob...");
       const blob = await instance.toBlob();
-      console.log("PDF blob generated successfully");
 
       // Create and trigger download
       const url = URL.createObjectURL(blob);
@@ -42,25 +36,12 @@ export function DownloadResumeButton({
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-
-      console.log("PDF download completed successfully");
     } catch (error) {
-      console.error("PDF Generation Error:", {
-        timestamp: new Date().toISOString(),
-        error:
-          error instanceof Error
-            ? {
-                message: error.message,
-                stack: error.stack,
-              }
-            : "Unknown error",
-        experiencesCount: experiences.length,
-        environment: {
-          userAgent: navigator.userAgent,
-          platform: navigator.platform,
-        },
-      });
-      // Show error to user
+      // Show error to user in development
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.error("PDF Generation Error:", error);
+      }
       alert(
         "Failed to generate PDF. Please try again or contact support if the issue persists.",
       );

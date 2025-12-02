@@ -2,7 +2,6 @@
 
 import { AlertCircle } from "lucide-react";
 import { Component, type ErrorInfo, type PropsWithChildren } from "react";
-import { logger } from "@/lib/logger";
 
 interface Props extends PropsWithChildren {
   fallback?: React.ReactNode;
@@ -25,13 +24,14 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logger.error({
-      name: this.props.name || "ErrorBoundary",
-      error,
-      component: errorInfo.componentStack,
-      message: error.message,
-      stack: error.stack,
-    });
+    if (process.env.NODE_ENV === "development") {
+      console.error("ErrorBoundary caught an error:", {
+        name: this.props.name || "ErrorBoundary",
+        error,
+        component: errorInfo.componentStack,
+        message: error.message,
+      });
+    }
   }
 
   public render() {
@@ -46,10 +46,6 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
             <button
               onClick={() => {
-                logger.info(
-                  "Retrying after error in",
-                  this.props.name || "ErrorBoundary",
-                );
                 this.setState({ hasError: false, error: null });
               }}
               className="mt-4 rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary/90"

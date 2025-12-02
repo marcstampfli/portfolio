@@ -6,7 +6,7 @@ import { ProjectCard } from "./project-card";
 import { ScrollSection } from "@/components/shared/scroll-section";
 import { useEffect, useState } from "react";
 
-import { ProjectWithTechStack } from "@/types/prisma";
+import { type ProjectWithTechStack } from "@/types";
 
 const containerVariants = {
   hidden: { opacity: 0 },

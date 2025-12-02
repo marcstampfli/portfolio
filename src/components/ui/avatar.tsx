@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export interface AvatarProps
@@ -22,10 +23,11 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {...props}
       >
         {src ? (
-          <img
+          <Image
             src={src}
-            alt={alt}
-            className="aspect-square h-full w-full"
+            alt={alt || "Avatar"}
+            fill
+            className="aspect-square h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">

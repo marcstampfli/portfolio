@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { type Experience } from "@/types/experience";
+import type { Experience } from "@/types";
 
 const Resume = dynamic(() => import("./resume-document"), { ssr: false });
 

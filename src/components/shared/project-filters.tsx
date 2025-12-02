@@ -16,9 +16,9 @@ interface ProjectFiltersProps {
   activeFilter: string;
   searchQuery: string;
   activeType: string | null;
-  onFilterChange: (filter: string) => void;
-  onSearchChange: (query: string) => void;
-  onTypeChange: (type: string | null) => void;
+  onFilterChange: (_filter: string) => void;
+  onSearchChange: (_query: string) => void;
+  onTypeChange: (_type: string | null) => void;
   projectTypes: string[];
   className?: string;
 }

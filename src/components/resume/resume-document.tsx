@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
-import type { Experience } from "../../types/experience";
+import type { Experience } from "@/types";
 
 interface ResumeProps {
   experiences: Experience[];

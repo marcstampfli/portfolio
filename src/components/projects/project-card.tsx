@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LoadingImage } from "@/components/shared/loading-image";
-import { ProjectWithTechStack } from "@/types/prisma";
+import { type ProjectWithTechStack } from "@/types";
 
 interface ProjectCardProps {
   project: ProjectWithTechStack;

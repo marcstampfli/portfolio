@@ -5,7 +5,7 @@ import React from "react";
 interface ProgressDotsProps {
   total: number;
   current: number;
-  onSelect: (index: number) => void;
+  onSelect: (_index: number) => void;
 }
 
 export function ProgressDots({ total, current, onSelect }: ProgressDotsProps) {

@@ -9,6 +9,7 @@
       "end_date": null,
       "location": null,
       "type": null,
+      "logo": null,
       "tech_stack": ["WordPress", "React", "UI/UX Design"],
       "achievements": [
         "Developed and maintained client websites using WordPress and React",
@@ -25,6 +26,7 @@
       "end_date": "2021-11-30",
       "location": null,
       "type": null,
+      "logo": "/images/logos/webfx.svg",
       "tech_stack": ["Figma", "Adobe XD", "UI Design"],
       "achievements": [
         "Designed user interfaces for web and mobile applications",
@@ -41,6 +43,7 @@
       "end_date": "2021-10-31",
       "location": null,
       "type": null,
+      "logo": null,
       "tech_stack": ["WordPress", "HTML/CSS", "JavaScript", "Graphic Design"],
       "achievements": [
         "Developed custom websites for various clients",
@@ -57,6 +60,7 @@
       "end_date": "2019-03-31",
       "location": null,
       "type": null,
+      "logo": null,
       "tech_stack": ["Content Management", "Social Media", "Video Editing"],
       "achievements": [
         "Managed website content and updates",
@@ -73,6 +77,7 @@
       "end_date": "2018-03-31",
       "location": null,
       "type": null,
+      "logo": null,
       "tech_stack": ["Web Development", "Social Media", "Digital Publishing"],
       "achievements": [
         "Developed and maintained magazine websites",
@@ -89,6 +94,7 @@
       "end_date": "2013-03-31",
       "location": null,
       "type": null,
+      "logo": "/images/logos/simply-intense-media.png",
       "tech_stack": [
         "Web Development",
         "Server Administration",

@@ -1,4 +1,4 @@
-import type { Experience, Project } from ".prisma/client";
+import type { Experience, Project } from "@/types";
 
 type CreateInput<T> = Omit<T, "id" | "created_at" | "updated_at">;
 
@@ -9,7 +9,7 @@ export function validateTechStack(tech: string): boolean {
 
   return Boolean(
     name?.trim() &&
-      (!category || allowedCategories.includes(category.toLowerCase())),
+      (!category || allowedCategories.includes(category.toLowerCase()))
   );
 }
 
@@ -22,11 +22,15 @@ export function toUTCDate(date: Date | string): Date {
 }
 
 // Validate experience data
-export function validateExperience(exp: CreateInput<Experience>): boolean {
-  return Boolean(exp.title && exp.company && exp.start_date && exp.description);
+export function validateExperience(
+  exp: Partial<CreateInput<Experience>>
+): boolean {
+  return Boolean(
+    exp.title && exp.company && exp.start_date && exp.description
+  );
 }
 
 // Validate project data
-export function validateProject(proj: CreateInput<Project>): boolean {
+export function validateProject(proj: Partial<CreateInput<Project>>): boolean {
   return Boolean(proj.title && proj.slug && proj.description && proj.content);
 }
