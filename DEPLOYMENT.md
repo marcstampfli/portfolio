@@ -16,6 +16,12 @@ NEXT_PUBLIC_APP_URL="https://marcstampfli.com"
 # Email (for contact form)
 RESEND_API_KEY="re_xxxxxxxxxxxxx"
 
+# Analytics (optional)
+NEXT_PUBLIC_GA_MEASUREMENT_ID="G-XXXXXXXXXX"
+
+# Prisma Accelerate (optional)
+ACCELERATE_URL="prisma://..."
+
 # Node environment
 NODE_ENV="production"
 ```

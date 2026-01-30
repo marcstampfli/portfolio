@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, CheckCircle2, Send } from "lucide-react";
 import { type SubmitButtonProps } from "@/types";

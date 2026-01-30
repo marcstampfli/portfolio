@@ -166,7 +166,7 @@ export default function Resume({ experiences }: ResumeProps) {
               <Text style={styles.description}>{exp.description}</Text>
               <View style={styles.achievements}>
                 {exp.achievements.map((achievement: string, index: number) => (
-                  <View key={index} style={styles.achievement}>
+                  <View key={`${achievement}-${index}`} style={styles.achievement}>
                     <Text style={styles.bullet}>•</Text>
                     <Text style={styles.achievementText}>{achievement}</Text>
                   </View>
@@ -174,7 +174,7 @@ export default function Resume({ experiences }: ResumeProps) {
               </View>
               <View style={styles.skillsGrid}>
                 {exp.tech_stack.map((tech: string, index: number) => (
-                  <Text key={index} style={styles.skill}>
+                  <Text key={`${tech}-${index}`} style={styles.skill}>
                     {tech}
                   </Text>
                 ))}

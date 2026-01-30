@@ -39,8 +39,8 @@ export function ExperienceSkeleton() {
       {/* Vertical Timeline skeleton */}
       <div className="max-w-4xl mx-auto">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div 
-            key={index} 
+          <div
+            key={`experience-skeleton-${index + 1}`}
             className="relative flex gap-6 md:gap-8"
           >
             {/* Timeline dot */}
@@ -83,7 +83,10 @@ export function ExperienceSkeleton() {
                   {/* Tags */}
                   <div className="flex gap-2 flex-wrap">
                     {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="h-6 w-16 rounded-full bg-muted/20 relative overflow-hidden">
+                      <div
+                        key={`experience-tag-${i + 1}`}
+                        className="h-6 w-16 rounded-full bg-muted/20 relative overflow-hidden"
+                      >
                         <Shimmer />
                       </div>
                     ))}
@@ -95,7 +98,10 @@ export function ExperienceSkeleton() {
                       <Shimmer />
                     </div>
                     {Array.from({ length: 2 }).map((_, i) => (
-                      <div key={i} className="h-4 w-full rounded bg-muted/20 relative overflow-hidden">
+                      <div
+                        key={`experience-achievement-${i + 1}`}
+                        className="h-4 w-full rounded bg-muted/20 relative overflow-hidden"
+                      >
                         <Shimmer />
                       </div>
                     ))}
@@ -127,7 +133,10 @@ export function ProjectsSkeleton() {
       {/* Filter buttons skeleton */}
       <div className="flex justify-center gap-3 mb-12 flex-wrap">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-10 w-24 rounded-full bg-muted/20 relative overflow-hidden">
+          <div
+            key={`project-filter-${i + 1}`}
+            className="h-10 w-24 rounded-full bg-muted/20 relative overflow-hidden"
+          >
             <Shimmer />
           </div>
         ))}
@@ -137,7 +146,7 @@ export function ProjectsSkeleton() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {Array.from({ length: 6 }).map((_, index) => (
           <SkeletonCard
-            key={index}
+            key={`project-skeleton-${index + 1}`}
             className="h-[480px] border border-primary/5"
           >
             {/* Image placeholder */}
@@ -164,7 +173,10 @@ export function ProjectsSkeleton() {
               {/* Tags */}
               <div className="flex gap-2 flex-wrap pt-2">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="h-6 w-14 rounded-full bg-muted/20 relative overflow-hidden">
+                  <div
+                    key={`project-tag-${i + 1}`}
+                    className="h-6 w-14 rounded-full bg-muted/20 relative overflow-hidden"
+                  >
                     <Shimmer />
                   </div>
                 ))}

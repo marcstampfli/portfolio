@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Github, Linkedin, Instagram } from "lucide-react";
@@ -39,7 +38,7 @@ export function SocialLinks() {
         >
           <Icon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
           <span className="sr-only">{label}</span>
-          <div className="absolute inset-0 -z-10 animate-pulse-slow rounded-full border border-primary/20" />
+          <div className="animate-pulse-slow absolute inset-0 -z-10 rounded-full border border-primary/20" />
           <div className="absolute inset-0 -z-10 rounded-full opacity-0 blur-sm transition-opacity group-hover:bg-primary/20 group-hover:opacity-100" />
         </Link>
       ))}

@@ -40,8 +40,8 @@ const contactInfo = [
   {
     icon: Mail,
     label: "Email",
-    value: "hello@marcstampfli.com",
-    href: "mailto:hello@marcstampfli.com",
+    value: "marcstampfli@gmail.com",
+    href: "mailto:marcstampfli@gmail.com",
   },
   {
     icon: MapPin,
@@ -65,6 +65,7 @@ export function ContactForm() {
       name: "",
       email: "",
       message: "",
+      website: "",
     },
   });
 
@@ -166,6 +167,17 @@ export function ContactForm() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6"
           >
+            <div className="sr-only" aria-hidden="true">
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                {...form.register("website")}
+              />
+            </div>
+
             <FormField
               name="name"
               label="Name"

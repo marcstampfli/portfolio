@@ -1,16 +1,10 @@
-import React from "react";
-
 interface ContactEmailProps {
   name: string;
   email: string;
   message: string;
 }
 
-export default function ContactEmail({
-  name,
-  email,
-  message,
-}: ContactEmailProps) {
+export default function ContactEmail({ name, email, message }: ContactEmailProps) {
   return (
     <div>
       <h1>New Contact Form Submission</h1>

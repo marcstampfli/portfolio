@@ -20,7 +20,7 @@ export const HeroSection = memo(function HeroSection() {
         delay: prefersReducedMotion ? 0 : 0.1,
       },
     }),
-    [prefersReducedMotion],
+    [prefersReducedMotion]
   );
 
   const highlights = useMemo(
@@ -46,7 +46,7 @@ export const HeroSection = memo(function HeroSection() {
         description: "Future-focused vision",
       },
     ],
-    [],
+    []
   );
 
   return (
@@ -75,7 +75,7 @@ export const HeroSection = memo(function HeroSection() {
                 <h1 className="text-4xl font-bold tracking-tight sm:text-6xl md:text-7xl">
                   <span className="block">Marc Stämpfli</span>
                   <div className="relative">
-                    <span className="mt-2 block bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] animate-text-shine bg-clip-text text-2xl text-transparent sm:text-3xl">
+                    <span className="animate-text-shine mt-2 block bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] bg-clip-text text-2xl text-transparent sm:text-3xl">
                       <TypeAnimation
                         sequence={[
                           "Software Developer",
@@ -104,13 +104,13 @@ export const HeroSection = memo(function HeroSection() {
                 {...fadeUpAnimation}
                 transition={{ delay: 0.1 }}
               >
-                Hi, I&apos;m Marc. I believe in creating digital products that
-                are both aesthetically pleasing and user-friendly.
+                Hi, I&apos;m Marc. I believe in creating digital products that are both
+                aesthetically pleasing and user-friendly.
               </motion.p>
 
               {/* Highlight Cards */}
               <motion.div
-                className="mt-8 sm:mt-12 grid grid-cols-2 gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto sm:grid-cols-4"
+                className="mx-auto mt-8 grid max-w-md grid-cols-2 gap-3 sm:mt-12 sm:max-w-none sm:grid-cols-4 sm:gap-4"
                 initial={false}
                 animate="animate"
                 transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
@@ -121,20 +121,18 @@ export const HeroSection = memo(function HeroSection() {
                     key={item.label}
                     {...fadeUpAnimation}
                     transition={{ delay: 0.2 + index * 0.1 }}
-                    className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-primary/10 bg-primary/5 p-3 sm:p-4 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10"
+                    className="group relative overflow-hidden rounded-xl border border-primary/10 bg-primary/5 p-3 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 sm:rounded-2xl sm:p-4"
                   >
-                    <div className="mb-2 sm:mb-3 inline-flex rounded-lg sm:rounded-xl bg-primary/10 p-2 sm:p-2.5 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/20 group-hover:ring-primary/30">
+                    <div className="mb-2 inline-flex rounded-lg bg-primary/10 p-2 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/20 group-hover:ring-primary/30 sm:mb-3 sm:rounded-xl sm:p-2.5">
                       <item.icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xs sm:text-sm font-medium text-foreground">
-                      {item.label}
-                    </h3>
-                    <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground leading-tight">
+                    <h3 className="text-xs font-medium text-foreground sm:text-sm">{item.label}</h3>
+                    <p className="mt-0.5 text-[10px] leading-tight text-muted-foreground sm:mt-1 sm:text-xs">
                       {item.description}
                     </p>
                     {/* Decorative corner elements */}
-                    <div className="absolute -right-px -top-px h-6 w-6 sm:h-8 sm:w-8 rounded-bl-lg sm:rounded-bl-xl border-b border-l border-primary/20 transition-colors group-hover:border-primary/30" />
-                    <div className="absolute -bottom-px -left-px h-6 w-6 sm:h-8 sm:w-8 rounded-tr-lg sm:rounded-tr-xl border-t border-r border-primary/20 transition-colors group-hover:border-primary/30" />
+                    <div className="absolute -right-px -top-px h-6 w-6 rounded-bl-lg border-b border-l border-primary/20 transition-colors group-hover:border-primary/30 sm:h-8 sm:w-8 sm:rounded-bl-xl" />
+                    <div className="absolute -bottom-px -left-px h-6 w-6 rounded-tr-lg border-r border-t border-primary/20 transition-colors group-hover:border-primary/30 sm:h-8 sm:w-8 sm:rounded-tr-xl" />
                   </motion.div>
                 ))}
               </motion.div>
@@ -156,9 +154,9 @@ export const HeroSection = memo(function HeroSection() {
               "Full Stack Developer and UI Designer specializing in modern web applications, WordPress development, and user-centered design solutions.",
             url: "https://marcstampfli.com",
             sameAs: [
-              "https://github.com/yourusername",
-              "https://linkedin.com/in/yourusername",
-              "https://twitter.com/yourusername",
+              "https://github.com/marcstampfli",
+              "https://www.linkedin.com/in/marc-stämpfli",
+              "https://www.instagram.com/marcstampfli",
             ],
             knowsAbout: [
               "Web Development",

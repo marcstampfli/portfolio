@@ -5,7 +5,6 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
-    dangerouslyAllowSVG: true,
     contentDispositionType: "inline",
     remotePatterns: [
       {
@@ -27,6 +26,22 @@ const nextConfig = {
   compress: true,
   reactStrictMode: true,
   async headers() {
+    const csp = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "object-src 'none'",
+      "img-src 'self' data: https:",
+      "font-src 'self' data: https:",
+      "style-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+      "connect-src 'self' https://www.google-analytics.com",
+      "upgrade-insecure-requests",
+    ]
+      .filter(Boolean)
+      .join("; ");
+
     return [
       {
         source: "/projects/:path*",
@@ -76,6 +91,10 @@ const nextConfig = {
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: csp,
           },
         ],
       },

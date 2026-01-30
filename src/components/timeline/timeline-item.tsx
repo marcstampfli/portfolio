@@ -18,7 +18,6 @@ export interface TimelineItemProps {
     end_date: Date | string | null;
     logo?: string | null;
   };
-  index: number;
 }
 
 export function TimelineItem({ experience }: TimelineItemProps) {
@@ -68,7 +67,7 @@ export function TimelineItem({ experience }: TimelineItemProps) {
             <p className="font-medium">Key Achievements:</p>
             <ul className="list-inside list-disc space-y-2 text-muted-foreground">
               {experience.achievements.map((achievement, i) => (
-                <li key={i}>{achievement}</li>
+                <li key={`${achievement}-${i}`}>{achievement}</li>
               ))}
             </ul>
           </div>

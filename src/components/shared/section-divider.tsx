@@ -39,7 +39,7 @@ export function SectionDivider({
         <div className={cn(baseClasses, "h-16 flex items-center justify-center gap-2")} aria-hidden="true">
           {Array.from({ length: 3 }).map((_, i) => (
             <div
-              key={i}
+              key={`dot-${i + 1}`}
               className="h-1.5 w-1.5 rounded-full bg-primary/30"
               style={{ opacity: 1 - i * 0.2 }}
             />

@@ -30,6 +30,7 @@ export function FormField({
       <input
         {...form.register(name)}
         type={type}
+        id={name}
         aria-invalid={!!errors[name]}
         aria-describedby={errors[name] ? `${name}-error` : undefined}
         onFocus={() => onFocus(name)}

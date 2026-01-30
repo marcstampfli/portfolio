@@ -23,7 +23,6 @@ export interface TimelineItemProps {
     logo?: string | null;
     location?: string | null;
   };
-  index: number;
   isLast?: boolean;
 }
 
@@ -142,8 +141,8 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
               <p className="text-sm font-semibold text-foreground mb-2">Key Achievements</p>
               <ul className="space-y-1.5">
                 {experience.achievements.map((achievement, i) => (
-                  <li 
-                    key={i} 
+                  <li
+                    key={`${achievement}-${i}`}
                     className="flex items-start gap-2 text-sm text-muted-foreground"
                   >
                     <ChevronRight className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />

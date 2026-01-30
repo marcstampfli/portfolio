@@ -24,7 +24,7 @@ export function OptimizedImage({
   alt,
   className,
   blurDataURL,
-  fallback = "/images/placeholder.svg",
+  fallback = "/images/particle.png",
   onError,
   ...props
 }: OptimizedImageProps) {
@@ -33,16 +33,14 @@ export function OptimizedImage({
   const fallbackTried = useRef(false);
 
   return (
-    <div className={cn("inline-block relative", props.fill && "w-full h-full")}>
+    <div className={cn("relative inline-block", props.fill && "h-full w-full")}>
       <Image
         src={error ? fallback : src}
         alt={alt}
         className={cn(
           "duration-700 ease-in-out",
-          isLoading
-            ? "scale-110 blur-2xl grayscale"
-            : "scale-100 blur-0 grayscale-0",
-          className,
+          isLoading ? "scale-110 blur-2xl grayscale" : "scale-100 blur-0 grayscale-0",
+          className
         )}
         onLoad={() => {
           setIsLoading(false);

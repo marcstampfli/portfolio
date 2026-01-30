@@ -2,7 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import dynamic from "next/dynamic";
 import { type ReactNode } from "react";
 
 function makeQueryClient() {
@@ -33,6 +33,15 @@ function getQueryClient() {
 export function Providers({ children }: { children: ReactNode }) {
   const queryClient = getQueryClient();
 
+  const ReactQueryDevtools = dynamic(
+    () => import("@tanstack/react-query-devtools").then((mod) => mod.ReactQueryDevtools),
+    { ssr: false }
+  );
+
+  const shouldShowDevtools =
+    process.env.NODE_ENV !== "production" &&
+    process.env.NEXT_PUBLIC_ENABLE_RQ_DEVTOOLS === "true";
+
   return (
     <QueryClientProvider client={queryClient}>
       <NextThemesProvider
@@ -44,7 +53,7 @@ export function Providers({ children }: { children: ReactNode }) {
       >
         {children}
       </NextThemesProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {shouldShowDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
     </QueryClientProvider>
   );
 }

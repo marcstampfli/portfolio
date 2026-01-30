@@ -76,8 +76,9 @@ export function FloatingNav() {
         };
       });
 
-      const currentSection = sections.reduce(
-        (closest: ScrollSection, section: ScrollSection) => {
+      const currentSection = sections.reduce<ScrollSection | null>(
+        (closest, section) => {
+          if (!closest) return section;
           if (
             Math.abs(section.top - window.scrollY) <
             Math.abs(closest.top - window.scrollY)
@@ -86,9 +87,12 @@ export function FloatingNav() {
           }
           return closest;
         },
+        null,
       );
 
-      setActiveSection(currentSection.id);
+      if (currentSection) {
+        setActiveSection(currentSection.id);
+      }
     };
 
     window.addEventListener("scroll", updateState);

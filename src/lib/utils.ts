@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function isValidProjectImage(url: string) {
+export function isValidProjectImage(url: string): boolean {
   if (!url) return false;
   return url.startsWith('/projects/') && 
     (url.endsWith('.jpg') || 

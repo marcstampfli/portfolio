@@ -47,7 +47,7 @@ next-env.d.ts
 *.swo
 
 # Prisma
-/prisma/migrations/
+# /prisma/migrations/
 
 # OS generated files
 Thumbs.db

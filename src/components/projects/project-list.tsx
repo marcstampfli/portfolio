@@ -6,7 +6,7 @@ import { ProjectCard } from "./project-card";
 import { ScrollSection } from "@/components/shared/scroll-section";
 import { useEffect, useState } from "react";
 
-import { type ProjectWithTechStack } from "@/types";
+import { type ApiResponse, type ProjectResponse, type ProjectWithTechStack } from "@/types";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -46,7 +46,17 @@ async function fetchProjects(): Promise<ProjectWithTechStack[]> {
     throw new Error("Failed to fetch projects");
   }
   
-  return response.json();
+  const payload = (await response.json()) as ApiResponse<ProjectResponse[]>;
+  if (!payload.success) {
+    throw new Error(payload.error || "Failed to fetch projects");
+  }
+
+  return (payload.data ?? []).map((project) => ({
+    ...project,
+    created_at: new Date(project.created_at),
+    updated_at: new Date(project.updated_at),
+    developed_at: project.developed_at ? new Date(project.developed_at) : null,
+  }));
 }
 
 export function ProjectList() {

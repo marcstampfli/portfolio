@@ -8,6 +8,12 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    datasources: {
+      db: {
+        // Prefer Accelerate proxy in production if provided, otherwise fallback to DATABASE_URL
+        url: process.env.ACCELERATE_URL ?? process.env.DATABASE_URL,
+      },
+    },
   });
 
 if (process.env.NODE_ENV !== "production") {

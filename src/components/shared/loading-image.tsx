@@ -12,7 +12,15 @@ interface LoadingImageProps {
   sizes?: string;
 }
 
-export function LoadingImage({ src, alt, priority = false }: LoadingImageProps) {
+const DEFAULT_SIZES =
+  "(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw";
+
+export function LoadingImage({
+  src,
+  alt,
+  priority = false,
+  sizes = DEFAULT_SIZES,
+}: LoadingImageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -38,28 +46,16 @@ export function LoadingImage({ src, alt, priority = false }: LoadingImageProps) 
 
   const handleError = useCallback(() => {
     if (retryCount < maxRetries) {
-      setRetryCount(prev => prev + 1);
-      // Add a small delay before retry
-      setTimeout(() => {
-        setRetryCount(prev => prev + 1);
-        // Force re-render of Image component
-        setIsLoading(true);
-      }, 1000);
+      setRetryCount((prev) => prev + 1);
+      setIsLoading(true);
     } else {
       setError(true);
       setIsLoading(false);
     }
   }, [retryCount]);
 
-  // Generate sizes based on breakpoints
-  const sizes = "(max-width: 640px) 100vw, " + 
-                "(max-width: 768px) 50vw, " +
-                "(max-width: 1024px) 33vw, " +
-                "(max-width: 1280px) 25vw, " +
-                "20vw";
-
   // Show a static placeholder during SSR or initial load
-  if (!mounted || isLoading) {
+  if (!mounted) {
     return (
       <div className="absolute inset-0 bg-muted/50 dark:bg-muted/20">
         <div className="absolute inset-0 flex items-center justify-center">
@@ -84,6 +80,7 @@ export function LoadingImage({ src, alt, priority = false }: LoadingImageProps) 
   return (
     <>
       <Image
+        key={`${src}-${retryCount}`}
         src={src}
         alt={alt}
         fill
@@ -96,7 +93,7 @@ export function LoadingImage({ src, alt, priority = false }: LoadingImageProps) 
         }`}
         sizes={sizes}
         quality={85}
-        onLoadingComplete={handleLoadComplete}
+        onLoad={handleLoadComplete}
         onError={handleError}
         priority={priority}
         loading={priority ? "eager" : "lazy"}

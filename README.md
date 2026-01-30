@@ -4,7 +4,7 @@ My personal portfolio website built with Next.js, showcasing my work and experie
 
 ## Tech Stack
 
-- Next.js 15 with App Router
+- Next.js 16 with App Router
 - TypeScript
 - TailwindCSS + Framer Motion
 - Prisma + PostgreSQL
@@ -14,7 +14,7 @@ My personal portfolio website built with Next.js, showcasing my work and experie
 
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
 # Start database
 docker compose up -d
@@ -24,7 +24,7 @@ npx prisma generate
 npx prisma db push
 
 # Run development server
-pnpm dev
+npm run dev
 ```
 
 Visit [marcstampfli.com](https://marcstampfli.com)

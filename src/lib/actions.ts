@@ -1,131 +1,77 @@
 "use server";
 
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import {
-  type ContactFormData,
-  type Experience,
-  type ProjectResponse,
-  contactFormSchema,
-} from "@/types";
+import { type ContactFormData, contactFormSchema } from "@/types";
 import { Resend } from "resend";
-
-// =============================================================================
-// Projects
-// =============================================================================
-
-export async function getProjects(): Promise<ProjectResponse[]> {
-  try {
-    const results = await prisma.project.findMany({
-      include: {
-        tech_stack: {
-          select: {
-            name: true,
-          },
-        },
-      },
-      orderBy: [
-        { order: "asc" },
-        { created_at: "desc" },
-      ],
-    });
-
-    return results.map((project) => {
-      // Parse images from JSON string
-      let images: string[] = [];
-      try {
-        const parsed = JSON.parse(project.images as string);
-        images = Array.isArray(parsed) ? parsed : [];
-        // Ensure each image path starts with /projects/
-        images = images.map((img) =>
-          img.startsWith("/projects/") ? img : `/projects/${img}`
-        );
-      } catch {
-        images = [];
-      }
-
-      return {
-        id: project.id,
-        title: project.title,
-        slug: project.slug,
-        description: project.description,
-        content: project.content,
-        project_type: project.project_type,
-        tech_stack: project.tech_stack.map((tech) => tech.name),
-        images,
-        live_url: project.live_url,
-        github_url: project.github_url,
-        figma_url: project.figma_url,
-        client: project.client,
-        status: project.status,
-        order: project.order,
-        created_at: project.created_at.toISOString(),
-        updated_at: project.updated_at.toISOString(),
-        developed_at: project.developed_at?.toISOString() ?? null,
-      };
-    });
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching projects:", error);
-    }
-    return [];
-  }
-}
-
-// =============================================================================
-// Experiences
-// =============================================================================
-
-export async function getExperiences(): Promise<Experience[]> {
-  try {
-    const rawExperiences = await prisma.experience.findMany({
-      orderBy: {
-        start_date: "desc",
-      },
-      include: {
-        tech_stack: true,
-        achievements: true,
-      },
-    });
-
-    return rawExperiences.map((exp) => ({
-      id: exp.id,
-      title: exp.title,
-      company: exp.company,
-      position: exp.position,
-      period: exp.period,
-      location: exp.location,
-      type: exp.type,
-      logo: exp.logo,
-      start_date: exp.start_date.toISOString(),
-      end_date: exp.end_date?.toISOString() ?? null,
-      description: exp.description,
-      tech_stack: exp.tech_stack.map((tech) => tech.name),
-      achievements: exp.achievements.map((a) => a.description),
-      created_at: exp.created_at.toISOString(),
-      updated_at: exp.updated_at.toISOString(),
-    }));
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching experiences:", error);
-    }
-    return [];
-  }
-}
 
 // =============================================================================
 // Contact Form
 // =============================================================================
 
+const stripTags = (value: string): string => value.replace(/<[^>]*>/g, "").trim();
+
+type RateLimitEntry = {
+  count: number;
+  resetAt: number;
+};
+
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+const rateLimitStore = new Map<string, RateLimitEntry>();
+
+function getClientIp(): string {
+  const headerStore = headers();
+  const forwardedFor = headerStore.get("x-forwarded-for") ?? "";
+  const realIp = headerStore.get("x-real-ip") ?? "";
+  const ip = forwardedFor.split(",")[0]?.trim() || realIp || "unknown";
+  return ip;
+}
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitStore.get(key);
+
+  if (!entry || entry.resetAt <= now) {
+    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return true;
+  }
+
+  entry.count += 1;
+  rateLimitStore.set(key, entry);
+  return false;
+}
+
 export async function submitContactMessage(
   data: ContactFormData
 ): Promise<{ success: boolean; error?: string }> {
+  const sanitizedInput = {
+    ...data,
+    name: stripTags(data.name),
+    message: stripTags(data.message),
+  };
+
   // Validate input
-  const parsed = contactFormSchema.safeParse(data);
+  const parsed = contactFormSchema.safeParse(sanitizedInput);
   if (!parsed.success) {
     return { success: false, error: "Invalid form data" };
   }
 
-  const { name, email, message } = parsed.data;
+  const { name, email, message, website } = parsed.data;
+
+  if (website && website.trim().length > 0) {
+    return { success: false, error: "Invalid form submission" };
+  }
+
+  const clientIp = getClientIp();
+  const rateLimitKey = `contact:${clientIp}`;
+  if (isRateLimited(rateLimitKey)) {
+    return { success: false, error: "Too many requests. Please try again later." };
+  }
 
   try {
     // Save to database
@@ -152,7 +98,7 @@ async function sendContactEmail(data: ContactFormData): Promise<void> {
 
   await resend.emails.send({
     from: "Portfolio Contact <contact@marcstampfli.com>",
-    to: ["hello@marcstampfli.com"],
+    to: ["marcstampfli@gmail.com"],
     replyTo: data.email,
     subject: `New Contact Message from ${data.name}`,
     text: `
