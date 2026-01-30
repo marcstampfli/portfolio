@@ -18,7 +18,9 @@ export function LazyLoad<TComponent extends ComponentType<any>>({
   fallback = <div className="w-full h-64 bg-muted/50 animate-pulse rounded-lg" />,
   ...props
 }: LazyLoadProps<TComponent>) {
-  const LazyComponent = lazy(component);
+  const LazyComponent = lazy(component) as ComponentType<
+    ComponentPropsWithoutRef<TComponent>
+  >;
   
   return (
     <Suspense fallback={fallback}>

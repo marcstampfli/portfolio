@@ -20,8 +20,10 @@ const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
-function getClientIp(): string {
-  const headerStore = headers();
+type ContactEmailPayload = Pick<ContactFormData, "name" | "email" | "message">;
+
+async function getClientIp(): Promise<string> {
+  const headerStore = await headers();
   const forwardedFor = headerStore.get("x-forwarded-for") ?? "";
   const realIp = headerStore.get("x-real-ip") ?? "";
   const ip = forwardedFor.split(",")[0]?.trim() || realIp || "unknown";
@@ -67,7 +69,7 @@ export async function submitContactMessage(
     return { success: false, error: "Invalid form submission" };
   }
 
-  const clientIp = getClientIp();
+  const clientIp = await getClientIp();
   const rateLimitKey = `contact:${clientIp}`;
   if (isRateLimited(rateLimitKey)) {
     return { success: false, error: "Too many requests. Please try again later." };
@@ -93,7 +95,7 @@ export async function submitContactMessage(
   }
 }
 
-async function sendContactEmail(data: ContactFormData): Promise<void> {
+async function sendContactEmail(data: ContactEmailPayload): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   await resend.emails.send({
