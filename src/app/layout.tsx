@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { env } from "@/lib/env";
 import { Analytics } from "@/components/shared/analytics";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeToggle />
           <Suspense fallback={null}>
             <Analytics />
+            <VercelAnalytics />
           </Suspense>
         </Providers>
       </body>
