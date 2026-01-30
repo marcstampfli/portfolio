@@ -1,35 +1,41 @@
 "use client";
 
-import { lazy, Suspense, ComponentType } from "react";
+import {
+  lazy,
+  Suspense,
+  type ComponentType,
+  type ComponentPropsWithoutRef,
+  type ReactNode,
+} from "react";
 
-type LazyLoadProps<TProps extends object> = {
-  component: () => Promise<{ default: ComponentType<TProps> }>;
-  fallback?: React.ReactNode;
-} & TProps;
+type LazyLoadProps<TComponent extends ComponentType<any>> = {
+  component: () => Promise<{ default: TComponent }>;
+  fallback?: ReactNode;
+} & ComponentPropsWithoutRef<TComponent>;
 
-export function LazyLoad<TProps extends object>({
+export function LazyLoad<TComponent extends ComponentType<any>>({
   component,
   fallback = <div className="w-full h-64 bg-muted/50 animate-pulse rounded-lg" />,
   ...props
-}: LazyLoadProps<TProps>) {
+}: LazyLoadProps<TComponent>) {
   const LazyComponent = lazy(component);
   
   return (
     <Suspense fallback={fallback}>
-      <LazyComponent {...(props as TProps)} />
+      <LazyComponent {...(props as ComponentPropsWithoutRef<TComponent>)} />
     </Suspense>
   );
 }
 
 // HOC for creating lazy-loaded components
-export function withLazyLoad<TProps extends object>(
-  componentLoader: () => Promise<{ default: ComponentType<TProps> }>,
-  fallback?: React.ReactNode
+export function withLazyLoad<TComponent extends ComponentType<any>>(
+  componentLoader: () => Promise<{ default: TComponent }>,
+  fallback?: ReactNode
 ) {
-  return function LazyComponent(props: TProps) {
+  return function LazyComponent(props: ComponentPropsWithoutRef<TComponent>) {
     return (
-      <LazyLoad 
-        component={componentLoader} 
+      <LazyLoad
+        component={componentLoader}
         fallback={fallback}
         {...props}
       />
