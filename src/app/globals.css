@@ -110,10 +110,10 @@ a {
   color: inherit;
 }
 
-/* Inline prose links — the animated underline effect.
-   A thin line slides from left → right on hover, retreats right → left on
-   mouse-out. Uses a gradient painted as a bottom border via background. */
-a.link {
+/* Animated underline effect — works on <a> and <span>.
+   A thin line slides left → right on hover, retreats right → left on exit.
+   Trigger on the parent: hovering the parent card will underline a .link child. */
+.link {
   display: inline;
   background-image: linear-gradient(to right, hsl(var(--primary) / 0.55), hsl(var(--primary)));
   background-repeat: no-repeat;
@@ -126,28 +126,17 @@ a.link {
     color 160ms ease;
 }
 
-a.link:hover,
-a.link:focus-visible {
+.link:hover,
+.link:focus-visible,
+*:hover > .link,
+*:focus-visible > .link,
+.group:hover .link,
+.group:focus-visible .link {
   background-size: 100% 1.5px;
 }
 
-/* Exit: line retreats from right */
-a.link:not(:hover):not(:focus-visible) {
+.link:not(:hover):not(:focus-visible) {
   background-position: right 100%;
-  transition:
-    background-size 200ms cubic-bezier(0.25, 1, 0.5, 1),
-    background-position 0ms 200ms,
-    color 160ms ease;
-}
-
-a.link:hover,
-a.link:focus-visible {
-  background-size: 100% 1.5px;
-}
-
-/* Exit: line retreats from right */
-a.link:not(:hover):not(:focus-visible) {
-  background-position: right bottom -2px;
   transition:
     background-size 200ms cubic-bezier(0.25, 1, 0.5, 1),
     background-position 0ms 200ms,

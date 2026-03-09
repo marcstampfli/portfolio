@@ -10,8 +10,8 @@ import { SectionHeader } from "@/components/shared/section-header";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
 import { ProjectModal } from "@/components/shared/project-modal";
-import { cn, isValidProjectImage } from "@/lib/utils";
-import { ArrowRight, ExternalLink, FolderArchive, Github, Star, User } from "lucide-react";
+import { isValidProjectImage } from "@/lib/utils";
+import { ArrowRight, ExternalLink, FolderArchive, Github, Star } from "lucide-react";
 
 interface ProjectsSectionProps {
   projects: ProjectWithTechStack[];
@@ -47,16 +47,25 @@ function ProjectCard({
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
             <PlaceholderImage className="h-full w-full" />
           )}
 
+          {/* dark gradient so badges are always readable over any image */}
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/60 to-transparent" />
+
           <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3">
-            <div className="flex flex-wrap gap-2">
-              <Badge>{getProjectTypeDisplayName(project.project_type)}</Badge>
-              {project.featured ? <Badge variant="secondary">Featured</Badge> : null}
+            <div className="flex flex-wrap gap-1.5">
+              <span className="inline-flex items-center rounded-sm bg-black/50 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
+                {getProjectTypeDisplayName(project.project_type)}
+              </span>
+              {project.featured ? (
+                <span className="inline-flex items-center rounded-sm bg-primary px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-primary-foreground">
+                  Featured
+                </span>
+              ) : null}
             </div>
             <div className="flex gap-2">
               {project.live_url ? (
@@ -65,10 +74,10 @@ function ProjectCard({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(event) => event.stopPropagation()}
-                  className="transition-theme bg-background/64 inline-flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 text-muted-foreground backdrop-blur-sm hover:border-primary/30 hover:text-foreground"
+                  className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
                   aria-label={`Open ${project.title} live project`}
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               ) : null}
               {project.github_url ? (
@@ -77,10 +86,10 @@ function ProjectCard({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(event) => event.stopPropagation()}
-                  className="transition-theme bg-background/64 inline-flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 text-muted-foreground backdrop-blur-sm hover:border-primary/30 hover:text-foreground"
+                  className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
                   aria-label={`Open ${project.title} source code`}
                 >
-                  <Github className="h-4 w-4" />
+                  <Github className="h-3.5 w-3.5" />
                 </a>
               ) : null}
             </div>
@@ -88,24 +97,14 @@ function ProjectCard({
         </div>
 
         <div className="flex flex-1 flex-col p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h3 className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
-                {project.title}
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">{project.description}</p>
-            </div>
-            <span
-              className={cn(
-                "text-[0.64rem] font-semibold uppercase tracking-[0.18em]",
-                project.status === "completed" ? "text-primary" : "text-muted-foreground"
-              )}
-            >
-              {project.status.replace("_", " ")}
-            </span>
+          <div>
+            <h3 className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
+              {project.title}
+            </h3>
+            <p className="mt-2 text-sm leading-7 text-muted-foreground">{project.description}</p>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-auto flex flex-wrap gap-2 pt-4">
             {project.tech_stack.slice(0, 4).map((tech, techIndex) => (
               <Badge key={`${tech}-${techIndex}`} variant="secondary">
                 {tech}
@@ -116,18 +115,21 @@ function ProjectCard({
             ) : null}
           </div>
 
-          <div className="mt-6 flex items-center justify-between border-t border-border/70 pt-5">
-            <div className="flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.16em] text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <User className="h-3.5 w-3.5" />
-                <span>{project.client ?? "Independent"}</span>
+          <div className="mt-auto border-t border-border/70 pt-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-foreground">
+                  {project.client ?? "Independent"}
+                </p>
+                {project.year ? (
+                  <p className="text-xs text-muted-foreground">{project.year}</p>
+                ) : null}
+              </div>
+              <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary">
+                <span className="link">View Case</span>
+                <ArrowRight className="h-3.5 w-3.5" />
               </span>
-              {project.year ? <span>{project.year}</span> : null}
             </div>
-            <span className="inline-flex items-center text-sm text-foreground">
-              View Case
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </span>
           </div>
         </div>
       </button>

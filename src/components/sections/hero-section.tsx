@@ -78,7 +78,7 @@ export const HeroSection = memo(function HeroSection() {
                   {item.href ? (
                     <a
                       href={item.href}
-                      className="block max-w-sm text-sm leading-6 text-foreground hover:text-primary sm:text-base"
+                      className="link block max-w-sm text-sm leading-6 sm:text-base"
                     >
                       {item.value}
                     </a>

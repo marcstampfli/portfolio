@@ -1,6 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Solid square badge with rounded corners — matches the nav MS badge -->
-  <rect width="32" height="32" rx="5" ry="5" fill="#0bafd4"/>
+  <style>
+    rect { fill: #0891b2; }
+    @media (prefers-color-scheme: dark) {
+      rect { fill: #0bafd4; }
+    }
+  </style>
+  <rect width="32" height="32" rx="5" ry="5"/>
   <text
     x="16"
     y="22.5"
