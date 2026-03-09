@@ -2,14 +2,12 @@
 
 import { useMemo } from "react";
 import { useReducedMotion } from "framer-motion";
-import { useIsClient } from "@/hooks/use-is-client";
 
 export function AnimatedGradientBackground() {
   const prefersReducedMotion = useReducedMotion();
-  const isClient = useIsClient();
 
   const particles = useMemo(() => {
-    if (prefersReducedMotion || !isClient) return [];
+    if (prefersReducedMotion) return [];
 
     // Use deterministic seed-based values to avoid hydration issues
     const seededRandom = (seed: number) => {
@@ -25,10 +23,10 @@ export function AnimatedGradientBackground() {
       animationDelay: seededRandom(i * 321) * 15,
       animationDuration: seededRandom(i * 654) * 8 + 14,
     }));
-  }, [isClient, prefersReducedMotion]);
+  }, [prefersReducedMotion]);
 
   const connections = useMemo(() => {
-    if (prefersReducedMotion || particles.length === 0 || !isClient) return [];
+    if (prefersReducedMotion || particles.length === 0) return [];
 
     // Use deterministic seed-based values to avoid hydration issues
     const seededRandom = (seed: number) => {
@@ -58,10 +56,10 @@ export function AnimatedGradientBackground() {
         animationDuration: seededRandom(i * 444) * 4 + 6,
       };
     });
-  }, [isClient, particles, prefersReducedMotion]);
+  }, [particles, prefersReducedMotion]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden" suppressHydrationWarning>
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.12),transparent_34%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_0%,hsl(var(--foreground)/0.02)_50%,transparent_100%)]" />

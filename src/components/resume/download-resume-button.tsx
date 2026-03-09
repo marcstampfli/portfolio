@@ -6,16 +6,12 @@ import { Download, Loader2 } from "lucide-react";
 import type { Experience } from "@/types";
 import { pdf } from "@react-pdf/renderer";
 import { Resume } from "./resume-generator";
-import { useIsClient } from "@/hooks/use-is-client";
 
 interface DownloadResumeButtonProps {
   experiences: Experience[];
 }
 
-export function DownloadResumeButton({
-  experiences,
-}: DownloadResumeButtonProps) {
-  const isClient = useIsClient();
+export function DownloadResumeButton({ experiences }: DownloadResumeButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDownload = async () => {
@@ -24,7 +20,6 @@ export function DownloadResumeButton({
       const instance = pdf(<Resume experiences={experiences} />);
       const blob = await instance.toBlob();
 
-      // Create and trigger download
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -37,30 +32,14 @@ export function DownloadResumeButton({
       if (process.env.NODE_ENV === "development") {
         console.error("PDF Generation Error:", error);
       }
-      alert(
-        "Failed to generate PDF. Please try again or contact support if the issue persists.",
-      );
+      alert("Failed to generate PDF. Please try again or contact support if the issue persists.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (!isClient) {
-    return (
-      <Button variant="outline" size="lg" disabled>
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        Loading...
-      </Button>
-    );
-  }
-
   return (
-    <Button
-      variant="outline"
-      size="lg"
-      onClick={handleDownload}
-      disabled={isLoading}
-    >
+    <Button variant="outline" size="lg" onClick={handleDownload} disabled={isLoading}>
       {isLoading ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
       ) : (

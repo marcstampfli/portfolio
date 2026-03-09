@@ -3,8 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useCallback } from "react";
-import { useTheme } from "next-themes";
-import { useIsClient } from "@/hooks/use-is-client";
 
 interface LoadingImageProps {
   src: string;
@@ -25,8 +23,6 @@ export function LoadingImage({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const isClient = useIsClient();
-  const { theme } = useTheme();
   const maxRetries = 2;
 
   const handleLoadComplete = useCallback(() => {
@@ -43,17 +39,6 @@ export function LoadingImage({
       setIsLoading(false);
     }
   }, [retryCount]);
-
-  // Show a static placeholder during SSR or initial load
-  if (!isClient) {
-    return (
-      <div className="absolute inset-0 bg-muted/50 dark:bg-muted/20">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -78,9 +63,7 @@ export function LoadingImage({
           isLoading
             ? "scale-[1.02] blur-[2px] grayscale dark:brightness-75"
             : "scale-100 blur-0 grayscale-0 dark:brightness-90"
-        } group-hover:scale-110 group-hover:hardware-accelerated ${
-          isClient && theme === "dark" ? "dark:contrast-100" : ""
-        }`}
+        } group-hover:hardware-accelerated group-hover:scale-110`}
         sizes={sizes}
         quality={85}
         onLoad={handleLoadComplete}
@@ -90,15 +73,15 @@ export function LoadingImage({
         fetchPriority={priority ? "high" : "auto"}
       />
       <AnimatePresence>
-        {isLoading && isClient && (
+        {isLoading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 flex items-center justify-center bg-background/40 dark:bg-background/60 blur-backdrop"
+            className="blur-backdrop absolute inset-0 flex items-center justify-center bg-background/40 dark:bg-background/60"
           >
-            <div className="h-8 w-8 animate-spin rounded-full border-3 border-primary border-t-transparent hardware-accelerated" />
+            <div className="border-3 hardware-accelerated h-8 w-8 animate-spin rounded-full border-primary border-t-transparent" />
           </motion.div>
         )}
       </AnimatePresence>
