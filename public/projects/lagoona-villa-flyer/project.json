@@ -1,0 +1,21 @@
+{
+  "title": "Lagoona Villa Flyer",
+  "slug": "lagoona-villa-flyer",
+  "type": "flyer",
+  "summary": "Lagoona Villa Flyer description",
+  "featured": false,
+  "status": "published",
+  "client": "Lagoona Villa",
+  "year": 2021,
+  "sortOrder": 19,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": "project-lagoona-flyer.gif",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

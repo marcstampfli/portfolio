@@ -1,152 +1,141 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Lightbulb, Heart, Target, Compass } from "lucide-react";
 import Image from "next/image";
+import { Blocks, PenTool, Workflow } from "lucide-react";
+import { Container } from "@/components/ui/container";
+import { SectionHeader } from "@/components/shared/section-header";
 
-const journey = [
+const principles = [
   {
-    icon: Lightbulb,
-    title: "The Spark",
+    icon: Workflow,
+    title: "Full ownership, start to finish",
     description:
-      "Started coding out of curiosity, quickly fell in love with creating digital experiences that make a difference.",
+      "I handle design, development, and deployment — so nothing gets lost between phases and the end result matches what was planned.",
   },
   {
-    icon: Heart,
-    title: "The Passion",
+    icon: PenTool,
+    title: "Design that earns its place",
     description:
-      "Found my calling in bridging design and technology, creating solutions that feel both beautiful and intuitive.",
+      "I care about hierarchy, spacing, and clarity. Interfaces should feel considered, not just functional.",
   },
   {
-    icon: Target,
-    title: "The Mission",
+    icon: Blocks,
+    title: "WordPress done properly",
     description:
-      "Dedicated to crafting digital products that solve real problems and bring value to people's lives.",
+      "Custom themes, Gutenberg blocks, plugins, Kadence, Elementor, performance — whatever the project calls for, built to last.",
   },
-  {
-    icon: Compass,
-    title: "The Journey",
-    description:
-      "Constantly exploring new technologies and approaches, always aiming to push the boundaries of what's possible.",
-  },
+];
+
+const focusAreas = [
+  "WordPress development",
+  "UI / UX design",
+  "React & Next.js",
+  "Custom themes & plugins",
 ];
 
 export function AboutSection() {
   const prefersReducedMotion = useReducedMotion();
 
-  const fadeIn = {
-    initial: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-  };
-
   return (
-    <>
-      <section
-        className="relative overflow-hidden py-24 sm:py-32"
-        id="about"
-        aria-label="About Me"
-      >
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]" />
-        </div>
+    <section id="about" className="section-shell relative" aria-labelledby="about-heading">
+      <Container>
+        <div className="space-y-12">
+          {/* Header */}
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SectionHeader
+              titleId="about-heading"
+              eyebrow="About"
+              title="Developer and designer with range."
+              subtitle="I've been building for the web since 2008 — in-house, freelance, and now agency work. WordPress is my core, React and Next.js are where I'm spending more time."
+              titleClassName="text-3xl sm:text-4xl lg:text-5xl"
+              className="max-w-3xl"
+            />
+          </motion.div>
 
-        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]"
-            aria-hidden="true"
-          ></div>
-          <div className="mx-auto max-w-3xl">
-            {/* Header */}
-            <motion.div {...fadeIn} className="text-center mb-16">
-              <div className="flex items-center justify-center mb-8">
-                {/* Profile Image */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="relative"
-                >
-                  <div
-                    className="relative h-32 w-32 overflow-hidden rounded-2xl border border-primary/20 bg-primary/5"
-                    style={{
-                      position: "relative",
-                      height: "128px",
-                      width: "128px",
-                      display: "inline-block",
-                      contain: "layout",
-                      transform: "translate3d(0, 0, 0)",
-                    }}
-                  >
-                    <Image
-                      src="/profile.jpg"
-                      alt="Marc Stämpfli"
-                      fill
-                      className="object-cover transition-transform duration-500 hover:scale-110"
-                      sizes="(max-width: 768px) 128px, 128px"
-                      priority
-                    />
-                  </div>
-                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary/50 to-primary/30 opacity-0 blur transition duration-500 group-hover:opacity-100" />
-                </motion.div>
+          {/* Bio row — photo + text */}
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.5, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+            className="grid gap-6 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-start lg:grid-cols-[200px_minmax(0,1fr)]"
+          >
+            {/* Photo */}
+            <div className="surface-card overflow-hidden p-2">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-border/60 bg-secondary/40">
+                <Image
+                  src="/profile.jpg"
+                  alt="Marc Stämpfli portrait"
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 160px, 200px"
+                  className="object-cover"
+                />
               </div>
+            </div>
 
-              <h2 className="text-4xl font-bold tracking-tight mb-6">
-                <span className="bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] animate-text-shine bg-clip-text text-transparent">
-                  My Journey
-                </span>
-              </h2>
+            {/* Bio + tags */}
+            <div className="surface-panel flex flex-col justify-between gap-6 p-6 sm:p-8">
+              <div className="space-y-4">
+                <p className="text-foreground/88 text-base leading-8">
+                  My work sits across development and design — which means I think about how
+                  something looks, how it works, and how it's built, all at once.
+                </p>
+                <p className="text-sm leading-7 text-muted-foreground sm:text-base">
+                  Most of my time goes into WordPress: custom themes, block development, plugin
+                  work, performance, and keeping things maintainable. Outside of that, I build with
+                  React and Next.js, and I'm currently working on a few personal projects — games,
+                  apps, and tools built for fun and for Trinidad.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 border-t border-border/60 pt-5">
+                {focusAreas.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-sm border border-border/70 bg-secondary/50 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
 
-              <motion.p
-                className="text-lg text-muted-foreground"
-                {...fadeIn}
-                transition={{ delay: 0.1 }}
+          {/* Principles — 3 col grid */}
+          <div className="grid gap-4 sm:grid-cols-3">
+            {principles.map((item, index) => (
+              <motion.article
+                key={item.title}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-8%" }}
+                transition={{
+                  duration: 0.45,
+                  delay: 0.08 + index * 0.07,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="surface-panel flex flex-col gap-4 p-6"
               >
-                Driven by curiosity, creativity, and a relentless pursuit of
-                excellence, I believe in the power of technology to transform
-                ideas into reality.
-              </motion.p>
-            </motion.div>
-
-            {/* Journey Cards */}
-            <motion.div
-              className="grid grid-cols-2 gap-3 sm:gap-6"
-              variants={{
-                visible: { transition: { staggerChildren: 0.1 } },
-              }}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              {journey.map((item, index) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-primary/10 bg-primary/5 p-3 sm:p-6 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10"
-                >
-                  <div className="mb-2 sm:mb-4 inline-flex rounded-lg sm:rounded-xl bg-primary/10 p-2 sm:p-3 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/20 group-hover:ring-primary/30">
-                    <item.icon className="h-4 w-4 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:scale-110" />
-                  </div>
-
-                  <h3 className="mb-1 sm:mb-2 text-sm sm:text-base font-semibold text-foreground transition-colors group-hover:text-primary">
+                <div className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-primary/20 bg-primary/10 text-primary">
+                  <item.icon className="h-4 w-4" />
+                </div>
+                <div>
+                  <h4 className="font-display text-base font-semibold tracking-[-0.02em] text-foreground">
                     {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
-                    {item.description}
-                  </p>
-
-                  {/* Decorative corner elements */}
-                  <div className="absolute -right-px -top-px h-6 w-6 sm:h-8 sm:w-8 rounded-bl-lg sm:rounded-bl-xl border-b border-l border-primary/20 transition-colors group-hover:border-primary/30" />
-                  <div className="absolute -bottom-px -left-px h-6 w-6 sm:h-8 sm:w-8 rounded-tr-lg sm:rounded-tr-xl border-t border-r border-primary/20 transition-colors group-hover:border-primary/30" />
-                </motion.div>
-              ))}
-            </motion.div>
+                  </h4>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.description}</p>
+                </div>
+              </motion.article>
+            ))}
           </div>
         </div>
-      </section>
-    </>
+      </Container>
+    </section>
   );
 }

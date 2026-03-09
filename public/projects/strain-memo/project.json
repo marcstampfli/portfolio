@@ -1,0 +1,19 @@
+{
+  "title": "Strain Memo",
+  "slug": "strain-memo",
+  "type": "web",
+  "summary": "A memo and catalogue app for tracking cannabis strains — effects, notes, ratings, and personal logs. Built for people who want to track what they've tried and what worked.",
+  "featured": true,
+  "status": "draft",
+  "client": null,
+  "year": 2026,
+  "sortOrder": 2,
+  "stack": ["Next.js", "TypeScript", "React", "Tailwind CSS", "PostgreSQL"],
+  "cover": "",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "company-role",
+  "title": "Software Developer",
+  "company": "Company Name",
+  "position": "Software Developer",
+  "location": "Remote",
+  "employmentType": "Full-time",
+  "logo": "logo.svg",
+  "logoBackground": "dark",
+  "logoFit": "contain",
+  "logoWidth": 24,
+  "logoHeight": 24,
+  "logoPadding": 5,
+  "summary": "Short role summary used in the timeline.",
+  "techStack": ["Next.js", "TypeScript"],
+  "achievements": [
+    "Describe a strong contribution",
+    "Add a measurable outcome"
+  ],
+  "startDate": "2024-01-01",
+  "endDate": null,
+  "sortOrder": 100
+}

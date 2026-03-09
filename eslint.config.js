@@ -2,7 +2,7 @@ import js from "@eslint/js";
 import next from "eslint-config-next";
 import prettier from "eslint-config-prettier";
 
-export default [
+const config = [
   js.configs.recommended,
   ...next,
   prettier,
@@ -10,15 +10,19 @@ export default [
     ignores: ["node_modules/", ".next/", "out/", "public/"],
   },
   {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      "no-undef": "off",
+    },
+  },
+  {
     rules: {
       "react/no-unescaped-entities": "off",
       "@next/next/no-img-element": "warn",
       "no-console": ["warn", { allow: ["warn", "error"] }],
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }
-      ]
-    }
-  }
+    },
+  },
 ];
+
+export default config;

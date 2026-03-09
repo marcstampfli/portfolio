@@ -1,37 +1,45 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useIsClient } from "@/hooks/use-is-client";
+import { cn } from "@/lib/utils";
 
-export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
+interface ThemeToggleProps {
+  className?: string;
+}
+
+export function ThemeToggle({ className }: ThemeToggleProps) {
+  const isClient = useIsClient();
   const { theme, setTheme, systemTheme } = useTheme();
 
-  // Prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const currentTheme = theme === "system" ? systemTheme : theme;
+  const isDark = currentTheme === "dark";
 
-  // Determine the current theme
-  const currentTheme = theme === 'system' ? systemTheme : theme;
-
-  if (!mounted) {
+  if (!isClient) {
     return null;
   }
 
   return (
     <button
       type="button"
-      className="fixed right-14 top-3 md:top-4 md:right-16 z-50 h-10 w-10 flex items-center justify-center rounded-full bg-background/40 border border-primary/10 backdrop-blur-md transition-colors hover:bg-accent dark:hover:bg-accent/10"
-      onClick={() => {
-        const newTheme = currentTheme === "dark" ? "light" : "dark";
-        setTheme(newTheme);
-      }}
-      aria-label={`Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} theme`}
+      className={cn(
+        "transition-theme relative inline-flex h-11 w-11 items-center justify-center rounded-sm border-0 bg-transparent text-muted-foreground hover:text-primary",
+        className
+      )}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
     >
-      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-300 text-primary dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-300 text-primary dark:rotate-0 dark:scale-100" />
+      <svg
+        viewBox="0 0 24 24"
+        className={cn(
+          "h-5 w-5 text-primary transition-transform duration-500",
+          isDark ? "rotate-0" : "rotate-180"
+        )}
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M12 3 A9 9 0 0 0 12 21 Z" fill="currentColor" />
+      </svg>
       <span className="sr-only">Toggle theme</span>
     </button>
   );

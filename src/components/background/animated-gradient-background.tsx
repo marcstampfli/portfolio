@@ -1,20 +1,15 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useReducedMotion } from "framer-motion";
+import { useIsClient } from "@/hooks/use-is-client";
 
 export function AnimatedGradientBackground() {
   const prefersReducedMotion = useReducedMotion();
-  const [isMounted, setIsMounted] = useState(false);
+  const isClient = useIsClient();
 
-  // Mount state effect
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Significantly reduce particles for better performance
   const particles = useMemo(() => {
-    if (prefersReducedMotion || !isMounted) return [];
+    if (prefersReducedMotion || !isClient) return [];
 
     // Use deterministic seed-based values to avoid hydration issues
     const seededRandom = (seed: number) => {
@@ -22,19 +17,18 @@ export function AnimatedGradientBackground() {
       return x - Math.floor(x);
     };
 
-    return Array.from({ length: 15 }, (_, i) => ({
+    return Array.from({ length: 10 }, (_, i) => ({
       id: i,
-      size: seededRandom(i * 123) * 3 + 2, // 2-5px (smaller)
+      size: seededRandom(i * 123) * 2 + 2,
       left: seededRandom(i * 456) * 100,
       top: seededRandom(i * 789) * 100,
       animationDelay: seededRandom(i * 321) * 15,
-      animationDuration: seededRandom(i * 654) * 8 + 12, // Shorter duration
+      animationDuration: seededRandom(i * 654) * 8 + 14,
     }));
-  }, [prefersReducedMotion, isMounted]);
+  }, [isClient, prefersReducedMotion]);
 
-  // Reduce connections for better performance
   const connections = useMemo(() => {
-    if (prefersReducedMotion || particles.length === 0 || !isMounted) return [];
+    if (prefersReducedMotion || particles.length === 0 || !isClient) return [];
 
     // Use deterministic seed-based values to avoid hydration issues
     const seededRandom = (seed: number) => {
@@ -42,7 +36,7 @@ export function AnimatedGradientBackground() {
       return x - Math.floor(x);
     };
 
-    return Array.from({ length: 8 }, (_, i) => {
+    return Array.from({ length: 5 }, (_, i) => {
       const particle1Index = Math.floor(seededRandom(i * 111) * particles.length);
       const particle2Index = Math.floor(seededRandom(i * 222) * particles.length);
       const particle1 = particles[particle1Index];
@@ -64,22 +58,21 @@ export function AnimatedGradientBackground() {
         animationDuration: seededRandom(i * 444) * 4 + 6,
       };
     });
-  }, [particles, prefersReducedMotion, isMounted]);
+  }, [isClient, particles, prefersReducedMotion]);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Dark background with subtle gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/95">
-        <div className="from-primary/3 absolute inset-0 bg-gradient-to-tr via-transparent to-primary/5" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.12),transparent_34%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_0%,hsl(var(--foreground)/0.02)_50%,transparent_100%)]" />
       </div>
 
-      {/* Floating particles - only render if motion is enabled */}
       {!prefersReducedMotion && particles.length > 0 && (
         <div className="absolute inset-0 will-change-auto">
           {particles.map((particle) => (
             <div
               key={particle.id}
-              className="animate-float-particle absolute rounded-full bg-primary/40 will-change-transform"
+              className="animate-float-particle absolute rounded-full bg-primary/50 will-change-transform"
               style={{
                 width: `${particle.size}px`,
                 height: `${particle.size}px`,
@@ -87,20 +80,19 @@ export function AnimatedGradientBackground() {
                 top: `${particle.top}%`,
                 animationDelay: `${particle.animationDelay}s`,
                 animationDuration: `${particle.animationDuration}s`,
-                boxShadow: `0 0 ${particle.size * 1.5}px rgba(59, 130, 246, 0.2)`,
+                boxShadow: `0 0 ${particle.size * 8}px hsl(var(--primary) / 0.18)`,
               }}
             />
           ))}
         </div>
       )}
 
-      {/* Connection lines between particles - only render if motion is enabled */}
       {!prefersReducedMotion && connections.length > 0 && (
         <div className="absolute inset-0 will-change-auto">
           {connections.map((connection) => (
             <div
               key={connection.id}
-              className="animate-connection-pulse absolute h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent will-change-transform"
+              className="animate-connection-pulse absolute h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent will-change-transform"
               style={{
                 left: `${connection.left}%`,
                 top: `${connection.top}%`,
@@ -116,14 +108,13 @@ export function AnimatedGradientBackground() {
         </div>
       )}
 
-      {/* Simplified ambient glow for reduced motion */}
       <div className="absolute inset-0">
         {prefersReducedMotion ? (
-          <div className="bg-primary/3 absolute left-1/4 top-1/3 h-96 w-96 rounded-full opacity-50 blur-3xl" />
+          <div className="absolute left-[18%] top-[16%] h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
         ) : (
           <>
-            <div className="bg-primary/4 animate-pulse-slow absolute left-1/4 top-1/3 h-96 w-96 rounded-full blur-3xl" />
-            <div className="bg-primary/2 animate-pulse-slower absolute bottom-1/3 right-1/4 h-80 w-80 rounded-full blur-3xl" />
+            <div className="animate-pulse-slow absolute left-[16%] top-[12%] h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+            <div className="animate-pulse-slower absolute bottom-[12%] right-[14%] h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
           </>
         )}
       </div>

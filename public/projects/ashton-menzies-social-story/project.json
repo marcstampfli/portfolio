@@ -1,0 +1,21 @@
+{
+  "title": "Ashton Menzies Social Story",
+  "slug": "ashton-menzies-social-story",
+  "type": "story",
+  "summary": "Ashton Menzies Social Story project.",
+  "featured": false,
+  "status": "published",
+  "client": "Ashton Menzies",
+  "year": 2021,
+  "sortOrder": 12,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

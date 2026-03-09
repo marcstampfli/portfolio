@@ -1,0 +1,21 @@
+{
+  "title": "Trini Revellers Website",
+  "slug": "trini-revellers-website",
+  "type": "website",
+  "summary": "Trini Revellers Website project.",
+  "featured": false,
+  "status": "published",
+  "client": "Trini Revellers",
+  "year": 2021,
+  "sortOrder": 32,
+  "stack": [
+    "Web Development"
+  ],
+  "cover": "project-trinirevellers-website.jpg",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

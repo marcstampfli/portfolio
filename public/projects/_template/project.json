@@ -1,0 +1,19 @@
+{
+  "title": "Project Title",
+  "slug": "project-slug",
+  "type": "website",
+  "summary": "Short summary for cards and archive rows.",
+  "featured": false,
+  "status": "published",
+  "client": "Client or personal project",
+  "year": 2026,
+  "sortOrder": 100,
+  "stack": ["Next.js", "Tailwind CSS"],
+  "cover": "cover.jpg",
+  "gallery": ["gallery-01.jpg", "gallery-02.jpg"],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

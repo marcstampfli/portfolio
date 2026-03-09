@@ -1,0 +1,24 @@
+{
+  "title": "Addict Gang Website",
+  "slug": "addict-gang-website",
+  "type": "website",
+  "summary": "Addict Gang Website project.",
+  "featured": false,
+  "status": "published",
+  "client": "Addict Gang",
+  "year": 2021,
+  "sortOrder": 30,
+  "stack": [
+    "Web Design",
+    "Web Development"
+  ],
+  "cover": "project-addcitgang-website.jpg",
+  "gallery": [
+    "project-addcitgang-website2.jpg"
+  ],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

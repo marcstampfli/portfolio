@@ -33,6 +33,7 @@ export interface Project {
   description: string;
   content: string;
   project_type: string;
+  featured: boolean;
   images: string[];
   live_url: string | null;
   github_url: string | null;
@@ -40,20 +41,15 @@ export interface Project {
   client: string | null;
   status: string;
   order: number;
-  created_at: Date | string;
-  updated_at: Date | string;
-  developed_at: Date | string | null;
+  year: number | null;
 }
 
-export interface ProjectWithTechStack extends Omit<Project, "tech_stack"> {
-  tech_stack: (TechStack | { name: string } | string)[];
+export interface ProjectWithTechStack extends Project {
+  tech_stack: string[];
 }
 
 // API Response type for projects
-export interface ProjectResponse extends Omit<Project, "created_at" | "updated_at" | "developed_at"> {
-  created_at: string;
-  updated_at: string;
-  developed_at: string | null;
+export interface ProjectResponse extends Omit<Project, "tech_stack"> {
   tech_stack: string[];
 }
 
@@ -75,6 +71,11 @@ export interface Experience {
   tech_stack: string[];
   achievements: string[];
   logo?: string | null;
+  logo_background?: "none" | "light" | "dark";
+  logo_fit?: "contain" | "cover";
+  logo_width?: number | null;
+  logo_height?: number | null;
+  logo_padding?: number | null;
   created_at?: Date | string;
   updated_at?: Date | string;
 }
@@ -94,6 +95,11 @@ export interface ExperienceResponse {
   tech_stack: string[];
   achievements: string[];
   logo?: string | null;
+  logo_background?: "none" | "light" | "dark";
+  logo_fit?: "contain" | "cover";
+  logo_width?: number | null;
+  logo_height?: number | null;
+  logo_padding?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -154,7 +160,10 @@ export const PROJECT_TYPE_DISPLAY_NAMES: Record<string, string> = {
   web: "Web App",
   website: "Website",
   flyer: "Flyer",
+  banner: "Banner",
   logo: "Logo",
+  story: "Social Story",
+  signage: "Digital Signage",
   ui: "UI Design",
   branding: "Branding",
   print: "Print Design",
@@ -167,8 +176,6 @@ export const PROJECT_TYPE_DISPLAY_NAMES: Record<string, string> = {
 export function getProjectTypeDisplayName(slug: string): string {
   return (
     PROJECT_TYPE_DISPLAY_NAMES[slug.toLowerCase()] ||
-    slug
-      .replace("_", " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase())
+    slug.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
   );
 }

@@ -1,0 +1,21 @@
+{
+  "title": "Nicholas St\u00e4mpfli Business Card",
+  "slug": "nicholas-stampfli-business-card",
+  "type": "bizcard",
+  "summary": "Nicholas St\u00e4mpfli Business Card project.",
+  "featured": false,
+  "status": "published",
+  "client": "Nicholas St\u00e4mpfli",
+  "year": 2021,
+  "sortOrder": 33,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

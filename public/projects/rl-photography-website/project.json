@@ -1,0 +1,25 @@
+{
+  "title": "RL Photography Website",
+  "slug": "rl-photography-website",
+  "type": "website",
+  "summary": "RL Photography Website project.",
+  "featured": false,
+  "status": "published",
+  "client": "RL Photography",
+  "year": 2021,
+  "sortOrder": 16,
+  "stack": [
+    "Modified Theme",
+    "WordPress"
+  ],
+  "cover": "project-rlphoto-website.jpg",
+  "gallery": [
+    "project-rlphoto-website2.jpg",
+    "project-rlphoto-website3.jpg"
+  ],
+  "links": {
+    "live": "https://rainierlangephotography.com/",
+    "github": "",
+    "figma": ""
+  }
+}

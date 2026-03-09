@@ -1,0 +1,24 @@
+{
+  "title": "Tinder Clone",
+  "slug": "tinder-clone",
+  "type": "web",
+  "summary": "Tinder Clone project.",
+  "featured": false,
+  "status": "unpublished",
+  "client": "Tinder Clone",
+  "year": 2021,
+  "sortOrder": 6,
+  "stack": [
+    "Firebase",
+    "React"
+  ],
+  "cover": "project-tinder-clone.jpg",
+  "gallery": [
+    "project-tinder-clone2.jpg"
+  ],
+  "links": {
+    "live": "https://tinder-clone-8baa7.web.app/",
+    "github": "",
+    "figma": ""
+  }
+}

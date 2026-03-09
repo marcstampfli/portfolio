@@ -2,8 +2,9 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useTheme } from "next-themes";
+import { useIsClient } from "@/hooks/use-is-client";
 
 interface LoadingImageProps {
   src: string;
@@ -24,20 +25,9 @@ export function LoadingImage({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  const isClient = useIsClient();
   const { theme } = useTheme();
   const maxRetries = 2;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Reset states when src changes
-  useEffect(() => {
-    setIsLoading(true);
-    setError(false);
-    setRetryCount(0);
-  }, [src]);
 
   const handleLoadComplete = useCallback(() => {
     setIsLoading(false);
@@ -55,7 +45,7 @@ export function LoadingImage({
   }, [retryCount]);
 
   // Show a static placeholder during SSR or initial load
-  if (!mounted) {
+  if (!isClient) {
     return (
       <div className="absolute inset-0 bg-muted/50 dark:bg-muted/20">
         <div className="absolute inset-0 flex items-center justify-center">
@@ -89,7 +79,7 @@ export function LoadingImage({
             ? "scale-[1.02] blur-[2px] grayscale dark:brightness-75"
             : "scale-100 blur-0 grayscale-0 dark:brightness-90"
         } group-hover:scale-110 group-hover:hardware-accelerated ${
-          mounted && theme === 'dark' ? 'dark:contrast-100' : ''
+          isClient && theme === "dark" ? "dark:contrast-100" : ""
         }`}
         sizes={sizes}
         quality={85}
@@ -100,7 +90,7 @@ export function LoadingImage({
         fetchPriority={priority ? "high" : "auto"}
       />
       <AnimatePresence>
-        {isLoading && mounted && (
+        {isLoading && isClient && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -7,10 +7,16 @@ export function cn(...inputs: ClassValue[]) {
 
 export function isValidProjectImage(url: string): boolean {
   if (!url) return false;
-  return url.startsWith('/projects/') && 
-    (url.endsWith('.jpg') || 
-     url.endsWith('.jpeg') || 
-     url.endsWith('.png') || 
-     url.endsWith('.gif') || 
-     url.endsWith('.webp'));
+  const normalizedUrl = url.toLowerCase();
+
+  return (
+    normalizedUrl.startsWith("/projects/") &&
+    (
+      normalizedUrl.endsWith(".jpg") ||
+      normalizedUrl.endsWith(".jpeg") ||
+      normalizedUrl.endsWith(".png") ||
+      normalizedUrl.endsWith(".gif") ||
+      normalizedUrl.endsWith(".webp")
+    )
+  );
 }

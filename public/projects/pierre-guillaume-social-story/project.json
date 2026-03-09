@@ -1,0 +1,21 @@
+{
+  "title": "Pierre Guillaume Social Story",
+  "slug": "pierre-guillaume-social-story",
+  "type": "story",
+  "summary": "Pierre Guillaume Social Story project.",
+  "featured": false,
+  "status": "published",
+  "client": "Pierre Guillaume",
+  "year": 2021,
+  "sortOrder": 13,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "title": "IOCL Website",
+  "slug": "iocl-website",
+  "type": "website",
+  "summary": "IOCL Website project.",
+  "featured": false,
+  "status": "published",
+  "client": "IOCL",
+  "year": 2021,
+  "sortOrder": 24,
+  "stack": [
+    "Web Development"
+  ],
+  "cover": "project-iocl-website.jpg",
+  "gallery": [
+    "project-iocl-website2.jpg",
+    "project-iocl-website3.jpg"
+  ],
+  "links": {
+    "live": "https://www.iocltt.com/",
+    "github": "",
+    "figma": ""
+  }
+}

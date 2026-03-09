@@ -1,0 +1,19 @@
+{
+  "title": "All Fours",
+  "slug": "all-fours-game",
+  "type": "web",
+  "summary": "A digital version of All Fours — the classic card game that's a staple in Trinidad and Tobago. Built as a full playable web app with game logic, scoring, and local multiplayer.",
+  "featured": true,
+  "status": "draft",
+  "client": null,
+  "year": 2026,
+  "sortOrder": 1,
+  "stack": ["Next.js", "TypeScript", "React", "Tailwind CSS"],
+  "cover": "",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Van's Vegan Delights Logo",
+  "slug": "vans-vegan-delights-logo",
+  "type": "logo",
+  "summary": "Van's Vegan Delights Logo project.",
+  "featured": false,
+  "status": "published",
+  "client": "Van's Vegan Delights",
+  "year": 2021,
+  "sortOrder": 10,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

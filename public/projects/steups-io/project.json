@@ -1,0 +1,19 @@
+{
+  "title": "Steups.io",
+  "slug": "steups-io",
+  "type": "web",
+  "summary": "A platform built for Trinidad and Tobago — local tools, generators, games, and utilities in one place. The name is pure Trini slang.",
+  "featured": true,
+  "status": "draft",
+  "client": null,
+  "year": 2025,
+  "sortOrder": 3,
+  "stack": ["Next.js", "TypeScript", "React", "Tailwind CSS"],
+  "cover": "",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

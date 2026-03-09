@@ -1,147 +1,99 @@
 "use client";
 
-import { useRef, useMemo, memo } from "react";
+import { memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Code2, Palette, Compass, Sparkles } from "lucide-react";
-import { AnimatedGradientBackground } from "@/components/background/animated-gradient-background";
-import { TypeAnimation } from "react-type-animation";
+import { ArrowRight } from "lucide-react";
+import { FuturisticBackground } from "@/components/background/futuristic-background";
+import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/lib/site";
+
+const heroMeta = [
+  {
+    label: "Base",
+    value: siteConfig.location,
+  },
+  {
+    label: "Focus",
+    value: "WordPress, React, UI design",
+  },
+  {
+    label: "Contact",
+    value: siteConfig.email,
+    href: `mailto:${siteConfig.email}`,
+  },
+];
 
 export const HeroSection = memo(function HeroSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
-
-  const fadeUpAnimation = useMemo(
-    () => ({
-      initial: { opacity: 0, y: prefersReducedMotion ? 0 : 10 },
-      animate: { opacity: 1, y: 0 },
-      transition: {
-        duration: prefersReducedMotion ? 0.1 : 0.5,
-        ease: [0.4, 0, 0.2, 1],
-        delay: prefersReducedMotion ? 0 : 0.1,
-      },
-    }),
-    [prefersReducedMotion]
-  );
-
-  const highlights = useMemo(
-    () => [
-      {
-        icon: Code2,
-        label: "Problem Solver",
-        description: "Turning ideas into reality",
-      },
-      {
-        icon: Palette,
-        label: "Creative Mind",
-        description: "Design-driven approach",
-      },
-      {
-        icon: Compass,
-        label: "Tech Explorer",
-        description: "Always learning, always growing",
-      },
-      {
-        icon: Sparkles,
-        label: "Innovator",
-        description: "Future-focused vision",
-      },
-    ],
-    []
-  );
 
   return (
     <>
       <section
-        className="relative flex min-h-[100vh] items-center justify-center overflow-hidden"
-        ref={containerRef}
+        className="relative flex min-h-screen items-center overflow-hidden pb-24 pt-28 sm:pb-28 sm:pt-36"
         aria-label="Introduction"
-        role="region"
       >
-        {/* Background with proper z-index */}
         <div className="absolute inset-0 z-0">
-          <AnimatedGradientBackground />
+          <FuturisticBackground />
         </div>
 
-        <div className="container relative z-10 px-4 md:px-6">
-          <div className="mx-auto max-w-4xl text-center">
-            {/* Main Content */}
-            <motion.div {...fadeUpAnimation} className="space-y-8">
-              {/* Title & Role */}
-              <div>
-                <div
-                  className="absolute -top-16 left-1/2 h-40 w-[380px] -translate-x-1/2 bg-primary/20 blur-[120px]"
-                  aria-hidden="true"
-                ></div>
-                <h1 className="text-4xl font-bold tracking-tight sm:text-6xl md:text-7xl">
-                  <span className="block">Marc Stämpfli</span>
-                  <div className="relative">
-                    <span className="animate-text-shine mt-2 block bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] bg-clip-text text-2xl text-transparent sm:text-3xl">
-                      <TypeAnimation
-                        sequence={[
-                          "Software Developer",
-                          4000,
-                          "Product Designer",
-                          4000,
-                          "Technical Lead",
-                          4000,
-                          "Digital Consultant",
-                          4000,
-                        ]}
-                        wrapper="span"
-                        speed={40}
-                        repeat={Infinity}
-                        cursor={true}
-                        style={{ display: "inline-block" }}
-                      />
-                    </span>
-                  </div>
-                </h1>
-              </div>
+        <Container className="relative z-10">
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-5xl"
+          >
+            <div className="section-kicker mb-8">
+              <span className="eyebrow-dot" aria-hidden="true" />
+              <span>WordPress • React • UI Design</span>
+            </div>
 
-              {/* Brief Introduction */}
-              <motion.p
-                className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl"
-                {...fadeUpAnimation}
-                transition={{ delay: 0.1 }}
-              >
-                Hi, I&apos;m Marc. I believe in creating digital products that are both
-                aesthetically pleasing and user-friendly.
-              </motion.p>
+            <h1 className="text-balance font-display text-6xl font-semibold tracking-[-0.08em] text-foreground sm:text-7xl lg:text-[6.4rem] lg:leading-[0.95]">
+              Web Developer &amp; Designer
+            </h1>
 
-              {/* Highlight Cards */}
-              <motion.div
-                className="mx-auto mt-8 grid max-w-md grid-cols-2 gap-3 sm:mt-12 sm:max-w-none sm:grid-cols-4 sm:gap-4"
-                initial={false}
-                animate="animate"
-                transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
-                style={{ overflow: "hidden" }}
-              >
-                {highlights.map((item, index) => (
-                  <motion.div
-                    key={item.label}
-                    {...fadeUpAnimation}
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                    className="group relative overflow-hidden rounded-xl border border-primary/10 bg-primary/5 p-3 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:bg-primary/10 sm:rounded-2xl sm:p-4"
-                  >
-                    <div className="mb-2 inline-flex rounded-lg bg-primary/10 p-2 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/20 group-hover:ring-primary/30 sm:mb-3 sm:rounded-xl sm:p-2.5">
-                      <item.icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xs font-medium text-foreground sm:text-sm">{item.label}</h3>
-                    <p className="mt-0.5 text-[10px] leading-tight text-muted-foreground sm:mt-1 sm:text-xs">
-                      {item.description}
+            <p className="text-foreground/92 mt-6 max-w-3xl text-balance font-display text-2xl font-medium tracking-[-0.04em] sm:text-3xl lg:text-4xl">
+              Building websites, WordPress solutions, and web apps for 15+ years.
+            </p>
+
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Button asChild size="lg">
+                <a href="#projects">
+                  View Projects
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href="#contact">Start a Conversation</a>
+              </Button>
+            </div>
+
+            <div className="mt-20 grid gap-6 border-t border-border/60 pt-6 sm:grid-cols-3 sm:gap-8">
+              {heroMeta.map((item) => (
+                <div key={item.label} className="space-y-2">
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    {item.label}
+                  </p>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      className="block max-w-sm text-sm leading-6 text-foreground hover:text-primary sm:text-base"
+                    >
+                      {item.value}
+                    </a>
+                  ) : (
+                    <p className="max-w-sm text-sm leading-6 text-foreground sm:text-base">
+                      {item.value}
                     </p>
-                    {/* Decorative corner elements */}
-                    <div className="absolute -right-px -top-px h-6 w-6 rounded-bl-lg border-b border-l border-primary/20 transition-colors group-hover:border-primary/30 sm:h-8 sm:w-8 sm:rounded-bl-xl" />
-                    <div className="absolute -bottom-px -left-px h-6 w-6 rounded-tr-lg border-r border-t border-primary/20 transition-colors group-hover:border-primary/30 sm:h-8 sm:w-8 sm:rounded-tr-xl" />
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </Container>
       </section>
 
-      {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -149,23 +101,22 @@ export const HeroSection = memo(function HeroSection() {
             "@context": "https://schema.org",
             "@type": "Person",
             name: "Marc Stämpfli",
-            jobTitle: "Full Stack Developer",
+            jobTitle: "Web Developer & Designer",
             description:
-              "Full Stack Developer and UI Designer specializing in modern web applications, WordPress development, and user-centered design solutions.",
-            url: "https://marcstampfli.com",
-            sameAs: [
-              "https://github.com/marcstampfli",
-              "https://www.linkedin.com/in/marc-stämpfli",
-              "https://www.instagram.com/marcstampfli",
-            ],
+              "Web Developer and Designer based in Trinidad and Tobago with 15+ years of experience building WordPress sites, React apps, and UI-driven web products.",
+            url: siteConfig.url,
+            sameAs: siteConfig.sameAs,
             knowsAbout: [
-              "Web Development",
-              "UI Design",
+              "WordPress",
               "React",
               "Next.js",
-              "WordPress",
-              "TypeScript",
+              "UI Design",
+              "Gutenberg",
+              "Elementor",
+              "Web Development",
               "JavaScript",
+              "TypeScript",
+              "PHP",
             ],
           }),
         }}

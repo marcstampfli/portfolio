@@ -1,93 +1,81 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# ─── Dependencies ────────────────────────────────────────────────────────────
 /node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
 
-# testing
-/coverage
-
-# next.js
+# ─── Next.js ─────────────────────────────────────────────────────────────────
 /.next/
 /out/
 
-# production
+# ─── Build output ────────────────────────────────────────────────────────────
 /build
 /dist
 
-# misc
-.DS_Store
-*.pem
+# ─── TypeScript ──────────────────────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
+# ─── Environment variables ───────────────────────────────────────────────────
 .env
 .env*.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# vercel
+# ─── Vercel ──────────────────────────────────────────────────────────────────
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# ─── Package manager lock files ──────────────────────────────────────────────
+# Keep package-lock.json; ignore others if not using them
+yarn.lock
+pnpm-lock.yaml
 
-# IDE
-.idea
-.vscode
-*.swp
-*.swo
+# ─── Testing & coverage ──────────────────────────────────────────────────────
+/coverage
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+lighthouse-report.html
 
-# Prisma
-# /prisma/migrations/
-
-# OS generated files
+# ─── OS generated files ──────────────────────────────────────────────────────
+.DS_Store
 Thumbs.db
 ehthumbs.db
 
-# Logs
-logs
-*.log
+# ─── IDE & editor ────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Runtime data
-pids
+# ─── Logs ────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Runtime data ────────────────────────────────────────────────────────────
+pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Temporary folders
+# ─── Temporary files ─────────────────────────────────────────────────────────
 tmp/
 temp/
-
-# Build artifacts
 *.tar.gz
 
-# Package manager lock files (keep package-lock.json but ignore others if using different managers)
-yarn.lock
-pnpm-lock.yaml
-
-# Local database files
+# ─── Local database files ────────────────────────────────────────────────────
 *.db
 *.sqlite
 *.sqlite3
 
-# Performance and testing files
-lighthouse-report.html
-cypress/videos/
-cypress/screenshots/
-.nyc_output/
-
-# Storybook build outputs
-storybook-static/
-
-# Cache directories
+# ─── Cache ───────────────────────────────────────────────────────────────────
 .cache/
 .parcel-cache/
+
+# ─── Misc build artifacts ────────────────────────────────────────────────────
+storybook-static/
+*.pem

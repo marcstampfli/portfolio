@@ -1,0 +1,28 @@
+{
+  "slug": "webfx-ui-designer",
+  "title": "UI Designer",
+  "company": "Webfx",
+  "position": "UI Designer",
+  "location": null,
+  "employmentType": null,
+  "logo": "webfx.png",
+  "logoBackground": "light",
+  "logoFit": "contain",
+  "logoWidth": 30,
+  "logoHeight": 16,
+  "logoPadding": 1,
+  "summary": "Freelance UI Designer specializing in user interface design for a local digital agency. Remote work.",
+  "techStack": [
+    "Figma",
+    "Adobe XD",
+    "UI Design"
+  ],
+  "achievements": [
+    "Designed user interfaces for web and mobile applications",
+    "Created design systems and style guides",
+    "Collaborated with developers to implement designs"
+  ],
+  "startDate": "2021-04-01",
+  "endDate": "2021-11-30",
+  "sortOrder": 0
+}

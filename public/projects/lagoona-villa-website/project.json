@@ -1,0 +1,25 @@
+{
+  "title": "Lagoona Villa Website",
+  "slug": "lagoona-villa-website",
+  "type": "website",
+  "summary": "Lagoona Villa Website project.",
+  "featured": false,
+  "status": "published",
+  "client": "Lagoona Villa",
+  "year": 2021,
+  "sortOrder": 20,
+  "stack": [
+    "WordPress"
+  ],
+  "cover": "project-lagoona-website.jpg",
+  "gallery": [
+    "project-lagoona-website2.jpg",
+    "project-lagoona-website3.jpg",
+    "project-lagoona-website4.jpg"
+  ],
+  "links": {
+    "live": "https://www.lagoonavilla.com/",
+    "github": "",
+    "figma": ""
+  }
+}

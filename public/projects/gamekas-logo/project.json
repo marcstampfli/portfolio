@@ -1,0 +1,21 @@
+{
+  "title": "GameKas Logo",
+  "slug": "gamekas-logo",
+  "type": "logo",
+  "summary": "GameKas Logo project.",
+  "featured": false,
+  "status": "published",
+  "client": "GameKas",
+  "year": 2021,
+  "sortOrder": 25,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

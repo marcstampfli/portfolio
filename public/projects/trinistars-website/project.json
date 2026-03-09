@@ -1,0 +1,25 @@
+{
+  "title": "TriniStars Website",
+  "slug": "trinistars-website",
+  "type": "website",
+  "summary": "WordPress website for a local brand, tailored to present content clearly while keeping the experience lightweight and easy to maintain.",
+  "featured": true,
+  "status": "published",
+  "client": "TriniStars",
+  "year": 2021,
+  "sortOrder": 15,
+  "stack": [
+    "Modified Theme",
+    "WordPress"
+  ],
+  "cover": "project-trinistars-website.jpg",
+  "gallery": [
+    "project-trinistars-website2.jpg",
+    "project-trinistars-website3.jpg"
+  ],
+  "links": {
+    "live": "https://trinistars.com/",
+    "github": "",
+    "figma": ""
+  }
+}

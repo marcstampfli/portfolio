@@ -4,6 +4,10 @@ import typography from "@tailwindcss/typography";
 
 const config: Config = {
   darkMode: ["class"],
+  corePlugins: {
+    fontSmoothing: false,
+    preflight: false,
+  },
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -18,12 +22,19 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        body: ["var(--font-body)", "sans-serif"],
+        display: ["var(--font-display)", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
+        borderStrong: "hsl(var(--border-strong))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        surface: "hsl(var(--surface))",
+        surfaceStrong: "hsl(var(--surface-strong))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -54,12 +65,16 @@ const config: Config = {
         },
       },
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        panel: "0 24px 80px -32px hsl(var(--shadow-color) / 0.45)",
+        card: "0 18px 48px -28px hsl(var(--shadow-color) / 0.35)",
       },
       keyframes: {
         "accordion-down": {

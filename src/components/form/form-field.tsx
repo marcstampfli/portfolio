@@ -1,69 +1,60 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { type FieldErrors, type UseFormReturn } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { type ContactFormData } from "@/types";
 
 interface FormFieldProps {
-  name: keyof ContactFormData;
+  name: keyof Omit<ContactFormData, "website">;
   label: string;
-  type?: string;
   form: UseFormReturn<ContactFormData>;
   errors: FieldErrors<ContactFormData>;
-  focusedField: keyof ContactFormData | null;
-  onFocus: (_field: keyof ContactFormData) => void;
-  onBlur: () => void;
+  type?: string;
+  fieldType?: "input" | "textarea";
+  rows?: number;
+  placeholder?: string;
 }
 
 export function FormField({
   name,
   label,
-  type = "text",
   form,
   errors,
-  focusedField,
-  onFocus,
-  onBlur,
+  type = "text",
+  fieldType = "input",
+  rows = 6,
+  placeholder,
 }: FormFieldProps) {
+  const error = errors[name]?.message;
+  const sharedProps = {
+    id: name,
+    "aria-invalid": Boolean(error),
+    "aria-describedby": error ? `${name}-error` : undefined,
+    placeholder,
+    ...form.register(name),
+  };
+
   return (
-    <div className="relative">
-      <input
-        {...form.register(name)}
-        type={type}
-        id={name}
-        aria-invalid={!!errors[name]}
-        aria-describedby={errors[name] ? `${name}-error` : undefined}
-        onFocus={() => onFocus(name)}
-        onBlur={onBlur}
-        className={`w-full rounded-xl border bg-transparent px-4 py-3 pt-6 text-foreground transition-all duration-300 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary ${
-          errors[name] ? "border-destructive" : "border-primary/10"
-        }`}
-      />
-      <motion.label
+    <div className="space-y-2.5">
+      <label
         htmlFor={name}
-        initial={false}
-        animate={{
-          y: focusedField === name || form.getValues()[name] ? -24 : 0,
-          scale: focusedField === name || form.getValues()[name] ? 0.85 : 1,
-        }}
-        transition={{ duration: 0.2 }}
-        className={`absolute left-4 origin-left cursor-text text-muted-foreground transition-colors ${
-          focusedField === name ? "text-primary" : ""
-        }`}
+        className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground"
       >
         {label}
-      </motion.label>
+      </label>
 
-      {errors[name] && (
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="mt-2 text-sm text-destructive"
-        >
-          {errors[name]?.message}
-        </motion.p>
+      {fieldType === "textarea" ? (
+        <Textarea {...sharedProps} rows={rows} />
+      ) : (
+        <Input {...sharedProps} type={type} />
       )}
+
+      {error ? (
+        <p id={`${name}-error`} className="text-sm text-destructive">
+          {String(error)}
+        </p>
+      ) : null}
     </div>
   );
 }

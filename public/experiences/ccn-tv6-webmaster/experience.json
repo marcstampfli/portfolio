@@ -1,0 +1,28 @@
+{
+  "slug": "ccn-tv6-webmaster",
+  "title": "Webmaster",
+  "company": "CCN TV6",
+  "position": "Webmaster",
+  "location": null,
+  "employmentType": null,
+  "logo": "ccntv6-logo.png",
+  "logoBackground": "none",
+  "logoFit": "contain",
+  "logoWidth": 22,
+  "logoHeight": 22,
+  "logoPadding": 1,
+  "summary": "Managed content creation, ePaper production, social media strategy, and minor video editing for the 'Beyond the Tape' segment at Trinidad Express Newspaper and CCN TV6. Semi-remote work.",
+  "techStack": [
+    "Content Management",
+    "Social Media",
+    "Video Editing"
+  ],
+  "achievements": [
+    "Managed website content and updates",
+    "Developed social media strategies",
+    "Produced digital publications and video content"
+  ],
+  "startDate": "2018-10-01",
+  "endDate": "2019-03-31",
+  "sortOrder": 0
+}

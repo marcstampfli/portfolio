@@ -1,0 +1,21 @@
+{
+  "title": "LiPS Program Flyer",
+  "slug": "lips-program-flyer",
+  "type": "flyer",
+  "summary": "LiPS Program Flyer project.",
+  "featured": false,
+  "status": "published",
+  "client": "LiPS Program",
+  "year": 2021,
+  "sortOrder": 29,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": "project-lips-flyer.gif",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

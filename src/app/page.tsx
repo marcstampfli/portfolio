@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { HeroSection } from "@/components/sections/hero-section";
 import { AboutSection } from "@/components/sections/about-section";
 import { ContactForm } from "@/components/form/contact-form";
@@ -10,74 +9,53 @@ import { ExperienceSection } from "@/components/sections/experience-section";
 import ProjectsSection from "@/components/sections/projects-section";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { SkipToContent } from "@/components/shared/skip-to-content";
-import { ExperienceSkeleton, ProjectsSkeleton } from "@/components/shared/section-skeletons";
-import { SectionDivider, DecorativeGlow } from "@/components/shared/section-divider";
 import { AnimatedSection } from "@/components/shared/animated-section";
+import { Container } from "@/components/ui/container";
+import { SectionHeader } from "@/components/shared/section-header";
+import { getExperiences, getPublishedProjects } from "@/lib/content";
 
-export default function Home() {
+export default async function Home() {
+  const [experiences, projects] = await Promise.all([getExperiences(), getPublishedProjects()]);
+
   return (
     <PageTransition>
-      {/* Accessibility: Skip to main content link */}
       <SkipToContent targetId="main-content" />
-      
-      {/* Scroll progress indicator */}
       <ScrollProgressBar />
-      
       <FloatingNav />
       <ParallaxBackground>
-        <main 
-          id="main-content"
-          className="relative min-h-screen bg-background/50 backdrop-blur-3xl"
-          tabIndex={-1}
-        >
+        <main id="main-content" className="relative min-h-screen pt-24 sm:pt-28" tabIndex={-1}>
           <div className="relative">
             <section id="home" className="min-h-screen">
               <HeroSection />
             </section>
 
-            <SectionDivider variant="fade" />
-
             <AboutSection />
 
-            <SectionDivider variant="gradient" />
+            <ExperienceSection experiences={experiences} />
 
-            <Suspense fallback={<ExperienceSkeleton />}>
-              <ExperienceSection />
-            </Suspense>
+            <ProjectsSection projects={projects} />
 
-            <SectionDivider variant="gradient" />
-
-            <Suspense fallback={<ProjectsSkeleton />}>
-              <ProjectsSection />
-            </Suspense>
-
-            <SectionDivider variant="dots" />
-
-            {/* Contact Section */}
             <AnimatedSection animation="fade-up" delay={0.1}>
               <section
                 id="contact"
-                className="relative overflow-hidden py-24 sm:py-32"
+                className="section-shell relative overflow-hidden"
                 aria-labelledby="contact-heading"
               >
-                <div className="container px-4 sm:px-6 lg:px-8">
-                  <div className="relative mx-auto max-w-2xl text-center">
-                    <DecorativeGlow position="top" size="md" />
-                    <h2 
-                      id="contact-heading"
-                      className="font-heading text-4xl font-bold tracking-tight sm:text-5xl"
-                    >
-                      <span className="animate-text-shine bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] bg-clip-text text-transparent">
-                        Connect with Me
-                      </span>
-                    </h2>
-                    <p className="mt-4 text-lg text-muted-foreground">
-                      Ready to explore the possibilities? Let&apos;s connect and
-                      discuss your next digital project.
-                    </p>
+                <Container>
+                  <div className="surface-panel relative overflow-hidden px-6 py-10 sm:px-10 sm:py-12">
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+                    <SectionHeader
+                      titleId="contact-heading"
+                      eyebrow="Contact"
+                      title="Let’s talk."
+                      subtitle="Send the brief. I’ll reply with a practical next step."
+                      align="center"
+                      className="mx-auto mb-12 max-w-3xl"
+                      titleClassName="text-3xl sm:text-4xl lg:text-5xl"
+                    />
+                    <ContactForm />
                   </div>
-                  <ContactForm />
-                </div>
+                </Container>
               </section>
             </AnimatedSection>
           </div>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import type { Experience } from "@/types";
 import { pdf } from "@react-pdf/renderer";
 import { Resume } from "./resume-generator";
+import { useIsClient } from "@/hooks/use-is-client";
 
 interface DownloadResumeButtonProps {
   experiences: Experience[];
@@ -14,12 +15,8 @@ interface DownloadResumeButtonProps {
 export function DownloadResumeButton({
   experiences,
 }: DownloadResumeButtonProps) {
-  const [isClient, setIsClient] = useState(false);
+  const isClient = useIsClient();
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleDownload = async () => {
     setIsLoading(true);
@@ -37,9 +34,7 @@ export function DownloadResumeButton({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      // Show error to user in development
       if (process.env.NODE_ENV === "development") {
-        // eslint-disable-next-line no-console
         console.error("PDF Generation Error:", error);
       }
       alert(

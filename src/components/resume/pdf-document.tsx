@@ -1,12 +1,7 @@
 "use client";
 
-import type { Experience as PrismaExperience } from ".prisma/client";
-
-interface Experience extends PrismaExperience {
-  tech_stack: string[];
-  achievements: string[];
-}
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import type { Experience } from "@/types";
 
 interface PDFDocumentProps {
   experiences: Experience[];
@@ -149,13 +144,13 @@ export default function PDFDocument({ experiences }: PDFDocumentProps) {
       <Page size="A4" style={styles.page}>
         <View style={styles.headerContainer}>
           <View style={styles.header}>
-            <Text style={styles.name}>Marc Stampfli</Text>
-            <Text style={styles.title}>Senior Full Stack Developer</Text>
+            <Text style={styles.name}>Marc Stämpfli</Text>
+            <Text style={styles.title}>Web Developer & Designer</Text>
           </View>
           <View style={styles.contactGrid}>
-            <Text style={styles.contact}>marc.stampfli@example.com</Text>
-            <Text style={styles.contact}>+41 123 456 789</Text>
-            <Text style={styles.contact}>Zurich, Switzerland</Text>
+            <Text style={styles.contact}>marcstampfli@gmail.com</Text>
+            <Text style={styles.contact}>Trinidad and Tobago</Text>
+            <Text style={styles.contact}>marcstampfli.com</Text>
             <Text style={styles.contact}>github.com/marcstampfli</Text>
           </View>
         </View>

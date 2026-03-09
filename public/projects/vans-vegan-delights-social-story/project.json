@@ -1,0 +1,21 @@
+{
+  "title": "Van's Vegan Delights Social Story",
+  "slug": "vans-vegan-delights-social-story",
+  "type": "story",
+  "summary": "Van's Vegan Delights Social Story project.",
+  "featured": false,
+  "status": "published",
+  "client": "Van's Vegan Delights",
+  "year": 2021,
+  "sortOrder": 9,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

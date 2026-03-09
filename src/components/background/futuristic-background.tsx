@@ -1,368 +1,176 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useReducedMotion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
-interface GridPoint {
+interface NodePoint {
   x: number;
   y: number;
-  z: number;
   vx: number;
   vy: number;
-  vz: number;
-  size: number;
-  opacity: number;
-  hue: number;
-  connections: number;
+  radius: number;
+}
+
+function seededRandom(seed: number) {
+  const value = Math.sin(seed) * 10000;
+  return value - Math.floor(value);
+}
+
+function createPoints(width: number, height: number, count: number): NodePoint[] {
+  return Array.from({ length: count }, (_, index) => ({
+    x: seededRandom(index * 101.7) * width,
+    y: seededRandom(index * 211.3) * height,
+    vx: (seededRandom(index * 307.9) - 0.5) * 0.18,
+    vy: (seededRandom(index * 401.1) - 0.5) * 0.18,
+    radius: 1.2 + seededRandom(index * 503.4) * 1.8,
+  }));
 }
 
 export function FuturisticBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointsRef = useRef<GridPoint[]>([]);
-  const particleImageRef = useRef<HTMLImageElement | null>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(
-    null,
-  );
-  const [isReady, setIsReady] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const animationFrameRef = useRef<number>(0);
-  const timeRef = useRef<number>(0);
-  const lastFrameTimeRef = useRef<number>(0);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const pointsRef = useRef<NodePoint[]>([]);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastFrameTimeRef = useRef(0);
+  const prefersReducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
+  const shouldAnimateCanvas = !prefersReducedMotion && !isMobile;
 
-  // Mount state effect
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Preload assets and initialize
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    const preloadAssets = async () => {
-      try {
-        // Preload particle image
-        const image = new Image();
-        await new Promise((resolve, reject) => {
-          image.onload = resolve;
-          image.onerror = reject;
-          image.src = "/images/particle.svg";
-        });
-        particleImageRef.current = image;
-
-        // Initialize canvas and points
-        if (canvasRef.current) {
-          const canvas = canvasRef.current;
-          const { width, height } = canvas.getBoundingClientRect();
-          const dpr = window.devicePixelRatio || 1;
-          canvas.width = width * dpr;
-          canvas.height = height * dpr;
-          setDimensions({ width: canvas.width, height: canvas.height });
-        }
-
-        setIsReady(true);
-      } catch (error) {
-        console.error("Failed to preload assets:", error);
-      }
-    };
-
-    preloadAssets();
-  }, [isMounted]);
-
-  // Handle resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (!canvasRef.current) return;
-      const canvas = canvasRef.current;
-      const { width, height } = canvas.getBoundingClientRect();
-
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      setDimensions({ width: canvas.width, height: canvas.height });
-
-      // Adjust point positions based on new dimensions
-      pointsRef.current = pointsRef.current.map((point) => {
-        // Keep points within relative bounds of new dimensions
-        const currentBound = Math.max(width, height);
-        const relativeX =
-          point.x / (point.x < 0 ? -currentBound : currentBound);
-        const relativeY =
-          point.y / (point.y < 0 ? -currentBound : currentBound);
-        return {
-          ...point,
-          x: relativeX * width,
-          y: relativeY * height,
-        };
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Initialize grid points
-  useEffect(() => {
-    if (!canvasRef.current || !isMounted) return;
-    const canvas = canvasRef.current;
-    const { width, height } = canvas.getBoundingClientRect();
-
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    setDimensions({ width: canvas.width, height: canvas.height });
-
-    // Create 3D grid of points - using seeded random for consistency
-    const points: GridPoint[] = [];
-    const numPoints = Math.min(200, Math.max(50, (width * height) / 8000)); // Reduced number of points for better performance
-
-    // Use deterministic seed-based values to avoid hydration issues
-    const seededRandom = (seed: number) => {
-      const x = Math.sin(seed) * 10000;
-      return x - Math.floor(x);
-    };
-
-    for (let i = 0; i < numPoints; i++) {
-      const seed1 = i * 123.456;
-      const seed2 = i * 789.123;
-      const seed3 = i * 456.789;
-      const seed4 = i * 321.654;
-      const seed5 = i * 987.321;
-      const seed6 = i * 654.987;
-      
-      const x = (seededRandom(seed1) - 0.5) * width * 2;
-      const y = (seededRandom(seed2) - 0.5) * height * 2;
-      const z = seededRandom(seed3) * Math.min(width, height) - Math.min(width, height) / 2;
-
-      points.push({
-        x,
-        y,
-        z,
-        vx: (seededRandom(seed4) - 0.5) * 0.3, // Reduced velocity for performance
-        vy: (seededRandom(seed5) - 0.5) * 0.3,
-        vz: (seededRandom(seed6) - 0.5) * 0.3,
-        size: 3.0 + seededRandom(seed1 + 100) * 2.0, // Larger particles for visibility
-        opacity: 0.4 + seededRandom(seed2 + 100) * 0.4, // Increased opacity for visibility
-        hue: seededRandom(seed3 + 100) * 40 - 20,
-        connections: 0,
-      });
+    if (!shouldAnimateCanvas || !canvasRef.current || !wrapperRef.current) {
+      return;
     }
 
-    pointsRef.current = points;
-  }, [isMounted]);
-
-  // Animation loop
-  useEffect(() => {
-    if (!canvasRef.current || !pointsRef.current.length || !isReady) return;
-
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx || !particleImageRef.current) return;
+    const wrapper = wrapperRef.current;
+    const context = canvas.getContext("2d", { alpha: true });
 
-    const project3DTo2D = (x: number, y: number, z: number) => {
-      const fov = Math.max(dimensions.width, dimensions.height); // Dynamic FOV based on viewport
-      const scale = fov / (fov + z);
-      return {
-        x: dimensions.width / 2 + x * scale,
-        y: dimensions.height / 2 + y * scale,
-        scale,
-      };
+    if (!context) {
+      return;
+    }
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    const resize = () => {
+      const rect = wrapper.getBoundingClientRect();
+      width = Math.max(1, rect.width);
+      height = Math.max(1, rect.height);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      const pointCount = Math.min(28, Math.max(14, Math.round((width * height) / 52000)));
+      pointsRef.current = createPoints(width, height, pointCount);
     };
 
-    const drawConnection = (point1: GridPoint, point2: GridPoint) => {
-      const proj1 = project3DTo2D(point1.x, point1.y, point1.z);
-      const proj2 = project3DTo2D(point2.x, point2.y, point2.z);
+    const draw = (timestamp: number) => {
+      const targetFrameTime = 1000 / 24;
 
-      const dx = proj2.x - proj1.x;
-      const dy = proj2.y - proj1.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const maxConnectionsPerPoint = 2; // Reduced connections per point
-
-      if (
-        distance < 200 && // Reduced connection distance for performance
-        point1.connections < maxConnectionsPerPoint &&
-        point2.connections < maxConnectionsPerPoint
-      ) {
-        const avgScale = (proj1.scale + proj2.scale) / 2;
-        const opacity = (1 - distance / 200) * 0.3 * avgScale; // Increased opacity for visibility
-
-        // Increment connection count for both points
-        point1.connections++;
-        point2.connections++;
-
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`; // Blue color for better visibility
-        ctx.lineWidth = avgScale * 1.0; // Increased line width
-        ctx.moveTo(proj1.x, proj1.y);
-        ctx.lineTo(proj2.x, proj2.y);
-        ctx.stroke();
-      }
-    };
-
-    const animate = (timestamp: number) => {
-      if (!ctx || !canvas) return;
-      
-      // Throttle to ~30 FPS for better performance
-      const targetFPS = 30;
-      const frameInterval = 1000 / targetFPS;
-      
-      if (timestamp - lastFrameTimeRef.current < frameInterval) {
-        animationFrameRef.current = requestAnimationFrame(animate);
+      if (timestamp - lastFrameTimeRef.current < targetFrameTime) {
+        animationFrameRef.current = window.requestAnimationFrame(draw);
         return;
       }
-      
+
       lastFrameTimeRef.current = timestamp;
-      timeRef.current = timestamp * 0.001;
-      
-      // Clear with a subtle dark background for visibility
-      ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-      
-      // Add a very subtle gradient background to make sure canvas is visible
-      const gradient = ctx.createRadialGradient(
-        dimensions.width / 2, dimensions.height / 2, 0,
-        dimensions.width / 2, dimensions.height / 2, Math.max(dimensions.width, dimensions.height) / 2
-      );
-      gradient.addColorStop(0, 'rgba(59, 130, 246, 0.03)'); // Very subtle blue center
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0.01)'); // Almost transparent edges
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, dimensions.width, dimensions.height);
-      
-      ctx.setTransform(
-        window.devicePixelRatio || 1,
-        0,
-        0,
-        window.devicePixelRatio || 1,
-        0,
-        0,
-      );
 
-      // Reset connection counts for each point
-      pointsRef.current.forEach((point) => (point.connections = 0));
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // Update and draw points
-      pointsRef.current = pointsRef.current.map((point) => {
-        // Update position with momentum
+      const points = pointsRef.current;
+
+      for (const point of points) {
         point.x += point.vx;
         point.y += point.vy;
-        point.z += point.vz;
 
-        // Boundary checks with wrapping - use relative boundaries
-        const boundX = dimensions.width;
-        const boundY = dimensions.height;
-        const boundZ = Math.min(boundX, boundY);
+        if (point.x < -20) point.x = width + 20;
+        if (point.x > width + 20) point.x = -20;
+        if (point.y < -20) point.y = height + 20;
+        if (point.y > height + 20) point.y = -20;
+      }
 
-        if (Math.abs(point.x) > boundX) point.x = -point.x;
-        if (Math.abs(point.y) > boundY) point.y = -point.y;
-        if (Math.abs(point.z) > boundZ) point.z = -point.z;
+      context.lineWidth = 0.7;
 
-        // Mouse interaction with scaled distance
-        if (mousePos) {
-          const projected = project3DTo2D(point.x, point.y, point.z);
-          const dx = mousePos.x - projected.x;
-          const dy = mousePos.y - projected.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const interactionRadius = Math.min(400, dimensions.width * 0.3); // Responsive interaction radius
+      for (let i = 0; i < points.length; i += 1) {
+        const pointA = points[i];
 
-          if (distance < interactionRadius) {
-            const force = (1 - distance / interactionRadius) * 0.03;
-            point.vx -= dx * force;
-            point.vy -= dy * force;
-            point.vz += force * Math.min(25, dimensions.height * 0.02);
+        for (let j = i + 1; j < points.length; j += 1) {
+          const pointB = points[j];
+          const dx = pointB.x - pointA.x;
+          const dy = pointB.y - pointA.y;
+          const distance = Math.hypot(dx, dy);
+
+          if (distance > 170) {
+            continue;
           }
-        }
 
-        // Speed damping
-        point.vx *= 0.99;
-        point.vy *= 0.99;
-        point.vz *= 0.99;
-
-        // Add subtle flow using time-based noise for deterministic behavior
-        const timeNoise = timeRef.current * 0.001;
-        point.vx += (Math.sin(point.x * 0.01 + timeNoise) - 0.5) * 0.05;
-        point.vy += (Math.cos(point.y * 0.01 + timeNoise) - 0.5) * 0.05;
-        point.vz += (Math.sin(point.z * 0.01 + timeNoise * 0.5) - 0.5) * 0.05;
-
-        return point;
-      });
-
-      // Draw connections (optimized - only check nearby points)
-      for (let i = 0; i < pointsRef.current.length; i++) {
-        // Only check the next 5 points to reduce computation
-        const maxChecks = Math.min(5, pointsRef.current.length - i - 1);
-        for (let j = 1; j <= maxChecks; j++) {
-          const point1 = pointsRef.current[i];
-          const point2 = pointsRef.current[i + j];
-          if (point1 && point2) {
-            drawConnection(point1, point2);
-          }
+          const opacity = (1 - distance / 170) * 0.14;
+          context.strokeStyle = `hsla(192, 92%, 60%, ${opacity})`;
+          context.beginPath();
+          context.moveTo(pointA.x, pointA.y);
+          context.lineTo(pointB.x, pointB.y);
+          context.stroke();
         }
       }
 
-      // Draw points using the image or fallback to circles
-      pointsRef.current.forEach((point) => {
-        const projected = project3DTo2D(point.x, point.y, point.z);
-        const size = point.size * projected.scale * 3; // Increased size for better visibility
+      for (const point of points) {
+        context.fillStyle = "hsla(192, 92%, 60%, 0.55)";
+        context.beginPath();
+        context.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+        context.fill();
+      }
 
-        ctx.globalAlpha = point.opacity * projected.scale;
-        
-        if (particleImageRef.current) {
-          // Draw with image
-          ctx.drawImage(
-            particleImageRef.current!,
-            projected.x - size / 2,
-            projected.y - size / 2,
-            size,
-            size,
-          );
-        } else {
-          // Fallback to blue circles if image fails to load
-          ctx.beginPath();
-          ctx.arc(projected.x, projected.y, size / 2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(59, 130, 246, ${point.opacity * projected.scale})`;
-          ctx.fill();
-        }
-        
-        ctx.globalAlpha = 1; // Reset alpha
-      });
-
-      animationFrameRef.current = requestAnimationFrame(animate);
+      animationFrameRef.current = window.requestAnimationFrame(draw);
     };
 
-    animate(0);
+    resize();
+
+    const resizeObserver = new ResizeObserver(() => {
+      resize();
+    });
+
+    resizeObserver.observe(wrapper);
+    animationFrameRef.current = window.requestAnimationFrame(draw);
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      resizeObserver.disconnect();
+
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [dimensions, mousePos, isReady]); // Added isReady to dependency array
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-    const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-    setMousePos({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setMousePos(null);
-  };
+  }, [shouldAnimateCanvas]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      style={{ 
-        cursor: "none",
-        backgroundColor: "transparent",
-        minHeight: "100vh",
-        minWidth: "100vw",
-        zIndex: 1
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    />
+    <div ref={wrapperRef} className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.09),transparent_28%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,hsl(var(--foreground)/0.04),transparent_24%)]" />
+
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, hsl(var(--grid-color)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--grid-color)) 1px, transparent 1px)",
+          backgroundSize: "88px 88px",
+          maskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
+        }}
+      />
+
+      <div className="absolute left-[7%] top-[16%] h-px w-[30%] bg-gradient-to-r from-primary/30 to-transparent" />
+      <div className="absolute right-[9%] top-[24%] h-px w-[18%] bg-gradient-to-l from-primary/20 to-transparent" />
+      <div className="absolute bottom-[18%] right-[12%] h-[24vw] w-[24vw] rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute left-[10%] top-[20%] h-[18vw] w-[18vw] rounded-full bg-primary/5 blur-3xl" />
+
+      {shouldAnimateCanvas ? (
+        <canvas ref={canvasRef} className="absolute inset-0 opacity-80" aria-hidden="true" />
+      ) : null}
+    </div>
   );
 }

@@ -6,10 +6,6 @@ import { z } from "zod";
  */
 
 const envSchema = z.object({
-  // Database
-  DATABASE_URL: z.string().url("DATABASE_URL must be a valid URL"),
-  ACCELERATE_URL: z.string().url().optional(),
-
   // App
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),

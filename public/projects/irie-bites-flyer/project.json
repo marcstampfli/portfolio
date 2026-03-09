@@ -1,0 +1,23 @@
+{
+  "title": "Irie Bites Flyer",
+  "slug": "irie-bites-flyer",
+  "type": "flyer",
+  "summary": "Irie Bites Flyer project.",
+  "featured": false,
+  "status": "published",
+  "client": "Irie Bites",
+  "year": 2021,
+  "sortOrder": 31,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": "project-iriebites-flyer.gif",
+  "gallery": [
+    "project-iriebites-flyer2.gif"
+  ],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

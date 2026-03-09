@@ -1,0 +1,26 @@
+{
+  "title": "Covid Tracker",
+  "slug": "covid-tracker",
+  "type": "web",
+  "summary": "Covid Tracker project.",
+  "featured": false,
+  "status": "published",
+  "client": "Covid Tracker",
+  "year": 2021,
+  "sortOrder": 5,
+  "stack": [
+    "API",
+    "React"
+  ],
+  "cover": "project-covidtracker-website4.jpg",
+  "gallery": [
+    "project-covidtracker-website.jpg",
+    "project-covidtracker-website2.jpg",
+    "project-covidtracker-website3.jpg"
+  ],
+  "links": {
+    "live": "https://covid-19-tracker-27c81.web.app/",
+    "github": "",
+    "figma": ""
+  }
+}

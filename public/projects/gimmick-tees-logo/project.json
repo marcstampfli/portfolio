@@ -1,0 +1,21 @@
+{
+  "title": "Gimmick Tees Logo",
+  "slug": "gimmick-tees-logo",
+  "type": "logo",
+  "summary": "Gimmick Tees Logo project.",
+  "featured": false,
+  "status": "published",
+  "client": "Gimmick Tees",
+  "year": 2021,
+  "sortOrder": 26,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

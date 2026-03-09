@@ -1,0 +1,28 @@
+{
+  "slug": "maco-magazines-web-developer",
+  "title": "Web Developer",
+  "company": "MACO Magazines",
+  "position": "Web Developer",
+  "location": null,
+  "employmentType": null,
+  "logo": "macomagazines.png",
+  "logoBackground": "none",
+  "logoFit": "contain",
+  "logoWidth": 24,
+  "logoHeight": 24,
+  "logoPadding": 0,
+  "summary": "Managed website development, social media strategy, and the digitization of magazines into flip books as the In-house Web Developer for all MACO Magazines. Semi-remote work.",
+  "techStack": [
+    "Web Development",
+    "Social Media",
+    "Digital Publishing"
+  ],
+  "achievements": [
+    "Developed and maintained magazine websites",
+    "Implemented digital publishing solutions",
+    "Managed social media presence and strategy"
+  ],
+  "startDate": "2017-02-01",
+  "endDate": "2018-03-31",
+  "sortOrder": 0
+}

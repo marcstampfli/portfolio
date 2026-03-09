@@ -1,35 +1,15 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getExperiences } from "@/lib/content";
 import type { ApiResponse, Experience } from "@/types";
 
 export async function GET(): Promise<NextResponse<ApiResponse<Experience[]>>> {
   try {
-    const rawExperiences = await prisma.experience.findMany({
-      orderBy: {
-        start_date: "desc",
-      },
-      include: {
-        tech_stack: true,
-        achievements: true,
-      },
-    });
-
-    const payload: Experience[] = rawExperiences.map((exp) => ({
-      id: exp.id,
-      title: exp.title,
-      company: exp.company,
-      position: exp.position,
-      period: exp.period,
-      location: exp.location,
-      type: exp.type,
-      logo: exp.logo,
-      start_date: exp.start_date.toISOString(),
-      end_date: exp.end_date?.toISOString() ?? null,
-      description: exp.description,
-      tech_stack: exp.tech_stack.map((tech) => tech.name),
-      achievements: exp.achievements.map((a) => a.description),
-      created_at: exp.created_at.toISOString(),
-      updated_at: exp.updated_at.toISOString(),
+    const payload = (await getExperiences()).map((experience) => ({
+      ...experience,
+      start_date: new Date(experience.start_date).toISOString(),
+      end_date: experience.end_date ? new Date(experience.end_date).toISOString() : null,
+      created_at: experience.created_at ? new Date(experience.created_at).toISOString() : undefined,
+      updated_at: experience.updated_at ? new Date(experience.updated_at).toISOString() : undefined,
     }));
 
     return NextResponse.json({ success: true, data: payload });

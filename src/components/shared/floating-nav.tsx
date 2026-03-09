@@ -1,228 +1,177 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { navItems } from "@/lib/nav";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-
-interface ScrollSection {
-  id: string;
-  top: number;
-}
+import { navItems } from "@/lib/nav";
+import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { Container } from "@/components/ui/container";
 
 export function FloatingNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("#home");
+  const [activeSection, setActiveSection] = useState("#home");
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Navigate to section by index
-  const navigateToSection = useCallback((direction: 'next' | 'prev') => {
-    const currentIndex = navItems.findIndex(item => item.href === activeSection);
-    let newIndex = currentIndex;
-    
-    if (direction === 'next' && currentIndex < navItems.length - 1) {
-      newIndex = currentIndex + 1;
-    } else if (direction === 'prev' && currentIndex > 0) {
-      newIndex = currentIndex - 1;
-    }
-    
-    if (newIndex !== currentIndex) {
-      const targetHref = navItems[newIndex].href;
-      document.querySelector(targetHref)?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [activeSection]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle if not in an input or textarea
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
-      }
-
-      if (e.key === 'ArrowDown' || e.key === 'j') {
-        e.preventDefault();
-        navigateToSection('next');
-      } else if (e.key === 'ArrowUp' || e.key === 'k') {
-        e.preventDefault();
-        navigateToSection('prev');
-      } else if (e.key === 'Escape' && mobileMenuOpen) {
-        setMobileMenuOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigateToSection, mobileMenuOpen]);
-
-  // Update active section and scroll state
   useEffect(() => {
     const updateState = () => {
-      // Update scroll state
-      setIsScrolled(window.scrollY > 100);
+      setIsScrolled(window.scrollY > 18);
 
-      // Update active section
-      const sections = navItems.map(({ href }) => {
-        const element = document.querySelector(href);
-        if (!element) return { id: href, top: 0 };
-        const rect = element.getBoundingClientRect();
-        return {
-          id: href,
-          top: rect.top + window.scrollY,
-        };
-      });
+      const current = navItems
+        .map(({ href }) => {
+          const element = document.querySelector(href);
 
-      const currentSection = sections.reduce<ScrollSection | null>(
-        (closest, section) => {
-          if (!closest) return section;
-          if (
-            Math.abs(section.top - window.scrollY) <
-            Math.abs(closest.top - window.scrollY)
-          ) {
-            return section;
+          if (!element) {
+            return null;
           }
-          return closest;
-        },
-        null,
-      );
 
-      if (currentSection) {
-        setActiveSection(currentSection.id);
+          const rect = element.getBoundingClientRect();
+          const offset = Math.abs(rect.top - 120);
+
+          return { href, offset };
+        })
+        .filter((entry): entry is { href: string; offset: number } => Boolean(entry))
+        .sort((a, b) => a.offset - b.offset)[0];
+
+      if (current) {
+        setActiveSection(current.href);
       }
     };
 
-    window.addEventListener("scroll", updateState);
-    return () => window.removeEventListener("scroll", updateState);
+    updateState();
+    window.addEventListener("scroll", updateState, { passive: true });
+    window.addEventListener("resize", updateState);
+
+    return () => {
+      window.removeEventListener("scroll", updateState);
+      window.removeEventListener("resize", updateState);
+    };
   }, []);
 
   const handleNavClick = (href: string) => {
-    document.querySelector(href)?.scrollIntoView({
-      behavior: "smooth",
-    });
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth", block: "start" });
     setMobileMenuOpen(false);
   };
 
   return (
-    <>
-      {/* Desktop Navigation */}
-      <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4"
-      >
-        <nav
-          className="hidden md:flex items-center space-x-1 rounded-full border border-primary/10 bg-background/40 px-4 py-2 shadow-lg backdrop-blur-md transition-all duration-300"
-          role="navigation"
-          aria-label="Main navigation"
+    <div className="fixed inset-x-0 top-0 z-50 pt-4 sm:pt-5">
+      <Container>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className={cn("surface-panel transition-theme relative", isScrolled ? "shadow-card" : "")}
         >
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const isActive = activeSection === href;
-            return (
-              <a
-                key={href}
-                href={href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick(href);
-                }}
-                className={cn(
-                  "group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:text-primary",
-                  isActive && "text-primary",
-                  isScrolled && !isActive && "px-2",
-                )}
-                aria-current={isActive ? "page" : undefined}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="bubble"
-                    className="absolute inset-0 z-0 rounded-full bg-primary/10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                <span className="relative flex items-center gap-2">
-                  <Icon className="h-4 w-4" aria-hidden="true" />
-                  <span
-                    className={cn(
-                      "relative transition-all duration-300",
-                      isScrolled &&
-                        !isActive &&
-                        "w-0 overflow-hidden opacity-0 p-0",
-                    )}
-                  >
-                    {label}
-                  </span>
-                </span>
-              </a>
-            );
-          })}
-        </nav>
+          <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
+            <button
+              type="button"
+              onClick={() => handleNavClick("#home")}
+              className="group flex items-center gap-3 bg-transparent text-left"
+              aria-label="Scroll to home"
+            >
+              <span className="transition-theme flex h-7 w-7 items-center justify-center rounded-sm bg-primary font-display text-[0.62rem] font-bold tracking-[0.1em] text-primary-foreground group-hover:bg-primary/90">
+                MS
+              </span>
+              <span
+                className="transition-theme h-4 w-px bg-border/70 group-hover:bg-primary/30"
+                aria-hidden="true"
+              />
+              <span className="transition-theme text-foreground/92 font-display text-sm font-medium tracking-[0.08em] group-hover:text-foreground">
+                Marc Stämpfli
+              </span>
+            </button>
 
-        {/* Mobile Menu Button */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden fixed top-3 right-3 h-10 w-10 flex items-center justify-center rounded-full bg-background/40 border border-primary/10 backdrop-blur-md"
-          aria-expanded={mobileMenuOpen}
-          aria-controls="mobile-menu"
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? (
-            <X className="h-5 w-5 text-primary" aria-hidden="true" />
-          ) : (
-            <Menu className="h-5 w-5 text-primary" aria-hidden="true" />
-          )}
-        </button>
-      </motion.div>
+            <nav
+              className="hidden items-center gap-1 md:flex"
+              role="navigation"
+              aria-label="Primary"
+            >
+              {navItems.map(({ href, label }) => {
+                const isActive = href === activeSection;
 
-      {/* Mobile Menu */}
-      <motion.div
-        initial={false}
-        animate={{
-          opacity: mobileMenuOpen ? 1 : 0,
-          y: mobileMenuOpen ? 0 : -32,
-        }}
-        transition={{ duration: 0.2, ease: "easeInOut" }}
-        className={cn(
-          "fixed inset-x-0 top-0 z-40 bg-background/80 backdrop-blur-md border-b border-primary/10 py-16 shadow-lg",
-          !mobileMenuOpen && "pointer-events-none",
-        )}
-      >
-        <nav
-          className="container px-4"
-          role="navigation"
-          aria-label="Mobile navigation"
-        >
-          <ul className="flex flex-col space-y-2">
-            {navItems.map(({ href, label, icon: Icon }) => {
-              const isActive = activeSection === href;
-              return (
-                <li key={href}>
+                return (
                   <a
+                    key={href}
                     href={href}
-                    onClick={(e) => {
-                      e.preventDefault();
+                    onClick={(event) => {
+                      event.preventDefault();
                       handleNavClick(href);
                     }}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-4 py-3 text-base text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary",
-                      isActive && "bg-primary/10 text-primary",
-                    )}
                     aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "transition-theme relative rounded-sm px-3 py-2 text-sm text-muted-foreground no-underline hover:text-foreground",
+                      isActive && "text-foreground"
+                    )}
                   >
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                    {label}
+                    {isActive ? (
+                      <motion.span
+                        layoutId="nav-active"
+                        className="absolute inset-0 rounded-sm border border-primary/10 bg-primary/10"
+                        transition={{ type: "spring", stiffness: 300, damping: 28 }}
+                      />
+                    ) : null}
+                    <span className="relative">{label}</span>
                   </a>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </motion.div>
-    </>
+                );
+              })}
+            </nav>
+
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen((open) => !open)}
+                className="transition-theme inline-flex h-11 w-11 items-center justify-center rounded-sm border-0 bg-transparent text-muted-foreground hover:text-primary md:hidden"
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-nav"
+                aria-label="Toggle navigation"
+              >
+                {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <AnimatePresence initial={false}>
+            {mobileMenuOpen ? (
+              <motion.div
+                id="mobile-nav"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="overflow-hidden border-t border-border/80 md:hidden"
+              >
+                <nav className="grid gap-1 p-3" aria-label="Mobile">
+                  {navItems.map(({ href, label, icon: Icon }) => {
+                    const isActive = href === activeSection;
+
+                    return (
+                      <a
+                        key={href}
+                        href={href}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          handleNavClick(href);
+                        }}
+                        aria-current={isActive ? "page" : undefined}
+                        className={cn(
+                          "transition-theme flex items-center gap-3 rounded-sm border px-3 py-3 text-sm",
+                          isActive
+                            ? "border-primary/20 bg-primary/10 text-foreground"
+                            : "border-transparent text-muted-foreground hover:border-border/70 hover:bg-secondary/50 hover:text-foreground"
+                        )}
+                      >
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        <span>{label}</span>
+                      </a>
+                    );
+                  })}
+                </nav>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </motion.div>
+      </Container>
+    </div>
   );
 }

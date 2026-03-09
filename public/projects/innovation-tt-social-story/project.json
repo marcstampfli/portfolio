@@ -1,0 +1,21 @@
+{
+  "title": "Innovation TT Social Story",
+  "slug": "innovation-tt-social-story",
+  "type": "story",
+  "summary": "Innovation TT Social Story project.",
+  "featured": false,
+  "status": "published",
+  "client": "Innovation TT",
+  "year": 2021,
+  "sortOrder": 14,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

@@ -1,60 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Send,
-  CheckCircle2,
   AlertCircle,
+  CheckCircle2,
+  Github,
+  Instagram,
+  Linkedin,
   Mail,
   MapPin,
-  Github,
-  Linkedin,
-  Instagram,
+  Send,
 } from "lucide-react";
 import { type ContactFormData, contactFormSchema } from "@/types";
 import { FormField } from "./form-field";
 import { submitContactMessage } from "@/lib/actions";
+import { siteConfig } from "@/lib/site";
+import { Button } from "@/components/ui/button";
 
 const socialLinks = [
-  {
-    name: "GitHub",
-    href: "https://github.com/marcstampfli",
-    icon: Github,
-  },
-  {
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/in/marc-stämpfli",
-    icon: Linkedin,
-  },
-  {
-    name: "Instagram",
-    href: "https://www.instagram.com/marcstampfli",
-    icon: Instagram,
-  },
+  { name: "GitHub", href: siteConfig.sameAs[0], icon: Github },
+  { name: "LinkedIn", href: siteConfig.sameAs[1], icon: Linkedin },
+  { name: "Instagram", href: siteConfig.sameAs[2], icon: Instagram },
 ];
 
 const contactInfo = [
   {
     icon: Mail,
     label: "Email",
-    value: "marcstampfli@gmail.com",
-    href: "mailto:marcstampfli@gmail.com",
+    value: siteConfig.email,
+    href: `mailto:${siteConfig.email}?subject=Hey Marc, I'd like to work with you&body=Hi Marc,%0D%0A%0D%0AI came across your portfolio and I'd love to chat about...`,
   },
   {
     icon: MapPin,
     label: "Location",
-    value: "Trinidad and Tobago",
+    value: siteConfig.location,
   },
 ];
 
 export function ContactForm() {
   const prefersReducedMotion = useReducedMotion();
-  const [focusedField, setFocusedField] = useState<
-    keyof ContactFormData | null
-  >(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,16 +60,20 @@ export function ContactForm() {
     try {
       setIsSubmitting(true);
       setError(null);
+      setIsSubmitted(false);
+
       const result = await submitContactMessage(data);
+
       if (!result.success) {
         throw new Error(result.error);
       }
+
       setIsSubmitted(true);
       form.reset();
-    } catch (err) {
+    } catch (submitError) {
       setError(
-        err instanceof Error
-          ? err.message
+        submitError instanceof Error
+          ? submitError.message
           : "Failed to send message. Please try again later."
       );
     } finally {
@@ -90,226 +81,154 @@ export function ContactForm() {
     }
   }
 
-  const animation = {
-    initial: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-  };
-
   return (
-    <div className="mx-auto mt-16 max-w-6xl">
-      <div className="grid gap-12 lg:grid-cols-5">
-        {/* Contact Info */}
-        <motion.div className="space-y-8 lg:col-span-2" {...animation}>
-          {/* Contact Details */}
-          <div className="space-y-6">
-            {contactInfo.map((item) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-                className="group flex items-center gap-4 transition-transform duration-300 hover:translate-x-1"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/20 group-hover:ring-primary/30">
-                  <item.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">{item.label}</p>
-                  {item.href ? (
-                    <a
-                      href={item.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
-                    >
-                      {item.value}
-                    </a>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {item.value}
-                    </p>
-                  )}
-                </div>
-              </motion.div>
+    <div className="grid gap-8 lg:grid-cols-[minmax(280px,0.78fr)_minmax(0,1fr)] lg:gap-10">
+      <motion.aside
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-10%" }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="surface-panel p-6 sm:p-7"
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          Contact Details
+        </p>
+        <div className="divide-y divide-border/60">
+          {contactInfo.map((item, index) => (
+            <motion.div
+              key={item.label}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="flex items-start gap-4 py-7 first:pt-5 last:pb-1"
+            >
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-sm border border-primary/20 bg-primary/10 text-primary">
+                <item.icon className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  {item.label}
+                </p>
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    className="link mt-2 inline-block text-sm leading-6 sm:text-base"
+                  >
+                    {item.value}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-sm leading-6 text-foreground sm:text-base">
+                    {item.value}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-8 border-t border-border/60 pt-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            Elsewhere
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {socialLinks.map((link) => (
+              <Button key={link.name} variant="outline" asChild className="rounded-sm">
+                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                  <link.icon className="mr-2 h-4 w-4" />
+                  {link.name}
+                </a>
+              </Button>
             ))}
           </div>
+        </div>
+      </motion.aside>
 
-          {/* Social Links */}
-          <div>
-            <h3 className="text-sm font-medium text-foreground">
-              Connect With Me
-            </h3>
-            <div className="mt-4 flex gap-4">
-              {socialLinks.map((link) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-lg bg-primary/10 p-2 text-primary ring-1 ring-primary/20 transition-all duration-300 hover:bg-primary/20 hover:ring-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  whileHover={{ scale: prefersReducedMotion ? 1 : 1.05 }}
-                  aria-label={`Connect on ${link.name}`}
-                >
-                  <link.icon className="h-5 w-5" />
-                </motion.a>
-              ))}
-            </div>
+      <motion.div
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-10%" }}
+        transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+        className="surface-card p-6 sm:p-7"
+      >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
+          <div className="hidden" aria-hidden="true">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              {...form.register("website")}
+            />
           </div>
-        </motion.div>
 
-        {/* Contact Form */}
-        <motion.div
-          className="relative rounded-2xl border border-primary/10 bg-primary/5 p-8 backdrop-blur-sm lg:col-span-3"
-          {...animation}
-        >
-          <motion.form
-            role="form"
-            aria-label="Contact form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
-          >
-            <div className="sr-only" aria-hidden="true">
-              <label htmlFor="website">Website</label>
-              <input
-                id="website"
-                type="text"
-                tabIndex={-1}
-                autoComplete="off"
-                {...form.register("website")}
-              />
-            </div>
-
-            <FormField
-              name="name"
-              label="Name"
-              form={form}
-              errors={form.formState.errors}
-              focusedField={focusedField}
-              onFocus={setFocusedField}
-              onBlur={() => setFocusedField(null)}
-            />
-
-            <FormField
-              name="email"
-              label="Email"
-              type="email"
-              form={form}
-              errors={form.formState.errors}
-              focusedField={focusedField}
-              onFocus={setFocusedField}
-              onBlur={() => setFocusedField(null)}
-            />
-
-            <div className="relative" role="textbox" aria-label="Message input">
-              <textarea
-                {...form.register("message")}
-                aria-invalid={!!form.formState.errors.message}
-                aria-describedby={
-                  form.formState.errors.message ? "message-error" : undefined
-                }
-                onFocus={() => setFocusedField("message")}
-                onBlur={() => setFocusedField(null)}
-                rows={5}
-                className={`w-full rounded-xl border bg-transparent px-4 py-3 pt-6 text-foreground transition-all duration-300 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary ${
-                  form.formState.errors.message
-                    ? "border-destructive"
-                    : "border-primary/10"
-                }`}
-              />
-              <motion.label
-                htmlFor="message"
-                initial={false}
-                animate={{
-                  y:
-                    focusedField === "message" || form.getValues().message
-                      ? -24
-                      : 0,
-                  scale:
-                    focusedField === "message" || form.getValues().message
-                      ? 0.85
-                      : 1,
-                }}
-                transition={{ duration: 0.2 }}
-                className={`absolute left-4 origin-left cursor-text text-muted-foreground transition-colors ${
-                  focusedField === "message" ? "text-primary" : ""
-                }`}
-              >
-                Message
-              </motion.label>
-
-              {form.formState.errors.message && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mt-2 text-sm text-destructive"
-                >
-                  {form.formState.errors.message.message}
-                </motion.p>
-              )}
-            </div>
-
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  role="alert"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="flex items-center gap-2 text-sm text-destructive"
-                >
-                  <AlertCircle className="h-4 w-4" aria-hidden="true" />
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <motion.button
-              type="submit"
-              disabled={isSubmitting || isSubmitted}
-              className={`group relative w-full overflow-hidden rounded-xl bg-primary px-4 py-3 text-primary-foreground transition-all duration-300 hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50 ${
-                isSubmitted ? "bg-green-500 hover:bg-green-600" : ""
-              }`}
-              whileHover={{ scale: prefersReducedMotion ? 1 : 1.01 }}
-            >
-              <motion.span
-                initial={false}
-                animate={{
-                  y: isSubmitted ? -30 : 0,
-                }}
-                transition={{ duration: 0.2 }}
-                className="flex items-center justify-center gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Send className="h-4 w-4 animate-pulse" />
-                    Sending...
-                  </>
-                ) : isSubmitted ? (
-                  <>
-                    <CheckCircle2 className="h-4 w-4" />
-                    Message Sent!
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                    Send Message
-                  </>
-                )}
-              </motion.span>
-            </motion.button>
-          </motion.form>
-
-          {/* Decorative corner elements */}
-          <div
-            className="absolute -right-px -top-px h-8 w-8 rounded-bl-xl border-b border-l border-primary/20"
-            aria-hidden="true"
+          <FormField
+            name="name"
+            label="Name"
+            form={form}
+            errors={form.formState.errors}
+            placeholder="Your name"
           />
-          <div
-            className="absolute -bottom-px -left-px h-8 w-8 rounded-tr-xl border-t border-r border-primary/20"
-            aria-hidden="true"
+
+          <FormField
+            name="email"
+            label="Email"
+            type="email"
+            form={form}
+            errors={form.formState.errors}
+            placeholder="you@example.com"
           />
-        </motion.div>
-      </div>
+
+          <FormField
+            name="message"
+            label="Project Brief"
+            fieldType="textarea"
+            rows={6}
+            form={form}
+            errors={form.formState.errors}
+            placeholder="What are you building, what is not working, and what kind of help do you need?"
+          />
+
+          <AnimatePresence mode="wait">
+            {error ? (
+              <motion.div
+                key="error"
+                role="alert"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+              >
+                <AlertCircle className="mt-0.5 h-4 w-4" />
+                <span>{error}</span>
+              </motion.div>
+            ) : null}
+
+            {!error && isSubmitted ? (
+              <motion.div
+                key="success"
+                role="status"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="flex items-start gap-3 rounded-md border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary"
+              >
+                <CheckCircle2 className="mt-0.5 h-4 w-4" />
+                <span>Message received. I’ll be in touch.</span>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+
+          <div className="flex flex-col gap-3 border-t border-border/70 pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm leading-6 text-muted-foreground">Short briefs are fine.</p>
+            <Button type="submit" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? "Sending..." : "Send Message"}
+              <Send className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </form>
+      </motion.div>
     </div>
   );
 }

@@ -1,0 +1,21 @@
+{
+  "title": "Irie Bites Digital Signage",
+  "slug": "irie-bites-digital-signage",
+  "type": "signage",
+  "summary": "Irie Bites Digital Signage project.",
+  "featured": false,
+  "status": "published",
+  "client": "Irie Bites",
+  "year": 2021,
+  "sortOrder": 27,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

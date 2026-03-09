@@ -1,0 +1,25 @@
+{
+  "title": "ROMA Website",
+  "slug": "roma-website",
+  "type": "website",
+  "summary": "Website and interface direction for ROMA, combining the visual system exploration with the final client-facing web experience.",
+  "featured": false,
+  "status": "published",
+  "client": "ROMA",
+  "year": 2021,
+  "sortOrder": 4,
+  "stack": [
+    "Figma",
+    "Custom Theme",
+    "WordPress"
+  ],
+  "cover": "project-roma-ui.jpg",
+  "gallery": [
+    "project-roma-ui2.jpg"
+  ],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Hulu Clone",
+  "slug": "hulu-clone",
+  "type": "web",
+  "summary": "Hulu Clone project.",
+  "featured": false,
+  "status": "unpublished",
+  "client": "Hulu Clone",
+  "year": 2021,
+  "sortOrder": 7,
+  "stack": [
+    "Firebase",
+    "React"
+  ],
+  "cover": "project-hulu-clone.jpg",
+  "gallery": [],
+  "links": {
+    "live": "https://hulu-clone-d0922.web.app/",
+    "github": "",
+    "figma": ""
+  }
+}

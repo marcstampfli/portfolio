@@ -1,465 +1,337 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import {
-  type ProjectWithTechStack,
-  type ProjectResponse,
-  getProjectTypeDisplayName,
-} from "@/types";
+import { motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import { type ProjectWithTechStack, getProjectTypeDisplayName } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Container } from "@/components/ui/container";
+import { SectionHeader } from "@/components/shared/section-header";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
 import { ProjectModal } from "@/components/shared/project-modal";
-import { isValidProjectImage } from "@/lib/utils";
-import { Github, ExternalLink, User, ArrowRight } from "lucide-react";
+import { cn, isValidProjectImage } from "@/lib/utils";
+import { ArrowRight, ExternalLink, FolderArchive, Github, Star, User } from "lucide-react";
 
-// Hook to detect if device is touch/mobile
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  return isMobile;
+interface ProjectsSectionProps {
+  projects: ProjectWithTechStack[];
 }
 
-// 3D Tilt Card Component
-function TiltCard({
+function ProjectCard({
   project,
   index,
-  isActive,
-  onClick,
+  onOpen,
 }: {
   project: ProjectWithTechStack;
   index: number;
-  isActive: boolean;
-  onClick: () => void;
+  onOpen: (_project: ProjectWithTechStack) => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 40 });
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 40 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      // Disable 3D effect on mobile
-      if (isMobile || !ref.current) return;
-
-      const rect = ref.current.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const xPct = mouseX / width - 0.5;
-      const yPct = mouseY / height - 0.5;
-
-      x.set(xPct);
-      y.set(yPct);
-    },
-    [x, y, isMobile]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    x.set(0);
-    y.set(0);
-  }, [x, y]);
-
   return (
-    <motion.div
-      ref={ref}
-      className={`group relative cursor-pointer ${isActive ? "z-20" : "z-10"}`}
-      style={
-        isMobile
-          ? {}
-          : {
-              rotateX,
-              rotateY,
-              transformStyle: "preserve-3d",
-            }
-      }
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onClick={onClick}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        scale: isActive ? 1.02 : 1,
-      }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.05,
-        type: "spring",
-        stiffness: 150,
-        damping: 25,
-      }}
-      whileHover={
-        isMobile
-          ? {}
-          : {
-              scale: 1.01,
-              transition: { duration: 0.2 },
-            }
-      }
+    <motion.article
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-8%" }}
+      transition={{ duration: 0.45, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+      className="surface-card group flex h-full flex-col overflow-hidden"
     >
-      <div
-        className="relative flex h-auto min-h-[360px] w-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card shadow-md transition-all duration-300 group-hover:shadow-xl md:h-[420px] md:rounded-2xl md:shadow-lg md:group-hover:shadow-2xl"
-        style={isMobile ? {} : { transform: "translateZ(50px)" }}
+      <button
+        type="button"
+        className="flex h-full flex-col text-left"
+        onClick={() => onOpen(project)}
       >
-        {/* Project Image */}
-        <div className="relative h-36 flex-shrink-0 overflow-hidden md:h-44">
+        <div className="relative aspect-[16/10] border-b border-border/80 bg-secondary/60">
           {isValidProjectImage(project.images?.[0]) ? (
             <OptimizedImage
+              key={project.images[0]}
               src={project.images[0]}
               alt={project.title}
-              width={400}
-              height={200}
-              className="h-full w-full object-cover transition-transform duration-500 md:group-hover:scale-110"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
             <PlaceholderImage className="h-full w-full" />
           )}
 
-          {/* Overlay - only on desktop */}
-          <div className="absolute inset-0 hidden bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 md:block md:group-hover:opacity-100" />
-
-          {/* Quick Actions - only visible on hover for desktop */}
-          <div className="absolute right-2 top-2 flex gap-2 transition-opacity duration-300 md:right-3 md:top-3 md:opacity-0 md:group-hover:opacity-100">
-            {project.live_url && (
-              <Button size="sm" variant="secondary" className="h-7 w-7 p-0 md:h-8 md:w-8">
-                <ExternalLink className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </Button>
-            )}
-            {project.github_url && (
-              <Button size="sm" variant="secondary" className="h-7 w-7 p-0 md:h-8 md:w-8">
-                <Github className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </Button>
-            )}
-          </div>
-
-          {/* Project Type Badge */}
-          <div className="absolute left-2 top-2 md:left-3 md:top-3">
-            <Badge variant="secondary" className="bg-background/80 text-xs backdrop-blur-sm">
-              {getProjectTypeDisplayName(project.project_type)}
-            </Badge>
+          <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3">
+            <div className="flex flex-wrap gap-2">
+              <Badge>{getProjectTypeDisplayName(project.project_type)}</Badge>
+              {project.featured ? <Badge variant="secondary">Featured</Badge> : null}
+            </div>
+            <div className="flex gap-2">
+              {project.live_url ? (
+                <a
+                  href={project.live_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(event) => event.stopPropagation()}
+                  className="transition-theme bg-background/64 inline-flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 text-muted-foreground backdrop-blur-sm hover:border-primary/30 hover:text-foreground"
+                  aria-label={`Open ${project.title} live project`}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              ) : null}
+              {project.github_url ? (
+                <a
+                  href={project.github_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(event) => event.stopPropagation()}
+                  className="transition-theme bg-background/64 inline-flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 text-muted-foreground backdrop-blur-sm hover:border-primary/30 hover:text-foreground"
+                  aria-label={`Open ${project.title} source code`}
+                >
+                  <Github className="h-4 w-4" />
+                </a>
+              ) : null}
+            </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex flex-1 flex-col p-4 md:p-5">
-          <div className="flex-1 space-y-2 md:space-y-3">
+        <div className="flex flex-1 flex-col p-5">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="line-clamp-1 text-base font-bold text-foreground transition-colors duration-300 group-hover:text-primary md:text-lg">
+              <h3 className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
                 {project.title}
               </h3>
-              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground md:text-sm">
-                {project.description}
-              </p>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">{project.description}</p>
             </div>
-
-            {/* Tech Stack */}
-            <div className="flex flex-wrap gap-1">
-              {project.tech_stack?.slice(0, 3).map((tech, techIndex) => (
-                <Badge
-                  key={`${tech}-${techIndex}`}
-                  variant="outline"
-                  className="px-1.5 py-0 text-[10px] md:text-xs"
-                >
-                  {typeof tech === "string" ? tech : tech.name}
-                </Badge>
-              ))}
-              {project.tech_stack?.length > 3 && (
-                <Badge variant="outline" className="px-1.5 py-0 text-[10px] md:text-xs">
-                  +{project.tech_stack.length - 3}
-                </Badge>
+            <span
+              className={cn(
+                "text-[0.64rem] font-semibold uppercase tracking-[0.18em]",
+                project.status === "completed" ? "text-primary" : "text-muted-foreground"
               )}
-            </div>
-
-            {/* Client & Status */}
-            <div className="flex items-center justify-between text-[10px] text-muted-foreground md:text-xs">
-              {project.client && (
-                <div className="flex items-center gap-1">
-                  <User className="h-3 w-3" />
-                  <span className="max-w-[80px] truncate md:max-w-none">{project.client}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-1">
-                <div
-                  className={`h-1.5 w-1.5 rounded-full md:h-2 md:w-2 ${
-                    project.status === "completed"
-                      ? "bg-green-500"
-                      : project.status === "in_progress"
-                        ? "bg-yellow-500"
-                        : "bg-gray-500"
-                  }`}
-                />
-                <span className="capitalize">{project.status?.replace("_", " ") || "Unknown"}</span>
-              </div>
-            </div>
+            >
+              {project.status.replace("_", " ")}
+            </span>
           </div>
 
-          {/* View Details Button - Fixed at bottom */}
-          <div className="mt-3 border-t border-border/30 pt-3 md:mt-4 md:pt-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-full text-xs transition-all duration-300 md:h-9 md:text-sm md:group-hover:bg-primary md:group-hover:text-primary-foreground"
-            >
-              View Details
-              <ArrowRight className="ml-2 h-3.5 w-3.5 transition-transform duration-300 md:h-4 md:w-4 md:group-hover:translate-x-1" />
-            </Button>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {project.tech_stack.slice(0, 4).map((tech, techIndex) => (
+              <Badge key={`${tech}-${techIndex}`} variant="secondary">
+                {tech}
+              </Badge>
+            ))}
+            {project.tech_stack.length > 4 ? (
+              <Badge variant="outline">+{project.tech_stack.length - 4} more</Badge>
+            ) : null}
+          </div>
+
+          <div className="mt-6 flex items-center justify-between border-t border-border/70 pt-5">
+            <div className="flex items-center gap-3 text-[0.68rem] uppercase tracking-[0.16em] text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5" />
+                <span>{project.client ?? "Independent"}</span>
+              </span>
+              {project.year ? <span>{project.year}</span> : null}
+            </div>
+            <span className="inline-flex items-center text-sm text-foreground">
+              View Case
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </span>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </button>
+    </motion.article>
   );
 }
 
-export function ProjectsSection() {
+function ArchiveRow({
+  project,
+  onOpen,
+}: {
+  project: ProjectWithTechStack;
+  onOpen: (_project: ProjectWithTechStack) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(project)}
+      className="transition-theme flex w-full items-center justify-between gap-4 rounded-sm border border-border/70 bg-background/40 px-4 py-4 text-left hover:border-primary/30 hover:bg-background/70"
+    >
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-display text-lg font-semibold text-foreground">{project.title}</h3>
+          <Badge variant="outline">{getProjectTypeDisplayName(project.project_type)}</Badge>
+        </div>
+        <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
+          {project.description || "Open project details"}
+        </p>
+      </div>
+      <div className="flex shrink-0 items-center gap-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        {project.year ? <span>{project.year}</span> : null}
+        <ArrowRight className="h-4 w-4" />
+      </div>
+    </button>
+  );
+}
+
+export function ProjectsSection({ projects }: ProjectsSectionProps) {
   const [selectedProject, setSelectedProject] = useState<ProjectWithTechStack | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>("all");
-  const [displayCount, setDisplayCount] = useState<number>(6);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [showAllArchive, setShowAllArchive] = useState(false);
 
-  const {
-    data: projects = [] as ProjectWithTechStack[],
-    isLoading,
-    error,
-  } = useQuery<ProjectWithTechStack[]>({
-    queryKey: ["projects"],
-    queryFn: async () => {
-      const response = await fetch("/api/projects", {
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch projects");
-      }
-
-      const data = (await response.json()) as {
-        success: boolean;
-        data?: ProjectResponse[];
-        error?: string;
-      };
-
-      if (!data.success || !data.data) {
-        throw new Error(data.error || "Failed to fetch projects");
-      }
-
-      return data.data.map((project: ProjectResponse): ProjectWithTechStack => ({
-        ...project,
-        created_at: new Date(project.created_at),
-        updated_at: new Date(project.updated_at),
-        developed_at: project.developed_at ? new Date(project.developed_at) : null,
-      }));
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-
-  // Get project types for filtering
   const projectTypes = useMemo(() => {
-    const types = new Set(projects.map((p) => p.project_type).filter(Boolean));
+    const types = new Set(projects.map((project) => project.project_type).filter(Boolean));
     return Array.from(types).sort();
   }, [projects]);
 
-  // Filter projects based on active filter
   const filteredProjects = useMemo(() => {
-    if (activeFilter === "all") return projects;
+    if (activeFilter === "all") {
+      return projects;
+    }
+
     return projects.filter(
       (project) => project.project_type.toLowerCase() === activeFilter.toLowerCase()
     );
-  }, [projects, activeFilter]);
+  }, [activeFilter, projects]);
 
-  // Projects to display based on pagination
-  const displayedProjects = useMemo(() => {
-    return filteredProjects.slice(0, displayCount);
-  }, [filteredProjects, displayCount]);
+  const featuredProjects = useMemo(
+    () => filteredProjects.filter((project) => project.featured),
+    [filteredProjects]
+  );
 
-  const hasMoreProjects = filteredProjects.length > displayCount;
+  const archiveProjects = useMemo(
+    () => filteredProjects.filter((project) => !project.featured),
+    [filteredProjects]
+  );
 
-  const handleProjectClick = useCallback((project: ProjectWithTechStack) => {
-    setSelectedProject(project);
-  }, []);
+  const archivePreviewCount = activeFilter === "all" ? 3 : 6;
 
-  const closeModal = useCallback(() => {
-    setSelectedProject(null);
-  }, []);
+  const visibleArchiveProjects = useMemo(() => {
+    if (showAllArchive || activeFilter !== "all") {
+      return archiveProjects;
+    }
 
-  const loadMoreProjects = useCallback(() => {
-    setDisplayCount((prev) => prev + 6);
-  }, []);
+    return archiveProjects.slice(0, archivePreviewCount);
+  }, [activeFilter, archivePreviewCount, archiveProjects, showAllArchive]);
 
-  // Reset display count when filter changes
-  useEffect(() => {
-    setDisplayCount(6);
-  }, [activeFilter]);
+  const hasHiddenArchiveProjects =
+    activeFilter === "all" && archiveProjects.length > archivePreviewCount;
 
-  if (isLoading) {
-    return (
-      <section className="relative py-24 sm:py-32">
-        <div className="container px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-pulse space-y-4">
-              <div className="mx-auto h-8 w-48 rounded-md bg-muted" />
-              <div className="mx-auto h-4 w-96 rounded-md bg-muted" />
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const visibleSelectedProject = useMemo(() => {
+    if (!selectedProject) {
+      return null;
+    }
 
-  if (error) {
-    return (
-      <section className="relative py-24 sm:py-32">
-        <div className="container px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Unable to load projects</h2>
-            <p className="mt-2 text-muted-foreground">Please try again later.</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+    return filteredProjects.some((project) => project.id === selectedProject.id)
+      ? selectedProject
+      : null;
+  }, [filteredProjects, selectedProject]);
 
   return (
     <>
-      <section id="projects" className="relative overflow-hidden py-24 sm:py-32">
-        {/* Background Elements */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute left-1/4 top-1/4 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
-          <div className="bg-primary/3 absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full blur-3xl" />
-        </div>
-
-        <div className="container px-4 sm:px-6 lg:px-8">
-          {/* Header */}
+      <section id="projects" className="section-shell relative" aria-labelledby="projects-heading">
+        <Container>
           <motion.div
-            className="mb-16 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
           >
-            <h2 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
-              <span className="animate-text-shine bg-gradient-to-r from-primary via-primary/70 to-primary bg-[200%_auto] bg-clip-text text-transparent">
-                Projects
-              </span>
-            </h2>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              A showcase of my work in web development, design, and digital experiences.
-            </p>
+            <SectionHeader
+              titleId="projects-heading"
+              eyebrow="Projects"
+              title="Client work, personal projects, and experiments."
+              subtitle="Featured work up top. Everything else is in the archive — filter by type to dig in."
+              titleClassName="text-3xl sm:text-4xl lg:text-5xl"
+              className="max-w-3xl"
+            />
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={activeFilter === "all" ? "default" : "outline"}
+                className="rounded-sm"
+                onClick={() => {
+                  setActiveFilter("all");
+                  setShowAllArchive(false);
+                }}
+              >
+                All
+              </Button>
+              {projectTypes.map((type) => (
+                <Button
+                  key={type}
+                  variant={activeFilter === type ? "default" : "outline"}
+                  className="rounded-sm"
+                  onClick={() => {
+                    setActiveFilter(type);
+                    setShowAllArchive(true);
+                  }}
+                >
+                  {getProjectTypeDisplayName(type)}
+                </Button>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Filter Buttons */}
-          <motion.div
-            className="relative z-30 mb-16 flex flex-wrap justify-center gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <Button
-              variant={activeFilter === "all" ? "default" : "ghost"}
-              onClick={() => setActiveFilter("all")}
-              className="rounded-full"
-            >
-              All Projects
-            </Button>
-            {projectTypes.map((type) => (
-              <Button
-                key={type}
-                variant={activeFilter === type ? "default" : "ghost"}
-                onClick={() => setActiveFilter(type)}
-                className="rounded-full"
-              >
-                {getProjectTypeDisplayName(type)}
-              </Button>
-            ))}
-          </motion.div>
-
-          {/* Projects Card Deck */}
-          <div className="relative z-10">
-            {filteredProjects.length === 0 ? (
-              <motion.div
-                className="py-16 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <h3 className="mb-2 text-xl font-semibold">No projects found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your filter or check back later.
-                </p>
-              </motion.div>
-            ) : (
-              <div className="perspective-1000 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
-                {displayedProjects.map((project, index) => (
-                  <TiltCard
-                    key={project.id}
-                    project={project}
-                    index={index}
-                    isActive={selectedProject?.id === project.id}
-                    onClick={() => handleProjectClick(project)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Load More Button */}
-          {hasMoreProjects && (
-            <motion.div
-              className="mt-16 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-full"
-                onClick={loadMoreProjects}
-              >
-                Load More Projects
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Projects Counter */}
-          {filteredProjects.length > 0 && (
-            <motion.div
-              className="mt-8 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-            >
-              <p className="text-sm text-muted-foreground">
-                Showing {displayedProjects.length} of {filteredProjects.length} projects
-                {activeFilter !== "all" && ` in ${getProjectTypeDisplayName(activeFilter)}`}
+          {filteredProjects.length === 0 ? (
+            <div className="surface-panel mt-10 p-8 sm:p-10">
+              <h3 className="font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
+                No matching projects.
+              </h3>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
+                Try another filter.
               </p>
-            </motion.div>
+            </div>
+          ) : (
+            <div className="mt-10 space-y-12">
+              {featuredProjects.length > 0 ? (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <Star className="h-4 w-4 text-primary" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                      Featured Case Studies
+                    </p>
+                  </div>
+                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {featuredProjects.map((project, index) => (
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        index={index}
+                        onOpen={setSelectedProject}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {archiveProjects.length > 0 ? (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <FolderArchive className="h-4 w-4 text-primary" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                      Project Archive
+                    </p>
+                  </div>
+                  <div className="surface-panel space-y-3 p-4 sm:p-5">
+                    {visibleArchiveProjects.map((project) => (
+                      <ArchiveRow key={project.id} project={project} onOpen={setSelectedProject} />
+                    ))}
+                  </div>
+                  {hasHiddenArchiveProjects ? (
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-sm text-muted-foreground">
+                        Showing {visibleArchiveProjects.length} of {archiveProjects.length} archived
+                        projects.
+                      </p>
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowAllArchive((current) => !current)}
+                      >
+                        {showAllArchive ? "Hide Archive" : "Show Full Archive"}
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
           )}
-        </div>
+        </Container>
       </section>
 
-      {/* Slide-out Modal */}
-      <ProjectModal project={selectedProject} onClose={closeModal} />
+      <ProjectModal project={visibleSelectedProject} onClose={() => setSelectedProject(null)} />
     </>
   );
 }

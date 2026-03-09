@@ -141,13 +141,13 @@ export default function Resume({ experiences }: ResumeProps) {
       <Page size="A4" style={styles.page}>
         <View style={styles.headerContainer}>
           <View style={styles.header}>
-            <Text style={styles.name}>Marc Stampfli</Text>
-            <Text style={styles.title}>Senior Full Stack Developer</Text>
+            <Text style={styles.name}>Marc Stämpfli</Text>
+            <Text style={styles.title}>Web Developer & Designer</Text>
           </View>
           <View style={styles.contactGrid}>
-            <Text style={styles.contact}>marc.stampfli@example.com</Text>
-            <Text style={styles.contact}>+41 123 456 789</Text>
-            <Text style={styles.contact}>Zurich, Switzerland</Text>
+            <Text style={styles.contact}>marcstampfli@gmail.com</Text>
+            <Text style={styles.contact}>Trinidad and Tobago</Text>
+            <Text style={styles.contact}>marcstampfli.com</Text>
             <Text style={styles.contact}>github.com/marcstampfli</Text>
           </View>
         </View>

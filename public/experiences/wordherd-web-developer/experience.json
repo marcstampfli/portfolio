@@ -1,0 +1,38 @@
+{
+  "slug": "wordherd-web-developer",
+  "title": "Web Developer",
+  "company": "WordHerd\u00ae",
+  "position": "Web Developer / Designer",
+  "location": null,
+  "employmentType": null,
+  "logo": "wordherd.png",
+  "logoBackground": "light",
+  "logoFit": "contain",
+  "logoWidth": 34,
+  "logoHeight": 18,
+  "logoPadding": 1,
+  "summary": "Web Developer and Designer at a web design and development agency. Fully remote. Building complete WordPress sites from scratch — custom themes, Gutenberg blocks, plugins, Kadence and Elementor builds, the WordHerd custom theme framework, and React-based WordPress integrations. Also handling UI/UX design across client projects.",
+  "techStack": [
+    "WordPress",
+    "PHP",
+    "React",
+    "JavaScript",
+    "Gutenberg",
+    "Elementor",
+    "Kadence Blocks",
+    "Custom Themes",
+    "UI/UX Design",
+    "Figma"
+  ],
+  "achievements": [
+    "Built complete WordPress websites for clients — custom themes, plugins, and block-based layouts",
+    "Developed and extended the WordHerd custom theme framework used across client projects",
+    "Created custom Gutenberg blocks and Elementor/Kadence components to match design specs",
+    "Integrated React-based features into WordPress projects",
+    "Handled UI/UX design alongside development — wireframes, mockups, and final interfaces",
+    "Managed updates, performance, and maintenance for existing client sites"
+  ],
+  "startDate": "2021-08-01",
+  "endDate": null,
+  "sortOrder": 0
+}

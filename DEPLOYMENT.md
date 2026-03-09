@@ -7,9 +7,6 @@ The following environment variables need to be set in your deployment platform (
 ### Required Variables
 
 ```bash
-# Database - Standard PostgreSQL connection string
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require"
-
 # Application URL
 NEXT_PUBLIC_APP_URL="https://marcstampfli.com"
 
@@ -18,9 +15,6 @@ RESEND_API_KEY="re_xxxxxxxxxxxxx"
 
 # Analytics (optional)
 NEXT_PUBLIC_GA_MEASUREMENT_ID="G-XXXXXXXXXX"
-
-# Prisma Accelerate (optional)
-ACCELERATE_URL="prisma://..."
 
 # Node environment
 NODE_ENV="production"
@@ -34,15 +28,6 @@ NODE_ENV="production"
 4. Output directory: `.next`
 5. Install command: `npm install`
 
-### Database Setup
-
-The project uses Prisma with PostgreSQL. Run migrations before first deployment:
-
-```bash
-npx prisma migrate deploy  # Apply migrations in production
-npx prisma generate        # Generate Prisma client
-```
-
 ### Build Process
 
 ```bash
@@ -55,6 +40,7 @@ npx tsc --noEmit  # Type check
 ### Key Features
 
 - Server Actions for data fetching (no API routes)
+- File-based project content from `public/projects/<slug>`
 - 3D tilt effect project cards
 - Slide-out project modal
 - GPU-accelerated animations with reduced motion support

@@ -1,0 +1,29 @@
+{
+  "title": "Gypsea Soul Jewelry Website",
+  "slug": "gypsea-soul-jewelry-website",
+  "type": "website",
+  "summary": "Gypsea Soul Jewelry Website project.",
+  "featured": true,
+  "status": "published",
+  "client": "Gypsea Soul Jewelry",
+  "year": 2021,
+  "sortOrder": 18,
+  "stack": [
+    "E-Commerce",
+    "Modified Theme",
+    "PayPal",
+    "WordPress"
+  ],
+  "cover": "project-gypsea-website.jpg",
+  "gallery": [
+    "project-gypsea-website2.jpg",
+    "project-gypsea-website3.jpg",
+    "project-gypsea-website4.jpg",
+    "project-gypsea-website5.jpg"
+  ],
+  "links": {
+    "live": "https://gypseasouljewelry.co/",
+    "github": "",
+    "figma": ""
+  }
+}

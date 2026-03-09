@@ -1,0 +1,29 @@
+{
+  "title": "Marc St\u00e4mpfli Website",
+  "slug": "marc-stampfli-website",
+  "type": "website",
+  "summary": "Personal portfolio and brand site covering both the interface direction and the final WordPress implementation as one unified project.",
+  "featured": false,
+  "status": "published",
+  "client": "Marc St\u00e4mpfli",
+  "year": 2021,
+  "sortOrder": 0,
+  "stack": [
+    "Figma",
+    "Custom Theme",
+    "Sass",
+    "WordPress"
+  ],
+  "cover": "project-marcstampfli-website.jpg",
+  "gallery": [
+    "project-marcstampfli-ui.jpg",
+    "project-marcstampfli-website2.jpg",
+    "project-marcstampfli-website3.jpg",
+    "project-marcstampfli-website4.jpg"
+  ],
+  "links": {
+    "live": "https://marcstampfli.com/",
+    "github": "",
+    "figma": ""
+  }
+}

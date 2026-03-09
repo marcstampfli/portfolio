@@ -1,52 +1,11 @@
 "use server";
 
-import { headers } from "next/headers";
-import { prisma } from "@/lib/prisma";
 import { type ContactFormData, contactFormSchema } from "@/types";
-import { Resend } from "resend";
-
-// =============================================================================
-// Contact Form
-// =============================================================================
+import nodemailer from "nodemailer";
 
 const stripTags = (value: string): string => value.replace(/<[^>]*>/g, "").trim();
 
-type RateLimitEntry = {
-  count: number;
-  resetAt: number;
-};
-
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-const RATE_LIMIT_MAX = 5;
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
 type ContactEmailPayload = Pick<ContactFormData, "name" | "email" | "message">;
-
-async function getClientIp(): Promise<string> {
-  const headerStore = await headers();
-  const forwardedFor = headerStore.get("x-forwarded-for") ?? "";
-  const realIp = headerStore.get("x-real-ip") ?? "";
-  const ip = forwardedFor.split(",")[0]?.trim() || realIp || "unknown";
-  return ip;
-}
-
-function isRateLimited(key: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitStore.get(key);
-
-  if (!entry || entry.resetAt <= now) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return true;
-  }
-
-  entry.count += 1;
-  rateLimitStore.set(key, entry);
-  return false;
-}
 
 export async function submitContactMessage(
   data: ContactFormData
@@ -57,58 +16,70 @@ export async function submitContactMessage(
     message: stripTags(data.message),
   };
 
-  // Validate input
   const parsed = contactFormSchema.safeParse(sanitizedInput);
   if (!parsed.success) {
     return { success: false, error: "Invalid form data" };
   }
 
-  const { name, email, message, website } = parsed.data;
+  const { name, message, website } = parsed.data;
+  const email = parsed.data.email.trim().toLowerCase();
 
+  // Honeypot — reject bots
   if (website && website.trim().length > 0) {
     return { success: false, error: "Invalid form submission" };
   }
 
-  const clientIp = await getClientIp();
-  const rateLimitKey = `contact:${clientIp}`;
-  if (isRateLimited(rateLimitKey)) {
-    return { success: false, error: "Too many requests. Please try again later." };
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    return {
+      success: false,
+      error: "Message could not be sent. Please email directly at marcstampfli@gmail.com",
+    };
   }
 
   try {
-    // Save to database
-    await prisma.contactMessage.create({
-      data: { name, email, message },
-    });
-
-    // Send email notification if Resend is configured
-    if (process.env.RESEND_API_KEY) {
-      await sendContactEmail({ name, email, message });
-    }
-
+    await sendContactEmail({ name, email, message });
     return { success: true };
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
-      console.error("Failed to submit contact message:", error);
+      console.error("Failed to submit message:", error);
     }
-    return { success: false, error: "Failed to submit message" };
+
+    return { success: false, error: "Failed to send message. Please try again later." };
   }
 }
 
 async function sendContactEmail(data: ContactEmailPayload): Promise<void> {
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
 
-  await resend.emails.send({
-    from: "Portfolio Contact <contact@marcstampfli.com>",
-    to: ["marcstampfli@gmail.com"],
+  await transporter.sendMail({
+    from: `"Portfolio Contact" <${process.env.GMAIL_USER}>`,
+    to: "marcstampfli@gmail.com",
     replyTo: data.email,
-    subject: `New Contact Message from ${data.name}`,
-    text: `
-Name: ${data.name}
-Email: ${data.email}
-
-Message:
-${data.message}
-    `.trim(),
+    subject: `New message from ${data.name}`,
+    text: `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #0ea5e9;">New portfolio contact</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; width: 80px;"><strong>Name</strong></td>
+            <td style="padding: 8px 0;">${data.name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b;"><strong>Email</strong></td>
+            <td style="padding: 8px 0;"><a href="mailto:${data.email}">${data.email}</a></td>
+          </tr>
+        </table>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
+        <p style="color: #64748b; margin-bottom: 4px;"><strong>Message</strong></p>
+        <p style="white-space: pre-wrap; line-height: 1.6;">${data.message}</p>
+      </div>
+    `,
   });
 }

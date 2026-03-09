@@ -1,0 +1,26 @@
+{
+  "title": "Softbox Studios Website",
+  "slug": "softbox-studios-website",
+  "type": "website",
+  "summary": "Softbox Studios Website project.",
+  "featured": false,
+  "status": "published",
+  "client": "Softbox Studios",
+  "year": 2021,
+  "sortOrder": 35,
+  "stack": [
+    "Web Development"
+  ],
+  "cover": "project-softbox-website.jpg",
+  "gallery": [
+    "project-softbox-website2.jpg",
+    "project-softbox-website3.jpg",
+    "project-softbox-website4.jpg",
+    "project-softbox-website5.jpg"
+  ],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

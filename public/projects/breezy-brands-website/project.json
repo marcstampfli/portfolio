@@ -1,0 +1,25 @@
+{
+  "title": "Breezy Brands Website",
+  "slug": "breezy-brands-website",
+  "type": "website",
+  "summary": "Brand and website project for Breezy Brands, covering interface direction and the final WordPress build in one cohesive client site.",
+  "featured": true,
+  "status": "published",
+  "client": "Breezy Brands",
+  "year": 2021,
+  "sortOrder": 0,
+  "stack": [
+    "Adobe XD",
+    "Custom Theme",
+    "WordPress"
+  ],
+  "cover": "project-breezybrands-website.jpg",
+  "gallery": [
+    "project-breezybrands-website2.jpg"
+  ],
+  "links": {
+    "live": "https://breezybrands.com",
+    "github": "",
+    "figma": ""
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Marc Stampfli Business Card",
+  "slug": "marc-stampfli-business-card",
+  "type": "bizcard",
+  "summary": "Marc Stampfli Business Card project.",
+  "featured": false,
+  "status": "published",
+  "client": "Marc St\u00e4mpfli",
+  "year": 2021,
+  "sortOrder": 34,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

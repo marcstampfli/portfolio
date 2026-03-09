@@ -1,158 +1,107 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import { Briefcase } from "lucide-react";
 import { TimelineItem } from "@/components/timeline/timeline-item-vertical";
 import { BackgroundEffect } from "@/components/timeline/background-effect";
+import { SectionHeader } from "@/components/shared/section-header";
+import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
 import { generatePeriodString } from "@/lib/date-utils";
-import { type ApiResponse, type Experience } from "@/types";
-import { Briefcase } from "lucide-react";
+import { type Experience } from "@/types";
 
-// Loading skeleton for vertical timeline
-function TimelineSkeleton() {
-  return (
-    <div className="space-y-8">
-      {Array.from({ length: 3 }).map((_, index) => (
-        <div
-          key={index}
-          className="relative grid grid-cols-[auto_1fr] gap-4 md:grid-cols-[1fr_auto_1fr] md:gap-8"
-        >
-          {/* Left placeholder */}
-          <div className="hidden md:block" />
-
-          {/* Center dot */}
-          <div className="relative flex flex-col items-center">
-            <div className="relative z-10 flex h-12 w-12 animate-pulse items-center justify-center rounded-full border-4 border-muted/30 bg-background">
-              <Briefcase className="h-5 w-5 text-muted" />
-            </div>
-            {index < 2 && <div className="w-px flex-1 bg-muted/20" />}
-          </div>
-
-          {/* Right content skeleton */}
-          <div className="pb-12 md:pb-16">
-            <div className="animate-pulse space-y-4 rounded-2xl border bg-card p-6">
-              <div className="h-4 w-24 rounded bg-muted/30" />
-              <div className="h-6 w-3/4 rounded bg-muted/40" />
-              <div className="h-4 w-1/2 rounded bg-muted/30" />
-              <div className="space-y-2 pt-2">
-                <div className="h-4 w-full rounded bg-muted/20" />
-                <div className="h-4 w-5/6 rounded bg-muted/20" />
-              </div>
-              <div className="flex gap-2 pt-2">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-6 w-16 rounded-full bg-muted/20" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+interface ExperienceSectionProps {
+  experiences: Experience[];
 }
 
-export function ExperienceSection() {
-  const {
-    data: experiences,
-    isLoading,
-    error,
-  } = useQuery<Experience[]>({
-    queryKey: ["experiences"],
-    queryFn: async () => {
-      const response = await fetch("/api/experiences", {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+export function ExperienceSection({ experiences }: ExperienceSectionProps) {
+  const [showFullTimeline, setShowFullTimeline] = useState(false);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch experiences");
-      }
+  const sortedExperiences = useMemo(
+    () =>
+      [...experiences].sort((a, b) => {
+        const dateA = new Date(a.start_date).getTime();
+        const dateB = new Date(b.start_date).getTime();
+        return dateB - dateA;
+      }),
+    [experiences]
+  );
 
-      const payload = (await response.json()) as ApiResponse<Experience[]>;
-      if (!payload.success) {
-        throw new Error(payload.error || "Failed to fetch experiences");
-      }
-
-      return payload.data ?? [];
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-
-  if (error) {
-    return (
-      <div className="flex h-[50vh] w-full items-center justify-center">
-        <p className="text-destructive dark:text-destructive/90">
-          {error instanceof Error ? error.message : "Failed to load experiences"}
-        </p>
-      </div>
-    );
-  }
-
-  const sortedExperiences = experiences?.sort((a, b) => {
-    const dateA = new Date(a.start_date).getTime();
-    const dateB = new Date(b.start_date).getTime();
-    return dateB - dateA; // Most recent first
-  });
+  const recentExperiences = sortedExperiences.slice(0, 3);
+  const archivedExperiences = sortedExperiences.slice(3);
+  const visibleExperiences = showFullTimeline ? sortedExperiences : recentExperiences;
 
   return (
     <section
       id="experience"
-      className="container relative px-4 py-24 sm:px-6 sm:py-32 lg:px-8"
+      className="section-shell relative"
       aria-labelledby="experience-heading"
     >
       <BackgroundEffect />
 
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10 mb-16 text-center"
-      >
-        <div className="mb-4 inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-          <Briefcase className="h-4 w-4" />
-          <span>Career Journey</span>
-        </div>
-        <h2 id="experience-heading" className="text-3xl font-bold sm:text-4xl md:text-5xl">
-          <span className="bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text">
-            Professional Experience
-          </span>
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          A journey through my career, highlighting key roles and achievements that have shaped my
-          expertise.
-        </p>
-      </motion.div>
+      <Container>
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-10"
+        >
+          <SectionHeader
+            titleId="experience-heading"
+            eyebrow="Experience"
+            title="15+ years building for the web."
+            subtitle="From in-house roles to freelance work and agency life — a career spent shipping websites and products."
+            titleClassName="text-3xl sm:text-4xl lg:text-5xl"
+          />
+        </motion.div>
 
-      {/* Timeline */}
-      <div className="relative mx-auto max-w-4xl">
-        {isLoading ? (
-          <TimelineSkeleton />
+        {sortedExperiences.length === 0 ? (
+          <div className="surface-panel max-w-3xl p-8 sm:p-10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-md border border-primary/20 bg-primary/10 text-primary">
+              <Briefcase className="h-5 w-5" />
+            </div>
+            <h3 className="mt-5 font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
+              Experience coming soon.
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
+              No experience entries are published yet.
+            </p>
+          </div>
         ) : (
-          <div className="relative">
-            {sortedExperiences?.map((experience, index) => {
-              const dynamicPeriod = generatePeriodString(
-                experience.start_date,
-                experience.end_date
-              );
-              const enhancedExperience = {
-                ...experience,
-                period: dynamicPeriod,
-              };
-
-              return (
+          <div className="relative mx-auto max-w-5xl space-y-6">
+            <div className="space-y-1">
+              {visibleExperiences.map((experience, index) => (
                 <TimelineItem
                   key={experience.id}
-                  experience={enhancedExperience}
-                  isLast={index === (sortedExperiences?.length ?? 0) - 1}
+                  experience={{
+                    ...experience,
+                    period: generatePeriodString(experience.start_date, experience.end_date),
+                  }}
+                  isLast={index === visibleExperiences.length - 1}
                 />
-              );
-            })}
+              ))}
+            </div>
+
+            {archivedExperiences.length > 0 ? (
+              <div className="flex flex-col gap-4 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">
+                  {showFullTimeline
+                    ? `Showing all ${sortedExperiences.length} experience entries.`
+                    : `Showing ${recentExperiences.length} recent roles. ${archivedExperiences.length} older roles are tucked away.`}
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFullTimeline((current) => !current)}
+                >
+                  {showFullTimeline ? "Hide Older Roles" : "View Full Timeline"}
+                </Button>
+              </div>
+            ) : null}
           </div>
         )}
-      </div>
+      </Container>
     </section>
   );
 }

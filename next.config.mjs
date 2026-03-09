@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const isDevelopment = process.env.NODE_ENV !== "production";
+
 const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
@@ -35,8 +37,24 @@ const nextConfig = {
       "img-src 'self' data: https:",
       "font-src 'self' data: https:",
       "style-src 'self' 'unsafe-inline'",
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
-      "connect-src 'self' https://www.google-analytics.com",
+      [
+        "script-src 'self' 'unsafe-inline'",
+        isDevelopment ? "'unsafe-eval'" : "",
+        "https://www.googletagmanager.com",
+        "https://www.google-analytics.com",
+        "https://va.vercel-scripts.com",
+      ]
+        .filter(Boolean)
+        .join(" "),
+      [
+        "connect-src 'self'",
+        "https://www.google-analytics.com",
+        "https://region1.google-analytics.com",
+        "https://vitals.vercel-insights.com",
+        "https://va.vercel-scripts.com",
+      ]
+        .filter(Boolean)
+        .join(" "),
       "upgrade-insecure-requests",
     ]
       .filter(Boolean)

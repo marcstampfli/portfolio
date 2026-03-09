@@ -1,16 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { env } from "@/lib/env";
 import { Analytics } from "@/components/shared/analytics";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
+import { siteConfig } from "@/lib/site";
 
-const inter = Inter({
+const isProduction = process.env.NODE_ENV === "production";
+
+const bodyFont = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-body",
+  display: "swap",
+  preload: true,
+});
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
   display: "swap",
   preload: true,
 });
@@ -20,31 +28,44 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#3B82F6" },
-    { media: "(prefers-color-scheme: dark)", color: "#60A5FA" },
+    { media: "(prefers-color-scheme: light)", color: "#edf3f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b1018" },
   ],
 };
 
 export const metadata: Metadata = {
   title: {
-    default: "Marc Stämpfli - Web Developer & Designer",
+    default: siteConfig.title,
     template: "%s | Marc Stämpfli",
   },
-  description: "Portfolio website showcasing web development and design projects by Marc Stämpfli.",
+  description: siteConfig.description,
   keywords: [
     "web development",
-    "design",
-    "portfolio",
-    "next.js",
-    "react",
-    "typescript",
+    "WordPress developer",
+    "web designer",
+    "UI design",
+    "React",
+    "Next.js",
+    "Trinidad and Tobago",
+    "freelance developer",
+    "Gutenberg",
+    "Elementor",
     "full-stack developer",
   ],
   authors: [{ name: "Marc Stämpfli" }],
   creator: "Marc Stämpfli",
-  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL || "https://www.marcstampfli.com"),
+  applicationName: "Marc Stämpfli Portfolio",
+  metadataBase: new URL(siteConfig.url),
   alternates: {
     canonical: "/",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: ["/favicon.ico"],
+    apple: ["/favicon.ico"],
   },
   robots: {
     index: true,
@@ -61,34 +82,38 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "Marc Stämpfli - Web Developer & Designer",
-    description: "Portfolio website showcasing web development and design projects.",
+    title: siteConfig.title,
+    description: siteConfig.description,
     siteName: "Marc Stämpfli Portfolio",
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.title,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Marc Stämpfli - Web Developer & Designer",
-    description: "Portfolio website showcasing web development and design projects.",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-      </head>
+      <head />
       <body
-        className={`${inter.className} min-h-screen bg-background text-foreground antialiased transition-colors duration-300`}
+        className={`${bodyFont.variable} ${displayFont.variable} min-h-screen bg-background font-body text-foreground`}
       >
         <Providers>
           {children}
-          <ThemeToggle />
           <Suspense fallback={null}>
             <Analytics />
-            <VercelAnalytics />
+            {isProduction ? <VercelAnalytics /> : null}
           </Suspense>
         </Providers>
       </body>

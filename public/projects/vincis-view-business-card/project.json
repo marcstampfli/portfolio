@@ -1,0 +1,21 @@
+{
+  "title": "Vinci's View Business Card",
+  "slug": "vincis-view-business-card",
+  "type": "bizcard",
+  "summary": "Vinci's View Business Card project.",
+  "featured": false,
+  "status": "published",
+  "client": "Vinci's View",
+  "year": 2021,
+  "sortOrder": 3,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

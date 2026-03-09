@@ -1,0 +1,21 @@
+{
+  "title": "Johnny Rockets Bar Flyer",
+  "slug": "johnny-rockets-bar-flyer",
+  "type": "flyer",
+  "summary": "Johnny Rockets Bar Flyer project.",
+  "featured": false,
+  "status": "published",
+  "client": "Johnny Rockets Bar",
+  "year": 2021,
+  "sortOrder": 21,
+  "stack": [
+    "Photoshop"
+  ],
+  "cover": "project-johnnyrocket-flyer.gif",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

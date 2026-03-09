@@ -51,7 +51,18 @@ export function SubmitButton({ isSubmitting, isSubmitted }: SubmitButtonProps) {
           )}
         </AnimatePresence>
       </span>
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:250%_250%,100%_100%] bg-[position:-100%_0,0_0] bg-no-repeat transition-[background-position_0s_ease] duration-500 group-hover:bg-[position:200%_0,0_0]" />
+      <div
+        className="absolute inset-0 -z-10 bg-no-repeat duration-500 group-hover:bg-[position:200%_0,0_0]"
+        style={{
+          backgroundImage:
+            "linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.3) 50%, transparent 75%)",
+          backgroundSize: "250% 250%, 100% 100%",
+          backgroundPosition: "-100% 0, 0 0",
+          transitionProperty: "background-position",
+          transitionDuration: "500ms",
+          transitionTimingFunction: "ease",
+        }}
+      />
     </motion.button>
   );
 }

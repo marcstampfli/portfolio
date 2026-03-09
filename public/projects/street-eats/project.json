@@ -1,0 +1,19 @@
+{
+  "title": "Street Eats",
+  "slug": "street-eats",
+  "type": "mobile",
+  "summary": "A mobile app for discovering local street food — built with React Native, currently in development and testing on Android.",
+  "featured": true,
+  "status": "draft",
+  "client": null,
+  "year": 2026,
+  "sortOrder": 5,
+  "stack": ["React Native", "TypeScript", "Android"],
+  "cover": "",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

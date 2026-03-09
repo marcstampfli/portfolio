@@ -1,0 +1,23 @@
+{
+  "title": "Craigslist Redesign",
+  "slug": "craigslist-redesign",
+  "type": "design",
+  "summary": "Concept redesign exploring how a notoriously utilitarian product could feel clearer, calmer, and easier to browse without losing its speed.",
+  "featured": false,
+  "status": "published",
+  "client": "Craigslist",
+  "year": 2021,
+  "sortOrder": 1,
+  "stack": [
+    "Figma"
+  ],
+  "cover": "project-craigslist-ui.jpg",
+  "gallery": [
+    "project-craigslist-ui2.jpg"
+  ],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

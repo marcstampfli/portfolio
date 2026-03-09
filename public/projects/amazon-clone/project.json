@@ -1,0 +1,26 @@
+{
+  "title": "Amazon Clone",
+  "slug": "amazon-clone",
+  "type": "web",
+  "summary": "React storefront clone built to practice real-world commerce patterns including product browsing, checkout flow, and payment integration.",
+  "featured": true,
+  "status": "unpublished",
+  "client": "Amazon Clone",
+  "year": 2021,
+  "sortOrder": 8,
+  "stack": [
+    "Firebase",
+    "React",
+    "Stripe"
+  ],
+  "cover": "project-amazon-clone.jpg",
+  "gallery": [
+    "project-amazon-clone2.jpg",
+    "project-amazon-clone3.jpg"
+  ],
+  "links": {
+    "live": "https://clone-666e1.web.app/",
+    "github": "",
+    "figma": ""
+  }
+}
