@@ -1,26 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-
-  <!-- Simple hexagon with gradient -->
-  <path 
-    d="M16,2 L28,9 L28,23 L16,30 L4,23 L4,9 Z" 
-    fill="url(#primaryGradient)"
-  />
-  
-  <!-- Simplified MS text -->
+  <!-- Solid square badge with rounded corners — matches the nav MS badge -->
+  <rect width="32" height="32" rx="5" ry="5" fill="#0bafd4"/>
   <text
     x="16"
-    y="20"
-    font-family="Arial Black, Arial Bold, Arial, sans-serif"
+    y="22.5"
+    font-family="'Arial Black', 'Arial Bold', Arial, sans-serif"
     font-weight="900"
-    font-size="14"
+    font-size="13"
     fill="white"
     text-anchor="middle"
-    style="letter-spacing: -1px"
+    letter-spacing="0.5"
   >MS</text>
 </svg>

@@ -1,36 +1,61 @@
-# Marc Stampfli Portfolio
+# Marc Stämpfli — Portfolio
 
-My personal portfolio website built with Next.js, showcasing my work and experience as a full-stack developer.
+Personal portfolio site built with Next.js. Flat-file content, no database.
 
-## Tech Stack
+Live at [marcstampfli.com](https://marcstampfli.com)
 
-- Next.js 16 with App Router
+## Stack
+
+- Next.js 16 (App Router)
 - TypeScript
-- TailwindCSS + Framer Motion
-- React Query
+- Tailwind CSS + Framer Motion
+- Nodemailer + Gmail SMTP (contact form)
 
 ## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
 ```
 
-## Project Content
+Copy `.env.example` to `.env.local` and fill in the values before running.
 
-- Each project lives in its own folder under `public/projects/<slug>`
-- Add a `project.json` file plus any images you want to use
-- Optional `body.md` adds longer case-study notes for the modal
-- Start from `public/projects/_template`
+## Environment Variables
 
-## Experience Content
+| Variable                        | Required | Description                                            |
+| ------------------------------- | -------- | ------------------------------------------------------ |
+| `NEXT_PUBLIC_APP_URL`           | Yes      | Full URL of the site (e.g. `https://marcstampfli.com`) |
+| `GMAIL_USER`                    | Yes      | Gmail address used to send contact form emails         |
+| `GMAIL_APP_PASSWORD`            | Yes      | Gmail App Password (not your account password)         |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No       | Google Analytics measurement ID                        |
 
-- Each experience lives in its own folder under `public/experiences/<slug>`
-- Add an `experience.json` file and optional logo asset in the same folder
-- Logo controls like `logoBackground`, `logoWidth`, `logoHeight`, and `logoPadding` help normalize wide or awkward brand marks
-- Start from `public/experiences/_template`
+Set these in Vercel under Project → Settings → Environment Variables.
 
-Visit [marcstampfli.com](https://marcstampfli.com)
+## Content
+
+### Projects
+
+Each project lives in its own folder under `public/projects/<slug>/`:
+
+- `project.json` — required, all project metadata
+- `body.md` — optional, longer case-study content shown in the modal
+- Images — referenced by filename in `project.json`
+
+Copy `public/projects/_template` to get started.
+
+### Experience
+
+Each role lives in `public/experiences/<slug>/`:
+
+- `experience.json` — required
+- Logo image — optional, referenced in the JSON
+
+Copy `public/experiences/_template` to get started.
+
+## Deployment
+
+Deploys automatically to Vercel on push to `main`.
+
+Build command: `npm run build`
+Output: `.next`
+Node: `>=20`

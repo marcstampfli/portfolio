@@ -16,7 +16,12 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
   const isDark = currentTheme === "dark";
 
   if (!isClient) {
-    return null;
+    return (
+      <span
+        className={cn("inline-flex h-11 w-11 items-center justify-center rounded-sm", className)}
+        aria-hidden="true"
+      />
+    );
   }
 
   return (
