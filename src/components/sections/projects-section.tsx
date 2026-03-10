@@ -288,7 +288,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                   <div className="flex items-center gap-3">
                     <Star className="h-4 w-4 text-primary" />
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      Featured Case Studies
+                      Featured Projects
                     </p>
                   </div>
                   <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

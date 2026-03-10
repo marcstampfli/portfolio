@@ -9,8 +9,10 @@
   "year": 2024,
   "sortOrder": 2,
   "stack": ["Next.js", "React", "TypeScript", "Supabase", "Tailwind CSS", "Zustand", "Jest", "Playwright"],
-  "cover": "",
-  "gallery": [],
+  "cover": "project-allfours.jpg",
+  "gallery": [
+    "project-allfours.jpg"
+  ],
   "links": {
     "live": "",
     "github": "",

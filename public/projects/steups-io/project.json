@@ -4,13 +4,15 @@
   "type": "web",
   "summary": "A platform built for Trinidad and Tobago — local tools, generators, games, and utilities in one place. The name is pure Trini slang.",
   "featured": true,
-  "status": "draft",
+  "status": "published",
   "client": null,
   "year": 2026,
   "sortOrder": 1,
   "stack": ["Next.js", "TypeScript", "React", "Tailwind CSS"],
-  "cover": "",
-  "gallery": [],
+  "cover": "project-steups.jpg",
+  "gallery": [
+    "project-steups2.jpg"
+  ],
   "links": {
     "live": "",
     "github": "",

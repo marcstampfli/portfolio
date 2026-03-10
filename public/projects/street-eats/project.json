@@ -4,7 +4,7 @@
   "type": "mobile",
   "summary": "A mobile app for discovering local street food — built with React Native, currently in development and testing on Android.",
   "featured": false,
-  "status": "draft",
+  "status": "published",
   "client": null,
   "year": 2025,
   "sortOrder": 5,
