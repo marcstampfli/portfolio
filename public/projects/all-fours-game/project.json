@@ -7,7 +7,7 @@
   "status": "published",
   "client": "Personal",
   "year": 2024,
-  "sortOrder": 2,
+  "sortOrder": 3,
   "stack": ["Next.js", "React", "TypeScript", "Supabase", "Tailwind CSS", "Zustand", "Jest", "Playwright"],
   "cover": "project-allfours.jpg",
   "gallery": [

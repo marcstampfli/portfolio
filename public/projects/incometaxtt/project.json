@@ -6,8 +6,8 @@
   "featured": true,
   "status": "published",
   "client": "Personal",
-  "year": 2026,
-  "sortOrder": 4,
+  "year": 2025,
+  "sortOrder": 2,
   "stack": [
     "React 19",
     "TypeScript",
@@ -19,8 +19,10 @@
     "Vercel",
     "PWA"
   ],
-  "cover": null,
-  "gallery": [],
+  "cover": "project-incometaxtt.jpg",
+  "gallery": [
+    "project-incometaxtt2.jpg"
+  ],
   "links": {
     "live": "https://incometaxtt.com",
     "github": "https://github.com/marcstampfli/tt-tax-app",
