@@ -9,7 +9,12 @@ import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/shared/section-header";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
-import { ProjectModal } from "@/components/shared/project-modal";
+import dynamic from "next/dynamic";
+
+const ProjectModal = dynamic(
+  () => import("@/components/shared/project-modal").then((m) => m.ProjectModal),
+  { ssr: false }
+);
 import { isValidProjectImage } from "@/lib/utils";
 import { ArrowRight, ExternalLink, FolderArchive, Github, Star } from "lucide-react";
 

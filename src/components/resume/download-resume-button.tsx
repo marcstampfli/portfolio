@@ -4,8 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import type { Experience } from "@/types";
-import { pdf } from "@react-pdf/renderer";
-import { Resume } from "./resume-generator";
 
 interface DownloadResumeButtonProps {
   experiences: Experience[];
@@ -17,6 +15,11 @@ export function DownloadResumeButton({ experiences }: DownloadResumeButtonProps)
   const handleDownload = async () => {
     setIsLoading(true);
     try {
+      const [{ pdf }, { Resume }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("./resume-generator"),
+      ]);
+
       const instance = pdf(<Resume experiences={experiences} />);
       const blob = await instance.toBlob();
 

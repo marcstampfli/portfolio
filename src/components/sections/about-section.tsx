@@ -126,9 +126,9 @@ export function AboutSection() {
                   <item.icon className="h-4 w-4" />
                 </div>
                 <div>
-                  <h4 className="font-display text-base font-semibold tracking-[-0.02em] text-foreground">
+                  <h3 className="font-display text-base font-semibold tracking-[-0.02em] text-foreground">
                     {item.title}
-                  </h4>
+                  </h3>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.description}</p>
                 </div>
               </motion.article>

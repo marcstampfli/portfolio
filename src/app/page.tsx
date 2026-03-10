@@ -1,18 +1,24 @@
+import dynamic from "next/dynamic";
 import { HeroSection } from "@/components/sections/hero-section";
 import { AboutSection } from "@/components/sections/about-section";
-import { ContactForm } from "@/components/form/contact-form";
 import { ScrollToTop } from "@/components/shared/scroll-to-top";
 import { FloatingNav } from "@/components/shared/floating-nav";
 import { ParallaxBackground } from "@/components/background/parallax-background";
 import { PageTransition } from "@/components/shared/page-transition";
-import { ExperienceSection } from "@/components/sections/experience-section";
-import ProjectsSection from "@/components/sections/projects-section";
 import { ScrollProgressBar } from "@/components/shared/scroll-progress-bar";
 import { SkipToContent } from "@/components/shared/skip-to-content";
 import { AnimatedSection } from "@/components/shared/animated-section";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/shared/section-header";
 import { getExperiences, getPublishedProjects } from "@/lib/content";
+
+const ExperienceSection = dynamic(() =>
+  import("@/components/sections/experience-section").then((m) => m.ExperienceSection)
+);
+const ProjectsSection = dynamic(() => import("@/components/sections/projects-section"));
+const ContactForm = dynamic(() =>
+  import("@/components/form/contact-form").then((m) => m.ContactForm)
+);
 
 export default async function Home() {
   const [experiences, projects] = await Promise.all([getExperiences(), getPublishedProjects()]);

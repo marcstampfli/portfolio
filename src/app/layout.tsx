@@ -20,7 +20,7 @@ const displayFont = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  preload: true,
+  preload: false,
 });
 
 export const viewport: Viewport = {
