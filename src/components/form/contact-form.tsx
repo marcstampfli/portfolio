@@ -31,7 +31,7 @@ const contactInfo = [
     icon: Mail,
     label: "Email",
     value: siteConfig.email,
-    href: `mailto:${siteConfig.email}?subject=Hey Marc, I'd like to work with you&body=Hi Marc,%0D%0A%0D%0AI came across your portfolio and I'd love to chat about...`,
+    href: `mailto:${siteConfig.email}?subject=New project — [brief description]&body=Hi Marc, I have a project I'd like to discuss...`,
   },
   {
     icon: MapPin,

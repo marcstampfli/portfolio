@@ -3,6 +3,7 @@
 import {
   lazy,
   Suspense,
+  useMemo,
   type ComponentType,
   type ComponentPropsWithoutRef,
   type ReactNode,
@@ -15,13 +16,14 @@ type LazyLoadProps<TComponent extends ComponentType<any>> = {
 
 export function LazyLoad<TComponent extends ComponentType<any>>({
   component,
-  fallback = <div className="w-full h-64 bg-muted/50 animate-pulse rounded-lg" />,
+  fallback = <div className="h-64 w-full animate-pulse rounded-lg bg-muted/50" />,
   ...props
 }: LazyLoadProps<TComponent>) {
-  const LazyComponent = lazy(component) as ComponentType<
-    ComponentPropsWithoutRef<TComponent>
-  >;
-  
+  const LazyComponent = useMemo(
+    () => lazy(component) as ComponentType<ComponentPropsWithoutRef<TComponent>>,
+    [component]
+  );
+
   return (
     <Suspense fallback={fallback}>
       <LazyComponent {...(props as ComponentPropsWithoutRef<TComponent>)} />
@@ -35,12 +37,6 @@ export function withLazyLoad<TComponent extends ComponentType<any>>(
   fallback?: ReactNode
 ) {
   return function LazyComponent(props: ComponentPropsWithoutRef<TComponent>) {
-    return (
-      <LazyLoad
-        component={componentLoader}
-        fallback={fallback}
-        {...props}
-      />
-    );
+    return <LazyLoad component={componentLoader} fallback={fallback} {...props} />;
   };
 }

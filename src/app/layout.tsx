@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   applicationName: "Marc Stämpfli Portfolio",
   metadataBase: new URL(siteConfig.url),
   alternates: {
-    canonical: "/",
+    canonical: siteConfig.url,
   },
   icons: {
     icon: [
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "/",
+    url: siteConfig.url,
     title: siteConfig.title,
     description: siteConfig.description,
     siteName: "Marc Stämpfli Portfolio",

@@ -14,8 +14,8 @@ export function TimelineProgress({ isLoading }: TimelineProgressProps) {
         animate={{ width: "100%" }}
         transition={{ duration: 1, ease: "easeInOut" }}
         className={`h-full w-full ${
-          isLoading 
-            ? "animate-pulse bg-muted/50" 
+          isLoading
+            ? "animate-pulse bg-muted/50"
             : "bg-gradient-to-r from-primary/50 via-primary/30 to-transparent"
         }`}
       />

@@ -27,13 +27,7 @@ export function SectionHeader({
   const centered = align === "center";
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-6",
-        centered && "items-center text-center",
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col gap-6", centered && "items-center text-center", className)}>
       <div className={cn("space-y-4", centered && "max-w-3xl")}>
         {eyebrow ? (
           <div className="section-kicker">

@@ -35,11 +35,11 @@ const getVariants = (animation: AnimationType): Variants => {
       hidden: { opacity: 0, x: -40 },
       visible: { opacity: 1, x: 0 },
     },
-    "scale": {
+    scale: {
       hidden: { opacity: 0, scale: 0.9 },
       visible: { opacity: 1, scale: 1 },
     },
-    "blur": {
+    blur: {
       hidden: { opacity: 0, filter: "blur(10px)" },
       visible: { opacity: 1, filter: "blur(0px)" },
     },

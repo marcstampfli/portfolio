@@ -4,10 +4,7 @@
  * @param endDate - The end date (null for current position)
  * @returns Formatted duration string like "2 yrs 3 mos" or "3 mos"
  */
-export function calculateDuration(
-  startDate: string | Date,
-  endDate: string | Date | null
-): string {
+export function calculateDuration(startDate: string | Date, endDate: string | Date | null): string {
   try {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : new Date();
@@ -49,10 +46,7 @@ export function calculateDuration(
  * @param endDate - The end date (null for current position)
  * @returns Formatted date range like "Aug 2021 - Present" or "Apr 2021 - Nov 2021"
  */
-export function formatDateRange(
-  startDate: string | Date,
-  endDate: string | Date | null
-): string {
+export function formatDateRange(startDate: string | Date, endDate: string | Date | null): string {
   try {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : null;
@@ -84,10 +78,13 @@ export function formatDateRange(
  * @param endDate - The end date (null for current position)
  * @returns Complete period string like "Aug 2021 - Present · 3 yrs 6 mos"
  */
-export function generatePeriodString(startDate: string | Date, endDate: string | Date | null): string {
+export function generatePeriodString(
+  startDate: string | Date,
+  endDate: string | Date | null
+): string {
   const dateRange = formatDateRange(startDate, endDate);
   const duration = calculateDuration(startDate, endDate);
-  
+
   return `${dateRange} · ${duration}`;
 }
 

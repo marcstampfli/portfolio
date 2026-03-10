@@ -4,9 +4,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
-const ImageOff = dynamic(() =>
-  import("lucide-react").then((mod) => mod.ImageOff),
-);
+const ImageOff = dynamic(() => import("lucide-react").then((mod) => mod.ImageOff));
 
 interface PlaceholderImageProps {
   className?: string;
@@ -27,15 +25,15 @@ export default function PlaceholderImage({
       animate={animate ? { opacity: 1, scale: 1 } : undefined}
       transition={{ duration: 0.3 }}
       className={cn(
-        "relative flex flex-col gap-3 items-center justify-center",
+        "relative flex flex-col items-center justify-center gap-3",
         "bg-background/50 backdrop-blur-sm",
-        fill && "w-full h-full",
-        className,
+        fill && "h-full w-full",
+        className
       )}
     >
-      <div className="bg-primary/5 rounded-lg p-4 backdrop-blur-sm">
+      <div className="rounded-lg bg-primary/5 p-4 backdrop-blur-sm">
         <ImageOff className="h-8 w-8 text-primary/40" aria-hidden="true" />
-        <span className="mt-2 block text-sm text-muted-foreground geist-mono">
+        <span className="geist-mono mt-2 block text-sm text-muted-foreground">
           No project image available
         </span>
       </div>

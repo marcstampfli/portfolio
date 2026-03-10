@@ -20,7 +20,7 @@ const heroMeta = [
   {
     label: "Contact",
     value: siteConfig.email,
-    href: `mailto:${siteConfig.email}`,
+    href: `mailto:${siteConfig.email}?subject=New project — [brief description]&body=Hi Marc, I have a project I'd like to discuss...`,
   },
 ];
 

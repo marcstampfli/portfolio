@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Web developer and designer with 15+ years of experience building websites and products.",
     start_url: "/",
     display: "standalone",
-    background_color: "#020617",
-    theme_color: "#3B82F6",
+    background_color: "#edf3f8",
+    theme_color: "#edf3f8",
     icons: [
       {
         src: "/favicon.ico",

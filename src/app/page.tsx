@@ -53,8 +53,8 @@ export default async function Home() {
                     <SectionHeader
                       titleId="contact-heading"
                       eyebrow="Contact"
-                      title="Let’s talk."
-                      subtitle="Send the brief. I’ll reply with a practical next step."
+                      title="Have a project in mind?"
+                      subtitle="Describe the project. I'll follow up with a direct response."
                       align="center"
                       className="mx-auto mb-12 max-w-3xl"
                       titleClassName="text-3xl sm:text-4xl lg:text-5xl"

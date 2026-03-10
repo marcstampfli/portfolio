@@ -11,12 +11,10 @@ export function isValidProjectImage(url: string): boolean {
 
   return (
     normalizedUrl.startsWith("/projects/") &&
-    (
-      normalizedUrl.endsWith(".jpg") ||
+    (normalizedUrl.endsWith(".jpg") ||
       normalizedUrl.endsWith(".jpeg") ||
       normalizedUrl.endsWith(".png") ||
       normalizedUrl.endsWith(".gif") ||
-      normalizedUrl.endsWith(".webp")
-    )
+      normalizedUrl.endsWith(".webp"))
   );
 }

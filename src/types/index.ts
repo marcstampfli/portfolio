@@ -61,7 +61,7 @@ export interface Experience {
   id: string;
   title: string;
   company: string;
-  position: string;
+  position: string | null;
   period: string;
   location: string | null;
   type: string | null;

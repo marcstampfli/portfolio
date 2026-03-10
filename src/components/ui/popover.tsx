@@ -3,8 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface PopoverProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface PopoverProps extends React.HTMLAttributes<HTMLDivElement> {
   trigger: React.ReactNode;
 }
 
@@ -14,13 +13,11 @@ const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
 
     return (
       <div className="relative inline-block">
-        <div onClick={() => setIsOpen(!isOpen)}>
-          {trigger}
-        </div>
+        <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
         {isOpen && (
           <div
             className={cn(
-              "absolute z-50 mt-2 w-56 rounded-md shadow-lg bg-popover text-popover-foreground",
+              "absolute z-50 mt-2 w-56 rounded-md bg-popover text-popover-foreground shadow-lg",
               "focus:outline-none",
               className
             )}

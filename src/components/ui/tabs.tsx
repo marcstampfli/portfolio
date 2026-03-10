@@ -38,41 +38,35 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
 
 export interface TabListProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const TabList = React.forwardRef<HTMLDivElement, TabListProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <div className={cn("flex border-b border-input", className)} ref={ref} {...props} />
-    );
-  }
-);
+const TabList = React.forwardRef<HTMLDivElement, TabListProps>(({ className, ...props }, ref) => {
+  return <div className={cn("flex border-b border-input", className)} ref={ref} {...props} />;
+});
 
 export interface TabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   value: string;
 }
 
-const Tab = React.forwardRef<HTMLButtonElement, TabProps>(
-  ({ className, value, ...props }, ref) => {
-    const { activeTab, setActiveTab } = React.useContext(TabContext);
-    return (
-      <button
-        type="button"
-        role="tab"
-        aria-selected={activeTab === value}
-        className={cn(
-          "px-4 py-2 text-sm font-medium border-b-2",
-          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-          activeTab === value
-            ? "border-primary text-primary"
-            : "border-transparent text-muted-foreground hover:text-foreground",
-          className
-        )}
-        onClick={() => setActiveTab(value)}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
+const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ className, value, ...props }, ref) => {
+  const { activeTab, setActiveTab } = React.useContext(TabContext);
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={activeTab === value}
+      className={cn(
+        "border-b-2 px-4 py-2 text-sm font-medium",
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        activeTab === value
+          ? "border-primary text-primary"
+          : "border-transparent text-muted-foreground hover:text-foreground",
+        className
+      )}
+      onClick={() => setActiveTab(value)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
 export interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string;
@@ -81,7 +75,7 @@ export interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
 const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(
   ({ className, value, children, ...props }, ref) => {
     const { activeTab } = React.useContext(TabContext);
-    
+
     if (activeTab !== value) {
       return null;
     }

@@ -5,6 +5,14 @@ import nodemailer from "nodemailer";
 
 const stripTags = (value: string): string => value.replace(/<[^>]*>/g, "").trim();
 
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
 type ContactEmailPayload = Pick<ContactFormData, "name" | "email" | "message">;
 
 export async function submitContactMessage(
@@ -32,7 +40,7 @@ export async function submitContactMessage(
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
     return {
       success: false,
-      error: "Message could not be sent. Please email directly at marcstampfli@gmail.com",
+      error: "Message could not be sent. Please try again later.",
     };
   }
 
@@ -57,28 +65,36 @@ async function sendContactEmail(data: ContactEmailPayload): Promise<void> {
     },
   });
 
+  const safeName = escapeHtml(data.name);
+  const safeEmail = escapeHtml(data.email);
+  const safeMessage = escapeHtml(data.message);
+
+  const subjectName = data.name.replace(/\r?\n|\r/g, " ").trim();
+  const textName = data.name.replace(/\r?\n|\r/g, " ").trim();
+  const textEmail = data.email.replace(/\r?\n|\r/g, " ").trim();
+
   await transporter.sendMail({
     from: `"Portfolio Contact" <${process.env.GMAIL_USER}>`,
-    to: "marcstampfli@gmail.com",
+    to: process.env.GMAIL_USER,
     replyTo: data.email,
-    subject: `New message from ${data.name}`,
-    text: `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`,
+    subject: `New message from ${subjectName}`,
+    text: `Name: ${textName}\nEmail: ${textEmail}\n\nMessage:\n${data.message}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #0ea5e9;">New portfolio contact</h2>
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 8px 0; color: #64748b; width: 80px;"><strong>Name</strong></td>
-            <td style="padding: 8px 0;">${data.name}</td>
+            <td style="padding: 8px 0;">${safeName}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #64748b;"><strong>Email</strong></td>
-            <td style="padding: 8px 0;"><a href="mailto:${data.email}">${data.email}</a></td>
+            <td style="padding: 8px 0;"><a href="mailto:${safeEmail}">${safeEmail}</a></td>
           </tr>
         </table>
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
         <p style="color: #64748b; margin-bottom: 4px;"><strong>Message</strong></p>
-        <p style="white-space: pre-wrap; line-height: 1.6;">${data.message}</p>
+        <p style="white-space: pre-wrap; line-height: 1.6;">${safeMessage}</p>
       </div>
     `,
   });

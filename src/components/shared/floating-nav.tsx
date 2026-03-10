@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+
 import { navItems } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -49,8 +49,15 @@ export function FloatingNav() {
   }, []);
 
   const handleNavClick = (href: string) => {
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const target = document.querySelector(href);
+    if (!target) return;
     setMobileMenuOpen(false);
+    // Wait for menu close animation (250ms) before scrolling so layout is stable
+    setTimeout(() => {
+      const navHeight = 80;
+      const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 260);
   };
 
   return (
@@ -126,7 +133,63 @@ export function FloatingNav() {
                 aria-controls="mobile-nav"
                 aria-label="Toggle navigation"
               >
-                {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  aria-hidden="true"
+                  className="overflow-visible"
+                >
+                  {/* Top line → top-right diagonal */}
+                  <motion.line
+                    x1="1"
+                    y1="4"
+                    x2="17"
+                    y2="4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="square"
+                    animate={
+                      mobileMenuOpen
+                        ? { x1: 2, y1: 2, x2: 16, y2: 16 }
+                        : { x1: 1, y1: 4, x2: 17, y2: 4 }
+                    }
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                  {/* Middle line → shrinks to a dot */}
+                  <motion.line
+                    x1="1"
+                    y1="9"
+                    x2="17"
+                    y2="9"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="square"
+                    animate={
+                      mobileMenuOpen
+                        ? { x1: 9, y1: 9, x2: 9, y2: 9, opacity: 0 }
+                        : { x1: 1, y1: 9, x2: 17, y2: 9, opacity: 1 }
+                    }
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                  {/* Bottom line → bottom-left diagonal */}
+                  <motion.line
+                    x1="1"
+                    y1="14"
+                    x2="17"
+                    y2="14"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="square"
+                    animate={
+                      mobileMenuOpen
+                        ? { x1: 2, y1: 16, x2: 16, y2: 2 }
+                        : { x1: 1, y1: 14, x2: 17, y2: 14 }
+                    }
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                </svg>
               </button>
             </div>
           </div>
@@ -138,15 +201,15 @@ export function FloatingNav() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="overflow-hidden border-t border-border/80 md:hidden"
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden border-t border-border/60 md:hidden"
               >
                 <nav className="grid gap-1 p-3" aria-label="Mobile">
-                  {navItems.map(({ href, label, icon: Icon }) => {
+                  {navItems.map(({ href, label, icon: Icon }, index) => {
                     const isActive = href === activeSection;
 
                     return (
-                      <a
+                      <motion.a
                         key={href}
                         href={href}
                         onClick={(event) => {
@@ -154,16 +217,33 @@ export function FloatingNav() {
                           handleNavClick(href);
                         }}
                         aria-current={isActive ? "page" : undefined}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{
+                          duration: 0.2,
+                          delay: index * 0.04,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
                         className={cn(
-                          "transition-theme flex items-center gap-3 rounded-sm border px-3 py-3 text-sm",
+                          "transition-theme flex items-center gap-3 rounded-sm border px-4 py-3 text-sm",
                           isActive
                             ? "border-primary/20 bg-primary/10 text-foreground"
                             : "border-transparent text-muted-foreground hover:border-border/70 hover:bg-secondary/50 hover:text-foreground"
                         )}
                       >
-                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        <span className={cn("transition-theme", isActive ? "text-primary" : "")}>
+                          <Icon className="h-4 w-4" aria-hidden="true" />
+                        </span>
                         <span>{label}</span>
-                      </a>
+                        {isActive ? (
+                          <motion.span
+                            layoutId="mobile-nav-active"
+                            className="ml-auto h-1.5 w-1.5 rounded-full bg-primary"
+                            transition={{ type: "spring", stiffness: 300, damping: 28 }}
+                          />
+                        ) : null}
+                      </motion.a>
                     );
                   })}
                 </nav>

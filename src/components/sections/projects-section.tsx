@@ -240,7 +240,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
               titleId="projects-heading"
               eyebrow="Projects"
               title="Client work, personal projects, and experiments."
-              subtitle="Featured work up top. Everything else is in the archive — filter by type to dig in."
+              subtitle="Selected work first. Browse the full archive and filter by type."
               titleClassName="text-3xl sm:text-4xl lg:text-5xl"
               className="max-w-3xl"
             />

@@ -256,9 +256,9 @@ export const getExperiences = cache(async (): Promise<Experience[]> => {
 
       const entry: ExperienceWithOrder = {
         id: experience.slug,
-        title: experience.title,
+        title: experience.position || experience.title,
         company: experience.company,
-        position: experience.position || experience.title,
+        position: null,
         period: generatePeriodString(experience.startDate, experience.endDate ?? null),
         location: experience.location || null,
         type: experience.employmentType || null,
@@ -273,8 +273,8 @@ export const getExperiences = cache(async (): Promise<Experience[]> => {
         description: experience.summary,
         tech_stack: experience.techStack,
         achievements: experience.achievements,
-        created_at: experience.startDate,
-        updated_at: experience.endDate ?? experience.startDate,
+        created_at: undefined,
+        updated_at: undefined,
         order: experience.sortOrder,
       };
 

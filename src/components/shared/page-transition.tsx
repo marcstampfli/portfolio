@@ -16,7 +16,6 @@ export function PageTransition({ children }: PageTransitionProps) {
         duration: 0.35,
         ease: [0.22, 1, 0.36, 1],
       }}
-      style={{ position: "relative" }}
       className="relative"
     >
       {children}

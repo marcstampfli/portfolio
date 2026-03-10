@@ -4,8 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export interface AvatarProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   src?: string;
   alt?: string;
   fallback?: React.ReactNode;
@@ -15,10 +14,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, alt, fallback, ...props }, ref) => {
     return (
       <div
-        className={cn(
-          "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-          className
-        )}
+        className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}
         ref={ref}
         {...props}
       >
