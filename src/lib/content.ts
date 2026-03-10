@@ -202,15 +202,22 @@ export const getPublishedProjects = cache(async (): Promise<ProjectWithTechStack
     .filter((project): project is ProjectWithTechStack => Boolean(project))
     .filter((project) => project.status === "published")
     .sort((a, b) => {
+      // Featured first
       if (a.featured !== b.featured) {
         return a.featured ? -1 : 1;
       }
 
-      if (a.order !== b.order) {
+      // Featured projects: respect manual sort order
+      if (a.featured && b.featured) {
         return a.order - b.order;
       }
 
-      return (b.year ?? 0) - (a.year ?? 0);
+      // Archive projects: newest year first, then manual order as tiebreaker
+      if ((b.year ?? 0) !== (a.year ?? 0)) {
+        return (b.year ?? 0) - (a.year ?? 0);
+      }
+
+      return a.order - b.order;
     });
 });
 

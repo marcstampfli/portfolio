@@ -6,7 +6,7 @@
   "featured": true,
   "status": "draft",
   "client": null,
-  "year": 2025,
+  "year": 2026,
   "sortOrder": 4,
   "stack": ["Next.js", "TypeScript", "Python", "React", "Tailwind CSS", "PostgreSQL"],
   "cover": "",
