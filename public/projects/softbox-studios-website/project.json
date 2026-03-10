@@ -2,14 +2,16 @@
   "title": "Softbox Studios Website",
   "slug": "softbox-studios-website",
   "type": "website",
-  "summary": "Softbox Studios Website project.",
+  "summary": "Early client website built for Softbox Studios, a Trinidad photography and media production company.",
   "featured": false,
   "status": "published",
   "client": "Softbox Studios",
   "year": 2012,
   "sortOrder": 35,
   "stack": [
-    "Web Development"
+    "HTML",
+    "CSS",
+    "JavaScript"
   ],
   "cover": "project-softbox-website.jpg",
   "gallery": [

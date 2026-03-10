@@ -2,15 +2,15 @@
   "title": "Tobago Housing Resorts Website",
   "slug": "tobago-housing-resorts-website",
   "type": "website",
-  "summary": "Tobago Housing Resorts Website project.",
+  "summary": "WordPress website for Tobago Housing Resorts, presenting their accommodation and facilities to prospective guests.",
   "featured": false,
   "status": "published",
   "client": "Tobago Housing Resorts",
   "year": 2017,
   "sortOrder": 23,
   "stack": [
-    "Modified Theme",
-    "WordPress"
+    "WordPress",
+    "Modified Theme"
   ],
   "cover": "project-tobagohousing-website.jpg",
   "gallery": [

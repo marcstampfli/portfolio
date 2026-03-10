@@ -2,17 +2,17 @@
   "title": "Gypsea Soul Jewelry Website",
   "slug": "gypsea-soul-jewelry-website",
   "type": "website",
-  "summary": "Gypsea Soul Jewelry Website project.",
+  "summary": "WordPress e-commerce site for Gypsea Soul Jewelry, a Trinidad-based jewelry brand, with PayPal checkout and a modified theme tailored to the brand's aesthetic.",
   "featured": false,
   "status": "published",
   "client": "Gypsea Soul Jewelry",
   "year": 2019,
   "sortOrder": 18,
   "stack": [
-    "E-Commerce",
-    "Modified Theme",
+    "WordPress",
+    "WooCommerce",
     "PayPal",
-    "WordPress"
+    "Modified Theme"
   ],
   "cover": "project-gypsea-website.jpg",
   "gallery": [

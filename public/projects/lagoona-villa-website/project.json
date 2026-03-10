@@ -2,14 +2,15 @@
   "title": "Lagoona Villa Website",
   "slug": "lagoona-villa-website",
   "type": "website",
-  "summary": "Lagoona Villa Website project.",
+  "summary": "WordPress website for Lagoona Villa, a Trinidad vacation rental property, presenting the property and facilitating booking inquiries.",
   "featured": false,
   "status": "published",
   "client": "Lagoona Villa",
   "year": 2018,
   "sortOrder": 20,
   "stack": [
-    "WordPress"
+    "WordPress",
+    "Modified Theme"
   ],
   "cover": "project-lagoona-website.jpg",
   "gallery": [

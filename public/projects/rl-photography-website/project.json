@@ -2,15 +2,15 @@
   "title": "RL Photography Website",
   "slug": "rl-photography-website",
   "type": "website",
-  "summary": "RL Photography Website project.",
+  "summary": "WordPress portfolio website for RL Photography, showcasing the work of Trinidad-based photographer Rainier Lange.",
   "featured": false,
   "status": "published",
   "client": "RL Photography",
   "year": 2021,
   "sortOrder": 16,
   "stack": [
-    "Modified Theme",
-    "WordPress"
+    "WordPress",
+    "Modified Theme"
   ],
   "cover": "project-rlphoto-website.jpg",
   "gallery": [

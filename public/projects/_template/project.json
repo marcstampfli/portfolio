@@ -4,7 +4,7 @@
   "type": "website",
   "summary": "Short summary for cards and archive rows.",
   "featured": false,
-  "status": "published",
+  "status": "draft",
   "client": "Client or personal project",
   "year": 2026,
   "sortOrder": 100,

@@ -2,14 +2,15 @@
   "title": "Trini Revellers Website",
   "slug": "trini-revellers-website",
   "type": "website",
-  "summary": "Trini Revellers Website project.",
+  "summary": "Early website built for Trini Revellers, a Trinidad Carnival band, to promote their brand and manage mas camp information.",
   "featured": false,
   "status": "published",
   "client": "Trini Revellers",
   "year": 2015,
   "sortOrder": 32,
   "stack": [
-    "Web Development"
+    "WordPress",
+    "Web Design"
   ],
   "cover": "project-trinirevellers-website.jpg",
   "gallery": [],

@@ -2,19 +2,19 @@
   "title": "Steups.io",
   "slug": "steups-io",
   "type": "web",
-  "summary": "A platform built for Trinidad and Tobago — local tools, generators, games, and utilities in one place. The name is pure Trini slang.",
+  "summary": "A culture-first web platform for Trinidad and Tobago featuring 38 tools, daily games, and AI-powered generators — all written in authentic Trini voice and dialect.",
   "featured": true,
   "status": "published",
-  "client": null,
+  "client": "Personal",
   "year": 2026,
   "sortOrder": 1,
-  "stack": ["Next.js", "TypeScript", "React", "Tailwind CSS"],
+  "stack": ["Next.js", "TypeScript", "React", "Supabase", "Groq AI", "SCSS Modules", "Framer Motion", "Radix UI", "Zod", "Vitest", "Playwright", "Vercel"],
   "cover": "project-steups.jpg",
   "gallery": [
     "project-steups2.jpg"
   ],
   "links": {
-    "live": "",
+    "live": "https://steups.io",
     "github": "",
     "figma": ""
   }
