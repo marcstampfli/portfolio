@@ -1,0 +1,21 @@
+{
+  "title": "JAS MultiServices Website",
+  "slug": "jas-multiservices-website",
+  "type": "website",
+  "summary": "WordPress website for JAS MultiServices, a Trinidad-based multi-service company.",
+  "featured": false,
+  "status": "published",
+  "client": "JAS MultiServices",
+  "year": 2025,
+  "sortOrder": 0,
+  "stack": [
+    "WordPress"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "https://jasmultiservices.net",
+    "github": "",
+    "figma": ""
+  }
+}
