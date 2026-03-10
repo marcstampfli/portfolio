@@ -3,7 +3,7 @@
   "slug": "trinistars-website",
   "type": "website",
   "summary": "WordPress website for a local brand, tailored to present content clearly while keeping the experience lightweight and easy to maintain.",
-  "featured": true,
+  "featured": false,
   "status": "published",
   "client": "TriniStars",
   "year": 2020,

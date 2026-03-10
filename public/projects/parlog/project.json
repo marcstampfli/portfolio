@@ -3,7 +3,7 @@
   "slug": "parlog",
   "type": "web",
   "summary": "A personal logging and data ingestion app with a terminal UI for input and a web interface for reviewing entries. Built with Next.js and Python — part notebook, part pipeline.",
-  "featured": true,
+  "featured": false,
   "status": "draft",
   "client": null,
   "year": 2026,

@@ -7,7 +7,7 @@
   "status": "published",
   "client": "Personal",
   "year": 2024,
-  "sortOrder": 1,
+  "sortOrder": 2,
   "stack": ["Next.js", "React", "TypeScript", "Supabase", "Tailwind CSS", "Zustand", "Jest", "Playwright"],
   "cover": "",
   "gallery": [],

@@ -7,7 +7,7 @@
   "status": "draft",
   "client": null,
   "year": 2026,
-  "sortOrder": 3,
+  "sortOrder": 1,
   "stack": ["Next.js", "TypeScript", "React", "Tailwind CSS"],
   "cover": "",
   "gallery": [],

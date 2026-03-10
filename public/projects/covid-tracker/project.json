@@ -3,7 +3,7 @@
   "slug": "covid-tracker",
   "type": "web",
   "summary": "Real-time pandemic dashboard visualizing global COVID-19 cases, recoveries, deaths, and vaccinations via an interactive world map, line charts, and ranked country table.",
-  "featured": true,
+  "featured": false,
   "status": "published",
   "client": "Personal",
   "year": 2020,
