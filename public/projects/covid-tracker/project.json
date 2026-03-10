@@ -1,16 +1,20 @@
 {
-  "title": "Covid Tracker",
+  "title": "COVID-19 Command Center",
   "slug": "covid-tracker",
   "type": "web",
-  "summary": "Covid Tracker project.",
-  "featured": false,
+  "summary": "Real-time pandemic dashboard visualizing global COVID-19 cases, recoveries, deaths, and vaccinations via an interactive world map, line charts, and ranked country table.",
+  "featured": true,
   "status": "published",
-  "client": "Covid Tracker",
-  "year": 2021,
+  "client": "Personal",
+  "year": 2020,
   "sortOrder": 5,
   "stack": [
-    "API",
-    "React"
+    "React 19",
+    "Vite",
+    "Chart.js",
+    "Leaflet",
+    "Firebase Hosting",
+    "disease.sh API"
   ],
   "cover": "project-covidtracker-website4.jpg",
   "gallery": [
