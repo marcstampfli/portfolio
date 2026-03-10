@@ -1,0 +1,29 @@
+{
+  "title": "IncomeTaxTT",
+  "slug": "incometaxtt",
+  "type": "web",
+  "summary": "Browser-based calculator for Trinidad & Tobago residents to estimate PAYE, annual income tax, quarterly payments, and business taxes across 26 years of historical IRD rules.",
+  "featured": true,
+  "status": "published",
+  "client": "Personal",
+  "year": 2026,
+  "sortOrder": 4,
+  "stack": [
+    "React 19",
+    "TypeScript",
+    "Vite",
+    "jsPDF",
+    "QR Code",
+    "Vitest",
+    "Playwright",
+    "Vercel",
+    "PWA"
+  ],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "https://incometaxtt.com",
+    "github": "https://github.com/marcstampfli/tt-tax-app",
+    "figma": ""
+  }
+}
