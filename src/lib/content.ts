@@ -5,6 +5,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import type { Experience, ProjectResponse, ProjectWithTechStack } from "@/types";
+import { generatePeriodString } from "@/lib/date-utils";
 
 const projectsRootDir = join(process.cwd(), "public", "projects");
 const experiencesRootDir = join(process.cwd(), "public", "experiences");
@@ -245,7 +246,7 @@ export const getExperiences = cache(async (): Promise<Experience[]> => {
         title: experience.title,
         company: experience.company,
         position: experience.position || experience.title,
-        period: "",
+        period: generatePeriodString(experience.startDate, experience.endDate ?? null),
         location: experience.location || null,
         type: experience.employmentType || null,
         logo: resolveExperienceLogo(experience) ?? null,

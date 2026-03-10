@@ -8,7 +8,6 @@ import { BackgroundEffect } from "@/components/timeline/background-effect";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { generatePeriodString } from "@/lib/date-utils";
 import { type Experience } from "@/types";
 
 interface ExperienceSectionProps {
@@ -75,10 +74,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
               {visibleExperiences.map((experience, index) => (
                 <TimelineItem
                   key={experience.id}
-                  experience={{
-                    ...experience,
-                    period: generatePeriodString(experience.start_date, experience.end_date),
-                  }}
+                  experience={experience}
                   isLast={index === visibleExperiences.length - 1}
                 />
               ))}
