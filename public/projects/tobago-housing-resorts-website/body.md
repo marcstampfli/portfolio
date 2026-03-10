@@ -10,5 +10,3 @@ A WordPress site with a modified theme, built around strong photography and clea
 - Photo galleries per property section
 - Booking inquiry form
 - Mobile-responsive layout
-
-The site is still live at [tobagohousingresorts.com](https://www.tobagohousingresorts.com/).

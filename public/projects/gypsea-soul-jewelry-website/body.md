@@ -10,5 +10,3 @@ The site runs on WordPress with WooCommerce for the shop. PayPal was integrated 
 - PayPal checkout integration
 - Mobile-responsive storefront
 - Modified WordPress theme to match brand identity
-
-The store is still live at [gypseasouljewelry.co](https://gypseasouljewelry.co/).

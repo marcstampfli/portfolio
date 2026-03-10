@@ -10,5 +10,3 @@ A WordPress site with a modified theme, focused on strong photography presentati
 - Photo gallery
 - Booking inquiry form
 - Mobile-responsive layout
-
-The site is still live at [lagoonavilla.com](https://www.lagoonavilla.com/).

@@ -10,5 +10,3 @@ Built on WordPress with a modified theme optimised for photography portfolios. T
 - Modified theme for photography presentation
 - Category-organised portfolio sections
 - Mobile-responsive design
-
-The site is still live at [rainierlangephotography.com](https://rainierlangephotography.com/).
