@@ -88,6 +88,10 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
+function renderInline(text: string): string {
+  return escapeHtml(text).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+}
+
 function renderSimpleMarkdown(markdown: string): string {
   const blocks = markdown
     .split(/\n\s*\n/)
@@ -102,19 +106,21 @@ function renderSimpleMarkdown(markdown: string): string {
         .filter(Boolean);
 
       if (lines.every((line) => line.startsWith("- "))) {
-        const items = lines.map((line) => `<li>${escapeHtml(line.slice(2).trim())}</li>`).join("");
+        const items = lines
+          .map((line) => `<li>${renderInline(line.slice(2).trim())}</li>`)
+          .join("");
         return `<ul>${items}</ul>`;
       }
 
       if (lines[0]?.startsWith("### ")) {
-        return `<h3>${escapeHtml(lines[0].slice(4).trim())}</h3>`;
+        return `<h3>${renderInline(lines[0].slice(4).trim())}</h3>`;
       }
 
       if (lines[0]?.startsWith("## ")) {
-        return `<h2>${escapeHtml(lines[0].slice(3).trim())}</h2>`;
+        return `<h2>${renderInline(lines[0].slice(3).trim())}</h2>`;
       }
 
-      return `<p>${escapeHtml(lines.join(" "))}</p>`;
+      return `<p>${renderInline(lines.join(" "))}</p>`;
     })
     .join("\n");
 }
