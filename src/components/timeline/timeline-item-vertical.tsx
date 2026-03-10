@@ -26,6 +26,7 @@ export interface TimelineItemProps {
     logo_height?: number | null;
     logo_padding?: number | null;
     location?: string | null;
+    type?: string | null;
   };
   isLast?: boolean;
 }
@@ -110,9 +111,16 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
             <p className="text-sm text-foreground/80">{experience.position}</p>
           </div>
 
-          <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-secondary/50 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>{experience.period}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-sm border border-border/70 bg-secondary/50 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>{experience.period}</span>
+            </div>
+            {experience.type ? (
+              <div className="inline-flex items-center rounded-sm border border-border/70 bg-secondary/50 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                {experience.type}
+              </div>
+            ) : null}
           </div>
         </div>
 
