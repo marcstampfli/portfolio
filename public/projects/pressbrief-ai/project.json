@@ -6,7 +6,8 @@
   "featured": false,
   "status": "published",
   "client": "Personal",
-  "year": 2025,
+  "yearStart": 2025,
+  "year": null,
   "sortOrder": 100,
   "stack": [
     "WordPress",

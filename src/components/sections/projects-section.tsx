@@ -15,7 +15,7 @@ const ProjectModal = dynamic(
   () => import("@/components/shared/project-modal").then((m) => m.ProjectModal),
   { ssr: false }
 );
-import { isValidProjectImage } from "@/lib/utils";
+import { formatProjectYear, isValidProjectImage } from "@/lib/utils";
 import { ArrowRight, ExternalLink, FolderArchive, Github, Star } from "lucide-react";
 
 interface ProjectsSectionProps {
@@ -126,8 +126,8 @@ function ProjectCard({
                 <p className="truncate text-sm font-medium text-foreground">
                   {project.client ?? "Independent"}
                 </p>
-                {project.year ? (
-                  <p className="text-xs text-muted-foreground">{project.year}</p>
+                {(project.year_start || project.year) ? (
+                  <p className="text-xs text-muted-foreground">{formatProjectYear(project.year_start, project.year)}</p>
                 ) : null}
               </div>
               <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary">
@@ -165,7 +165,7 @@ function ArchiveRow({
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        {project.year ? <span>{project.year}</span> : null}
+        {(project.year_start || project.year) ? <span>{formatProjectYear(project.year_start, project.year)}</span> : null}
         <ArrowRight className="h-4 w-4" />
       </div>
     </button>

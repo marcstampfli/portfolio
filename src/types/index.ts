@@ -41,6 +41,7 @@ export interface Project {
   client: string | null;
   status: string;
   order: number;
+  year_start: number | null;
   year: number | null;
 }
 

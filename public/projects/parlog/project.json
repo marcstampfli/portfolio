@@ -6,7 +6,8 @@
   "featured": true,
   "status": "draft",
   "client": "Personal",
-  "year": 2026,
+  "yearStart": 2026,
+  "year": null,
   "sortOrder": 4,
   "stack": [
     "Next.js",

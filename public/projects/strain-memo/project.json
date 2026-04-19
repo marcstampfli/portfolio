@@ -6,7 +6,8 @@
   "featured": true,
   "status": "published",
   "client": "Personal",
-  "year": 2026,
+  "yearStart": 2026,
+  "year": null,
   "sortOrder": 5,
   "stack": [
     "React 19",

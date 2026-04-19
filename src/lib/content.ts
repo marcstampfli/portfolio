@@ -19,6 +19,7 @@ const projectConfigSchema = z.object({
   featured: z.boolean().optional().default(false),
   status: z.enum(["published", "draft", "unpublished", "archived"]).optional().default("published"),
   client: z.string().optional().nullable(),
+  yearStart: z.number().int().optional().nullable(),
   year: z.number().int().optional().nullable(),
   sortOrder: z.number().int().optional().default(0),
   stack: z.array(z.string()).optional().default([]),
@@ -189,6 +190,7 @@ function readProjectConfig(projectDirName: string): ProjectWithTechStack | null 
     client: project.client || null,
     status: project.status,
     order: project.sortOrder,
+    year_start: project.yearStart ?? null,
     year: project.year ?? null,
   };
 }
@@ -219,8 +221,10 @@ export const getPublishedProjects = cache(async (): Promise<ProjectWithTechStack
       }
 
       // Archive projects: newest year first, then manual order as tiebreaker
-      if ((b.year ?? 0) !== (a.year ?? 0)) {
-        return (b.year ?? 0) - (a.year ?? 0);
+      const aYear = a.year ?? a.year_start ?? 0;
+      const bYear = b.year ?? b.year_start ?? 0;
+      if (bYear !== aYear) {
+        return bYear - aYear;
       }
 
       return a.order - b.order;

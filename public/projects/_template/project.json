@@ -6,6 +6,7 @@
   "featured": false,
   "status": "draft",
   "client": "Client or personal project",
+  "yearStart": null,
   "year": 2026,
   "sortOrder": 100,
   "stack": ["Next.js", "Tailwind CSS"],
