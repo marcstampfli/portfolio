@@ -1,0 +1,29 @@
+{
+  "title": "PressBrief AI",
+  "slug": "pressbrief-ai",
+  "type": "web",
+  "summary": "WordPress plugin ecosystem that uses AI to auto-generate press brief summaries for posts, with a commercial Pro version and a Next.js licensing/marketing site.",
+  "featured": false,
+  "status": "published",
+  "client": "Personal",
+  "year": 2025,
+  "sortOrder": 100,
+  "stack": [
+    "WordPress",
+    "PHP",
+    "Next.js",
+    "React",
+    "SQLite",
+    "OpenAI API",
+    "Anthropic Claude API",
+    "Google Gemini API",
+    "Groq API"
+  ],
+  "cover": "",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}
