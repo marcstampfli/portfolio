@@ -100,25 +100,11 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
                   <div className="space-y-6">
-                    <section>
-                      <h3 className="font-display text-xl font-semibold tracking-[-0.03em] text-foreground">
-                        Overview
-                      </h3>
-                      <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-                        {project.description}
-                      </p>
-                    </section>
-
                     {sanitizedContent ? (
-                      <section>
-                        <h3 className="font-display text-xl font-semibold tracking-[-0.03em] text-foreground">
-                          Notes
-                        </h3>
-                        <div
-                          className="prose prose-sm mt-3 max-w-none text-muted-foreground dark:prose-invert prose-headings:font-display prose-headings:text-foreground prose-p:leading-7"
-                          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-                        />
-                      </section>
+                      <div
+                        className="prose prose-sm max-w-none text-muted-foreground dark:prose-invert prose-headings:font-display prose-headings:text-foreground prose-p:leading-7"
+                        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                      />
                     ) : null}
 
                     {project.images && project.images.length > 1 ? (
