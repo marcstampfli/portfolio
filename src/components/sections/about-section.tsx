@@ -43,7 +43,7 @@ export function AboutSection() {
         <div className="space-y-12">
           {/* Header */}
           <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -60,7 +60,7 @@ export function AboutSection() {
 
           {/* Bio row — photo + text */}
           <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.5, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
@@ -112,7 +112,7 @@ export function AboutSection() {
             {principles.map((item, index) => (
               <motion.article
                 key={item.title}
-                initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
+                initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-8%" }}
                 transition={{

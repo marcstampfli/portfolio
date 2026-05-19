@@ -75,7 +75,7 @@ export function ContactForm() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(280px,0.78fr)_minmax(0,1fr)] lg:gap-10">
       <motion.aside
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+        initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-10%" }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -88,7 +88,7 @@ export function ContactForm() {
           {contactInfo.map((item, index) => (
             <motion.div
               key={item.label}
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+              initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -136,7 +136,7 @@ export function ContactForm() {
       </motion.aside>
 
       <motion.div
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+        initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-10%" }}
         transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}

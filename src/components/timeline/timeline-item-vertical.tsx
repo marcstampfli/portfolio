@@ -51,8 +51,8 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
       {/* Timeline connector column */}
       <div className="relative flex flex-col items-center pt-1">
         <motion.div
-          initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.8 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             "relative z-10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-sm border sm:h-12 sm:w-12",
@@ -92,8 +92,8 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
 
       {/* Card */}
       <motion.article
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
         transition={{ duration: 0.45, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
         className={cn("surface-card relative flex-1 p-4 sm:p-6", !isLast && "mb-5 sm:mb-6")}
       >

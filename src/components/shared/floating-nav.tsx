@@ -145,13 +145,10 @@ export function FloatingNav() {
                 >
                   {/* Top line → top-right diagonal */}
                   <motion.line
-                    x1="1"
-                    y1="4"
-                    x2="17"
-                    y2="4"
                     stroke="currentColor"
                     strokeWidth="1.5"
                     strokeLinecap="square"
+                    initial={{ x1: 1, y1: 4, x2: 17, y2: 4 }}
                     animate={
                       mobileMenuOpen
                         ? { x1: 2, y1: 2, x2: 16, y2: 16 }
@@ -161,13 +158,10 @@ export function FloatingNav() {
                   />
                   {/* Middle line → shrinks to a dot */}
                   <motion.line
-                    x1="1"
-                    y1="9"
-                    x2="17"
-                    y2="9"
                     stroke="currentColor"
                     strokeWidth="1.5"
                     strokeLinecap="square"
+                    initial={{ x1: 1, y1: 9, x2: 17, y2: 9, opacity: 1 }}
                     animate={
                       mobileMenuOpen
                         ? { x1: 9, y1: 9, x2: 9, y2: 9, opacity: 0 }
@@ -177,13 +171,10 @@ export function FloatingNav() {
                   />
                   {/* Bottom line → bottom-left diagonal */}
                   <motion.line
-                    x1="1"
-                    y1="14"
-                    x2="17"
-                    y2="14"
                     stroke="currentColor"
                     strokeWidth="1.5"
                     strokeLinecap="square"
+                    initial={{ x1: 1, y1: 14, x2: 17, y2: 14 }}
                     animate={
                       mobileMenuOpen
                         ? { x1: 2, y1: 16, x2: 16, y2: 2 }
