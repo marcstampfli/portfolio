@@ -1,0 +1,36 @@
+{
+  "title": "All Fours Ultimate",
+  "slug": "all-fours-ultimate",
+  "type": "web",
+  "summary": "Competitive multiplayer esports platform for the Trinidad & Tobago card game \"All Fours,\" featuring ranked matchmaking, tournaments, and live online play.",
+  "featured": true,
+  "status": "published",
+  "client": "Personal",
+  "yearStart": 2024,
+  "year": null,
+  "sortOrder": 3,
+  "stack": [
+    "React 19",
+    "TypeScript",
+    "Vite",
+    "Django",
+    "Django REST Framework",
+    "PostgreSQL",
+    "WebSockets",
+    "TanStack Query",
+    "React Router 7",
+    "Custom CSS Design System",
+    "Vercel",
+    "Railway",
+    "Cloudflare"
+  ],
+  "cover": "project-allfours.jpg",
+  "gallery": [
+    "project-allfours.jpg"
+  ],
+  "links": {
+    "live": "https://allfours.io",
+    "github": "",
+    "figma": ""
+  }
+}
