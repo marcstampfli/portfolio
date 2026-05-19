@@ -1,23 +1,63 @@
 "use server";
 
-import { type ContactFormData, contactFormSchema } from "@/types";
+import { headers } from "next/headers";
 import nodemailer from "nodemailer";
+import { type ContactFormData, contactFormSchema } from "@/types";
+import { escapeHtml } from "@/lib/html";
 
 const stripTags = (value: string): string => value.replace(/<[^>]*>/g, "").trim();
+const stripCrlf = (value: string): string => value.replace(/[\r\n]+/g, " ").trim();
 
-const escapeHtml = (value: string): string =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+// Simple in-memory token bucket per client. Per-instance — for stronger guarantees
+// behind multiple serverless instances, swap for a shared store (Redis, Upstash, etc.).
+const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RATE_LIMIT = 5;
+const submissions = new Map<string, number[]>();
+
+function rateLimit(key: string): boolean {
+  const now = Date.now();
+  const recent = (submissions.get(key) ?? []).filter((ts) => now - ts < RATE_WINDOW_MS);
+
+  if (recent.length >= RATE_LIMIT) {
+    submissions.set(key, recent);
+    return false;
+  }
+
+  recent.push(now);
+  submissions.set(key, recent);
+  return true;
+}
+
+async function getClientKey(): Promise<string> {
+  const headerList = await headers();
+  const forwarded = headerList.get("x-forwarded-for");
+  const ip = forwarded?.split(",")[0]?.trim() || headerList.get("x-real-ip") || "unknown";
+  return ip;
+}
+
+let transporter: nodemailer.Transporter | null = null;
+function getTransporter(): nodemailer.Transporter {
+  if (transporter) return transporter;
+  transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+  return transporter;
+}
 
 type ContactEmailPayload = Pick<ContactFormData, "name" | "email" | "message">;
 
 export async function submitContactMessage(
   data: ContactFormData
 ): Promise<{ success: boolean; error?: string }> {
+  // Honeypot — silently reject bots
+  if (data.website && data.website.trim().length > 0) {
+    return { success: true };
+  }
+
   const sanitizedInput = {
     ...data,
     name: stripTags(data.name),
@@ -29,56 +69,42 @@ export async function submitContactMessage(
     return { success: false, error: "Invalid form data" };
   }
 
-  const { name, message, website } = parsed.data;
-  const email = parsed.data.email.trim().toLowerCase();
-
-  // Honeypot — reject bots
-  if (website && website.trim().length > 0) {
-    return { success: false, error: "Invalid form submission" };
+  const clientKey = await getClientKey();
+  if (!rateLimit(clientKey)) {
+    return { success: false, error: "Too many submissions. Please try again later." };
   }
 
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    return {
-      success: false,
-      error: "Message could not be sent. Please try again later.",
-    };
+    return { success: false, error: "Message could not be sent. Please try again later." };
   }
 
   try {
-    await sendContactEmail({ name, email, message });
+    await sendContactEmail({
+      name: parsed.data.name,
+      email: parsed.data.email.trim().toLowerCase(),
+      message: parsed.data.message,
+    });
     return { success: true };
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.error("Failed to submit message:", error);
     }
-
     return { success: false, error: "Failed to send message. Please try again later." };
   }
 }
 
 async function sendContactEmail(data: ContactEmailPayload): Promise<void> {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-  });
-
   const safeName = escapeHtml(data.name);
   const safeEmail = escapeHtml(data.email);
   const safeMessage = escapeHtml(data.message);
+  const subjectName = stripCrlf(data.name);
 
-  const subjectName = data.name.replace(/\r?\n|\r/g, " ").trim();
-  const textName = data.name.replace(/\r?\n|\r/g, " ").trim();
-  const textEmail = data.email.replace(/\r?\n|\r/g, " ").trim();
-
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from: `"Portfolio Contact" <${process.env.GMAIL_USER}>`,
     to: process.env.GMAIL_USER,
     replyTo: data.email,
     subject: `New message from ${subjectName}`,
-    text: `Name: ${textName}\nEmail: ${textEmail}\n\nMessage:\n${data.message}`,
+    text: `Name: ${subjectName}\nEmail: ${stripCrlf(data.email)}\n\nMessage:\n${data.message}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #0ea5e9;">New portfolio contact</h2>

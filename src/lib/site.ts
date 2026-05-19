@@ -20,6 +20,8 @@ function normalizeSiteUrl(value?: string): string {
 
 const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_APP_URL);
 
+const email = "marcstampfli@gmail.com";
+
 export const siteConfig = {
   name: "Marc Stämpfli",
   title: "Marc Stämpfli - Web Developer & Designer",
@@ -28,7 +30,8 @@ export const siteConfig = {
   url: siteUrl,
   ogImage: `${siteUrl}/profile.jpg`,
   location: "Trinidad and Tobago",
-  email: "marcstampfli@gmail.com",
+  email,
+  mailto: `mailto:${email}?subject=${encodeURIComponent("New project — [brief description]")}&body=${encodeURIComponent("Hi Marc, I have a project I'd like to discuss...")}`,
   sameAs: [
     "https://github.com/marcstampfli",
     "https://www.linkedin.com/in/marc-st%C3%A4mpfli",

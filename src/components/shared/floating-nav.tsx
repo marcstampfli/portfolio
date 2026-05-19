@@ -14,50 +14,52 @@ export function FloatingNav() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const updateState = () => {
-      setIsScrolled(window.scrollY > 18);
+    const onScroll = () => setIsScrolled(window.scrollY > 18);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-      const current = navItems
-        .map(({ href }) => {
-          const element = document.querySelector(href);
+  useEffect(() => {
+    const sections = navItems
+      .map(({ href }) => document.querySelector<HTMLElement>(href))
+      .filter((el): el is HTMLElement => el !== null);
 
-          if (!element) {
-            return null;
-          }
+    if (sections.length === 0) return;
 
-          const rect = element.getBoundingClientRect();
-          const offset = Math.abs(rect.top - 120);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-          return { href, offset };
-        })
-        .filter((entry): entry is { href: string; offset: number } => Boolean(entry))
-        .sort((a, b) => a.offset - b.offset)[0];
+        if (visible) {
+          setActiveSection(`#${visible.target.id}`);
+        }
+      },
+      { rootMargin: "-30% 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
 
-      if (current) {
-        setActiveSection(current.href);
-      }
-    };
-
-    updateState();
-    window.addEventListener("scroll", updateState, { passive: true });
-    window.addEventListener("resize", updateState);
-
-    return () => {
-      window.removeEventListener("scroll", updateState);
-      window.removeEventListener("resize", updateState);
-    };
+    for (const section of sections) observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
   const handleNavClick = (href: string) => {
     const target = document.querySelector(href);
     if (!target) return;
-    setMobileMenuOpen(false);
-    // Wait for menu close animation (250ms) before scrolling so layout is stable
-    setTimeout(() => {
+    const scroll = () => {
       const navHeight = 80;
       const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
       window.scrollTo({ top, behavior: "smooth" });
-    }, 260);
+    };
+
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+      // Wait for menu close animation so layout is stable before scrolling.
+      setTimeout(scroll, 260);
+    } else {
+      scroll();
+    }
   };
 
   return (

@@ -15,7 +15,7 @@ const ProjectModal = dynamic(
   () => import("@/components/shared/project-modal").then((m) => m.ProjectModal),
   { ssr: false }
 );
-import { formatProjectYear, isValidProjectImage } from "@/lib/utils";
+import { formatProjectYear, isValidLocalImage } from "@/lib/utils";
 import { ArrowRight, ExternalLink, FolderArchive, Github, Star } from "lucide-react";
 
 interface ProjectsSectionProps {
@@ -45,7 +45,7 @@ function ProjectCard({
         onClick={() => onOpen(project)}
       >
         <div className="relative aspect-[16/10] border-b border-border/80 bg-secondary/60">
-          {isValidProjectImage(project.images?.[0]) ? (
+          {isValidLocalImage(project.images?.[0]) ? (
             <OptimizedImage
               key={project.images[0]}
               src={project.images[0]}

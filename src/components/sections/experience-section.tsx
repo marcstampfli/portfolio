@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Briefcase } from "lucide-react";
 import { TimelineItem } from "@/components/timeline/timeline-item-vertical";
 import { BackgroundEffect } from "@/components/timeline/background-effect";
@@ -17,19 +17,9 @@ interface ExperienceSectionProps {
 export function ExperienceSection({ experiences }: ExperienceSectionProps) {
   const [showFullTimeline, setShowFullTimeline] = useState(false);
 
-  const sortedExperiences = useMemo(
-    () =>
-      [...experiences].sort((a, b) => {
-        const dateA = new Date(a.start_date).getTime();
-        const dateB = new Date(b.start_date).getTime();
-        return dateB - dateA;
-      }),
-    [experiences]
-  );
-
-  const recentExperiences = sortedExperiences.slice(0, 3);
-  const archivedExperiences = sortedExperiences.slice(3);
-  const visibleExperiences = showFullTimeline ? sortedExperiences : recentExperiences;
+  const recentExperiences = experiences.slice(0, 3);
+  const archivedExperiences = experiences.slice(3);
+  const visibleExperiences = showFullTimeline ? experiences : recentExperiences;
 
   return (
     <section
@@ -56,7 +46,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
           />
         </motion.div>
 
-        {sortedExperiences.length === 0 ? (
+        {experiences.length === 0 ? (
           <div className="surface-panel max-w-3xl p-8 sm:p-10">
             <div className="flex h-12 w-12 items-center justify-center rounded-md border border-primary/20 bg-primary/10 text-primary">
               <Briefcase className="h-5 w-5" />
@@ -84,7 +74,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
               <div className="flex flex-col gap-4 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-muted-foreground">
                   {showFullTimeline
-                    ? `Showing all ${sortedExperiences.length} experience entries.`
+                    ? `Showing all ${experiences.length} experience entries.`
                     : `Showing ${recentExperiences.length} recent roles. ${archivedExperiences.length} older roles are tucked away.`}
                 </p>
                 <Button

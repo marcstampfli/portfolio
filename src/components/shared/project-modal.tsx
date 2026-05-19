@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatProjectYear, isValidProjectImage } from "@/lib/utils";
+import { formatProjectYear, isValidLocalImage } from "@/lib/utils";
 import { Calendar, ExternalLink, Figma, Github, Layers, User, X } from "lucide-react";
 
 interface ProjectModalProps {
@@ -56,7 +56,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               <div className="space-y-8 px-6 py-6 sm:px-7 sm:py-7">
                 <div className="overflow-hidden rounded-lg border border-border/80">
                   <div className="relative aspect-[16/9] bg-secondary/60">
-                    {isValidProjectImage(project.images?.[0]) ? (
+                    {isValidLocalImage(project.images?.[0]) ? (
                       <OptimizedImage
                         key={project.images[0] ?? project.id}
                         src={project.images[0]}
@@ -114,7 +114,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                         </h3>
                         <div className="grid gap-4 sm:grid-cols-2">
                           {project.images.slice(1).map((image, index) =>
-                            isValidProjectImage(image) ? (
+                            isValidLocalImage(image) ? (
                               <div
                                 key={`${image}-${index}`}
                                 className="overflow-hidden rounded-lg border border-border/80"

@@ -16,16 +16,13 @@ export function formatProjectYear(
   return `${yearStart}–${year}`;
 }
 
-export function isValidProjectImage(url: string): boolean {
-  if (!url) return false;
-  const normalizedUrl = url.toLowerCase();
+const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"];
 
+export function isValidLocalImage(url: string | undefined | null): url is string {
+  if (!url) return false;
+  const lower = url.toLowerCase();
   return (
-    normalizedUrl.startsWith("/projects/") &&
-    (normalizedUrl.endsWith(".jpg") ||
-      normalizedUrl.endsWith(".jpeg") ||
-      normalizedUrl.endsWith(".png") ||
-      normalizedUrl.endsWith(".gif") ||
-      normalizedUrl.endsWith(".webp"))
+    (lower.startsWith("/projects/") || lower.startsWith("/experiences/")) &&
+    IMAGE_EXTENSIONS.some((ext) => lower.endsWith(ext))
   );
 }

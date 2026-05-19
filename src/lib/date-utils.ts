@@ -72,42 +72,9 @@ export function formatDateRange(startDate: string | Date, endDate: string | Date
   }
 }
 
-/**
- * Generates a complete period string with duration
- * @param startDate - The start date
- * @param endDate - The end date (null for current position)
- * @returns Complete period string like "Aug 2021 - Present · 3 yrs 6 mos"
- */
 export function generatePeriodString(
   startDate: string | Date,
   endDate: string | Date | null
 ): string {
-  const dateRange = formatDateRange(startDate, endDate);
-  const duration = calculateDuration(startDate, endDate);
-
-  return `${dateRange} · ${duration}`;
-}
-
-/**
- * Safely extracts year from a date string or Date object
- * This prevents hydration mismatches by using consistent parsing
- * @param date - The date string or Date object
- * @returns Year as string or fallback
- */
-export function safeGetYear(date: string | Date | null | undefined): string {
-  if (!date) return "Unknown";
-
-  try {
-    // Parse the date consistently for both server and client
-    const parsedDate = typeof date === "string" ? new Date(date) : date;
-
-    // Validate the date is valid
-    if (isNaN(parsedDate.getTime())) {
-      return "Unknown";
-    }
-
-    return parsedDate.getFullYear().toString();
-  } catch {
-    return "Unknown";
-  }
+  return `${formatDateRange(startDate, endDate)} · ${calculateDuration(startDate, endDate)}`;
 }

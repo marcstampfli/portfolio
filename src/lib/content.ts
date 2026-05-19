@@ -4,8 +4,9 @@ import { cache } from "react";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
-import type { Experience, ProjectResponse, ProjectWithTechStack } from "@/types";
+import type { Experience, ProjectWithTechStack } from "@/types";
 import { generatePeriodString } from "@/lib/date-utils";
+import { escapeHtml } from "@/lib/html";
 
 const projectsRootDir = join(process.cwd(), "public", "projects");
 const experiencesRootDir = join(process.cwd(), "public", "experiences");
@@ -78,15 +79,6 @@ function readOptionalTextFile(filePath: string): string {
   }
 
   return readFileSync(filePath, "utf-8").trim();
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }
 
 function renderInline(text: string): string {
@@ -260,9 +252,9 @@ export const getExperiences = cache(async (): Promise<Experience[]> => {
 
       const entry: ExperienceWithOrder = {
         id: experience.slug,
-        title: experience.position || experience.title,
+        title: experience.title,
         company: experience.company,
-        position: null,
+        position: experience.position ?? null,
         period: generatePeriodString(experience.startDate, experience.endDate ?? null),
         location: experience.location || null,
         type: experience.employmentType || null,
@@ -277,8 +269,6 @@ export const getExperiences = cache(async (): Promise<Experience[]> => {
         description: experience.summary,
         tech_stack: experience.techStack,
         achievements: experience.achievements,
-        created_at: undefined,
-        updated_at: undefined,
         order: experience.sortOrder,
       };
 
@@ -294,10 +284,3 @@ export const getExperiences = cache(async (): Promise<Experience[]> => {
     })
     .map(({ order: _order, ...experience }) => experience);
 });
-
-export function serializeProjectForApi(project: ProjectWithTechStack): ProjectResponse {
-  return {
-    ...project,
-    tech_stack: project.tech_stack,
-  };
-}

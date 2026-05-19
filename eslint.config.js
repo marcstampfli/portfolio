@@ -13,6 +13,11 @@ const config = [
     files: ["**/*.ts", "**/*.tsx"],
     rules: {
       "no-undef": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
     },
   },
   {
@@ -20,7 +25,6 @@ const config = [
       "react/no-unescaped-entities": "off",
       "@next/next/no-img-element": "warn",
       "no-console": ["warn", { allow: ["warn", "error"] }],
-      "no-unused-vars": "off",
     },
   },
 ];

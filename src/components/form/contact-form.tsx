@@ -27,17 +27,8 @@ const socialLinks = [
 ];
 
 const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: siteConfig.email,
-    href: `mailto:${siteConfig.email}?subject=New project — [brief description]&body=Hi Marc, I have a project I'd like to discuss...`,
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: siteConfig.location,
-  },
+  { icon: Mail, label: "Email", value: siteConfig.email, href: siteConfig.mailto },
+  { icon: MapPin, label: "Location", value: siteConfig.location },
 ];
 
 export function ContactForm() {

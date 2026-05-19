@@ -39,19 +39,6 @@ export const metadata: Metadata = {
     template: "%s | Marc Stämpfli",
   },
   description: siteConfig.description,
-  keywords: [
-    "web development",
-    "WordPress developer",
-    "web designer",
-    "UI design",
-    "React",
-    "Next.js",
-    "Trinidad and Tobago",
-    "freelance developer",
-    "Gutenberg",
-    "Elementor",
-    "full-stack developer",
-  ],
   authors: [{ name: "Marc Stämpfli" }],
   creator: "Marc Stämpfli",
   applicationName: "Marc Stämpfli Portfolio",
@@ -90,8 +77,6 @@ export const metadata: Metadata = {
     images: [
       {
         url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
         alt: siteConfig.title,
       },
     ],
@@ -104,10 +89,37 @@ export const metadata: Metadata = {
   },
 };
 
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Marc Stämpfli",
+  jobTitle: "Web Developer & Designer",
+  description: siteConfig.description,
+  url: siteConfig.url,
+  sameAs: siteConfig.sameAs,
+  knowsAbout: [
+    "WordPress",
+    "React",
+    "Next.js",
+    "UI Design",
+    "Gutenberg",
+    "Elementor",
+    "Web Development",
+    "JavaScript",
+    "TypeScript",
+    "PHP",
+  ],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+      </head>
       <body
         className={`${bodyFont.variable} ${displayFont.variable} min-h-screen bg-background font-body text-foreground`}
       >
