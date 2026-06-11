@@ -22,12 +22,14 @@ Copy `.env.example` to `.env.local` and fill in the values before running.
 
 ## Environment Variables
 
-| Variable                        | Required | Description                                            |
-| ------------------------------- | -------- | ------------------------------------------------------ |
-| `NEXT_PUBLIC_APP_URL`           | Yes      | Full URL of the site (e.g. `https://marcstampfli.com`) |
-| `GMAIL_USER`                    | Yes      | Gmail address used to send contact form emails         |
-| `GMAIL_APP_PASSWORD`            | Yes      | Gmail App Password (not your account password)         |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No       | Google Analytics measurement ID                        |
+| Variable                        | Required | Description                                                  |
+| ------------------------------- | -------- | ------------------------------------------------------------ |
+| `NEXT_PUBLIC_APP_URL`           | Yes      | Full URL of the site (e.g. `https://marcstampfli.com`)       |
+| `GMAIL_USER`                    | Yes      | Gmail address used to send contact form emails               |
+| `GMAIL_APP_PASSWORD`            | Yes      | Gmail App Password (not your account password)               |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No       | Google Analytics measurement ID                              |
+| `UPSTASH_REDIS_REST_URL`        | No       | Shared Redis REST URL for production contact rate limiting   |
+| `UPSTASH_REDIS_REST_TOKEN`      | No       | Shared Redis REST token for production contact rate limiting |
 
 Set these in Vercel under Project → Settings → Environment Variables.
 
@@ -59,3 +61,14 @@ Deploys automatically to Vercel on push to `main`.
 Build command: `npm run build`
 Output: `.next`
 Node: `>=20`
+
+## Checks
+
+```bash
+npm test
+npm run format:check
+npm run lint
+npm run type-check
+npm audit --audit-level=low
+npm run build
+```

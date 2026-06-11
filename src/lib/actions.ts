@@ -13,8 +13,9 @@ const stripCrlf = (value: string): string => value.replace(/[\r\n]+/g, " ").trim
 const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const RATE_LIMIT = 5;
 const submissions = new Map<string, number[]>();
+const RATE_WINDOW_SECONDS = RATE_WINDOW_MS / 1000;
 
-function rateLimit(key: string): boolean {
+function inMemoryRateLimit(key: string): boolean {
   const now = Date.now();
   const recent = (submissions.get(key) ?? []).filter((ts) => now - ts < RATE_WINDOW_MS);
 
@@ -28,11 +29,64 @@ function rateLimit(key: string): boolean {
   return true;
 }
 
+async function sharedRateLimit(key: string): Promise<boolean | null> {
+  const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!redisUrl || !redisToken) {
+    return null;
+  }
+
+  const windowKey = `contact:${key}:${Math.floor(Date.now() / RATE_WINDOW_MS)}`;
+  const response = await fetch(`${redisUrl}/pipeline`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${redisToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([
+      ["INCR", windowKey],
+      ["EXPIRE", windowKey, RATE_WINDOW_SECONDS],
+    ]),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Rate limit store failed with status ${response.status}`);
+  }
+
+  const [incrementResult] = (await response.json()) as Array<{ result?: number }>;
+  return Number(incrementResult?.result ?? RATE_LIMIT + 1) <= RATE_LIMIT;
+}
+
+async function rateLimit(key: string): Promise<boolean> {
+  try {
+    const sharedResult = await sharedRateLimit(key);
+
+    if (sharedResult !== null) {
+      return sharedResult;
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Shared rate limit failed:", error);
+    }
+
+    return false;
+  }
+
+  return inMemoryRateLimit(key);
+}
+
 async function getClientKey(): Promise<string> {
   const headerList = await headers();
   const forwarded = headerList.get("x-forwarded-for");
   const ip = forwarded?.split(",")[0]?.trim() || headerList.get("x-real-ip") || "unknown";
-  return ip;
+  const userAgent = headerList.get("user-agent") || "unknown";
+  return `${ip}:${userAgent.slice(0, 80)}`;
+}
+
+function buildMailtoHref(email: string): string {
+  return `mailto:${encodeURIComponent(email)}`;
 }
 
 let transporter: nodemailer.Transporter | null = null;
@@ -70,7 +124,7 @@ export async function submitContactMessage(
   }
 
   const clientKey = await getClientKey();
-  if (!rateLimit(clientKey)) {
+  if (!(await rateLimit(clientKey))) {
     return { success: false, error: "Too many submissions. Please try again later." };
   }
 
@@ -115,7 +169,7 @@ async function sendContactEmail(data: ContactEmailPayload): Promise<void> {
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #64748b;"><strong>Email</strong></td>
-            <td style="padding: 8px 0;"><a href="mailto:${safeEmail}">${safeEmail}</a></td>
+            <td style="padding: 8px 0;"><a href="${buildMailtoHref(data.email)}">${safeEmail}</a></td>
           </tr>
         </table>
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />

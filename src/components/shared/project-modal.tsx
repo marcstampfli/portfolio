@@ -154,14 +154,18 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                           </div>
                         ) : null}
 
-                        {(project.year_start || project.year) ? (
+                        {project.year_start || project.year ? (
                           <div className="flex items-start gap-3">
                             <Calendar className="mt-0.5 h-4 w-4 text-primary" />
                             <div>
                               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                                {project.year_start && project.year !== project.year_start ? "Period" : "Year"}
+                                {project.year_start && project.year !== project.year_start
+                                  ? "Period"
+                                  : "Year"}
                               </p>
-                              <p className="mt-1 text-foreground">{formatProjectYear(project.year_start, project.year)}</p>
+                              <p className="mt-1 text-foreground">
+                                {formatProjectYear(project.year_start, project.year)}
+                              </p>
                             </div>
                           </div>
                         ) : null}

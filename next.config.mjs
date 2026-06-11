@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const isDevelopment = process.env.NODE_ENV !== "production";
-
 const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
@@ -16,38 +14,6 @@ const nextConfig = {
   compress: true,
   reactStrictMode: true,
   async headers() {
-    const csp = [
-      "default-src 'self'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-      "object-src 'none'",
-      "img-src 'self' data: https:",
-      "font-src 'self' data: https:",
-      "style-src 'self' 'unsafe-inline'",
-      [
-        "script-src 'self' 'unsafe-inline'",
-        isDevelopment ? "'unsafe-eval'" : "",
-        "https://www.googletagmanager.com",
-        "https://www.google-analytics.com",
-        "https://va.vercel-scripts.com",
-      ]
-        .filter(Boolean)
-        .join(" "),
-      [
-        "connect-src 'self'",
-        "https://www.google-analytics.com",
-        "https://region1.google-analytics.com",
-        "https://vitals.vercel-insights.com",
-        "https://va.vercel-scripts.com",
-      ]
-        .filter(Boolean)
-        .join(" "),
-      "upgrade-insecure-requests",
-    ]
-      .filter(Boolean)
-      .join("; ");
-
     return [
       {
         source: "/projects/:path*",
@@ -84,10 +50,6 @@ const nextConfig = {
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
-          },
-          {
-            key: "Content-Security-Policy",
-            value: csp,
           },
         ],
       },

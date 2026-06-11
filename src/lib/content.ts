@@ -11,39 +11,73 @@ import { escapeHtml } from "@/lib/html";
 const projectsRootDir = join(process.cwd(), "public", "projects");
 const experiencesRootDir = join(process.cwd(), "public", "experiences");
 
-const projectConfigSchema = z.object({
-  title: z.string().min(1),
-  slug: z.string().min(1),
-  type: z.string().min(1),
-  summary: z.string().default(""),
-  content: z.string().optional().default(""),
-  featured: z.boolean().optional().default(false),
-  status: z.enum(["published", "draft", "unpublished", "archived"]).optional().default("published"),
-  client: z.string().optional().nullable(),
-  yearStart: z.number().int().optional().nullable(),
-  year: z.number().int().optional().nullable(),
-  sortOrder: z.number().int().optional().default(0),
-  stack: z.array(z.string()).optional().default([]),
-  cover: z.string().optional().nullable(),
-  gallery: z.array(z.string()).optional().default([]),
-  links: z
-    .object({
-      live: z.string().optional().default(""),
-      github: z.string().optional().default(""),
-      figma: z.string().optional().default(""),
-    })
-    .optional()
-    .default({}),
+const slugSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid slug");
+const projectImageSchema = z
+  .string()
+  .regex(/^[A-Za-z0-9._-]+\.(?:avif|gif|jpe?g|png|webp)$/i, "Invalid image filename");
+const experienceLogoSchema = z
+  .string()
+  .regex(/^[A-Za-z0-9._/-]+\.(?:avif|gif|jpe?g|png|svg|webp)$/i, "Invalid logo path");
+const optionalUrlSchema = z
+  .string()
+  .trim()
+  .refine((value) => {
+    if (!value) {
+      return true;
+    }
+
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" || url.protocol === "http:";
+    } catch {
+      return false;
+    }
+  }, "URL must be empty or use http(s)");
+const dateSchema = z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), {
+  message: "Invalid date",
 });
 
+const projectConfigSchema = z
+  .object({
+    title: z.string().min(1),
+    slug: slugSchema,
+    type: z.string().min(1),
+    summary: z.string().default(""),
+    content: z.string().optional().default(""),
+    featured: z.boolean().optional().default(false),
+    status: z
+      .enum(["published", "draft", "unpublished", "archived"])
+      .optional()
+      .default("published"),
+    client: z.string().optional().nullable(),
+    yearStart: z.number().int().optional().nullable(),
+    year: z.number().int().optional().nullable(),
+    sortOrder: z.number().int().optional().default(0),
+    stack: z.array(z.string()).optional().default([]),
+    cover: projectImageSchema.optional().nullable(),
+    gallery: z.array(projectImageSchema).optional().default([]),
+    links: z
+      .object({
+        live: optionalUrlSchema.optional().default(""),
+        github: optionalUrlSchema.optional().default(""),
+        figma: optionalUrlSchema.optional().default(""),
+      })
+      .optional()
+      .default({}),
+  })
+  .refine((project) => !project.yearStart || !project.year || project.yearStart <= project.year, {
+    message: "yearStart must be less than or equal to year",
+    path: ["yearStart"],
+  });
+
 const experienceConfigSchema = z.object({
-  slug: z.string().min(1),
+  slug: slugSchema,
   title: z.string(),
   company: z.string(),
   position: z.string().optional().nullable(),
   location: z.string().nullable().optional(),
   employmentType: z.string().nullable().optional(),
-  logo: z.string().nullable().optional(),
+  logo: experienceLogoSchema.nullable().optional(),
   logoBackground: z.enum(["none", "light", "dark"]).optional().default("dark"),
   logoFit: z.enum(["contain", "cover"]).optional().default("contain"),
   logoWidth: z.number().int().min(12).max(40).nullable().optional(),
@@ -52,8 +86,8 @@ const experienceConfigSchema = z.object({
   summary: z.string(),
   techStack: z.array(z.string()),
   achievements: z.array(z.string()),
-  startDate: z.string(),
-  endDate: z.string().nullable().optional(),
+  startDate: dateSchema,
+  endDate: dateSchema.nullable().optional(),
   sortOrder: z.number().int().optional().default(0),
 });
 

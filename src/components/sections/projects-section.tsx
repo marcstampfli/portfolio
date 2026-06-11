@@ -39,102 +39,107 @@ function ProjectCard({
       transition={{ duration: 0.45, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
       className="surface-card group flex h-full flex-col overflow-hidden"
     >
-      <button
-        type="button"
-        className="flex h-full flex-col text-left"
-        onClick={() => onOpen(project)}
-      >
-        <div className="relative aspect-[16/10] border-b border-border/80 bg-secondary/60">
-          {isValidLocalImage(project.images?.[0]) ? (
-            <OptimizedImage
-              key={project.images[0]}
-              src={project.images[0]}
-              alt={project.title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <PlaceholderImage className="h-full w-full" />
-          )}
+      <div className="relative aspect-[16/10] border-b border-border/80 bg-secondary/60">
+        {isValidLocalImage(project.images?.[0]) ? (
+          <OptimizedImage
+            key={project.images[0]}
+            src={project.images[0]}
+            alt={project.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <PlaceholderImage className="h-full w-full" />
+        )}
 
-          {/* dark gradient so badges are always readable over any image */}
-          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/60 to-transparent" />
+        <button
+          type="button"
+          onClick={() => onOpen(project)}
+          className="absolute inset-0 z-10"
+          aria-label={`View ${project.title} case study`}
+        />
 
-          <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3">
-            <div className="flex flex-wrap gap-1.5">
-              <span className="inline-flex items-center rounded-sm bg-black/50 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
-                {getProjectTypeDisplayName(project.project_type)}
+        {/* dark gradient so badges are always readable over any image */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-black/60 to-transparent" />
+
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 p-3">
+          <div className="flex flex-wrap gap-1.5">
+            <span className="inline-flex items-center rounded-sm bg-black/50 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
+              {getProjectTypeDisplayName(project.project_type)}
+            </span>
+            {project.featured ? (
+              <span className="inline-flex items-center rounded-sm bg-primary px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-primary-foreground">
+                Featured
               </span>
-              {project.featured ? (
-                <span className="inline-flex items-center rounded-sm bg-primary px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-primary-foreground">
-                  Featured
-                </span>
-              ) : null}
-            </div>
-            <div className="flex gap-2">
-              {project.live_url ? (
-                <a
-                  href={project.live_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(event) => event.stopPropagation()}
-                  className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
-                  aria-label={`Open ${project.title} live project`}
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              ) : null}
-              {project.github_url ? (
-                <a
-                  href={project.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(event) => event.stopPropagation()}
-                  className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
-                  aria-label={`Open ${project.title} source code`}
-                >
-                  <Github className="h-3.5 w-3.5" />
-                </a>
-              ) : null}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-1 flex-col p-5">
-          <div>
-            <h3 className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
-              {project.title}
-            </h3>
-            <p className="mt-2 text-sm leading-7 text-muted-foreground">{project.description}</p>
-          </div>
-
-          <div className="mt-auto flex flex-wrap gap-2 pt-4">
-            {project.tech_stack.slice(0, 4).map((tech, techIndex) => (
-              <Badge key={`${tech}-${techIndex}`} variant="secondary">
-                {tech}
-              </Badge>
-            ))}
-            {project.tech_stack.length > 4 ? (
-              <Badge variant="outline">+{project.tech_stack.length - 4} more</Badge>
             ) : null}
           </div>
+          <div className="pointer-events-auto flex gap-2">
+            {project.live_url ? (
+              <a
+                href={project.live_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
+                aria-label={`Open ${project.title} live project`}
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            ) : null}
+            {project.github_url ? (
+              <a
+                href={project.github_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
+                aria-label={`Open ${project.title} source code`}
+              >
+                <Github className="h-3.5 w-3.5" />
+              </a>
+            ) : null}
+          </div>
+        </div>
+      </div>
 
-          <div className="mt-auto border-t border-border/70 pt-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {project.client ?? "Independent"}
+      <button
+        type="button"
+        className="flex flex-1 flex-col p-5 text-left"
+        onClick={() => onOpen(project)}
+      >
+        <div>
+          <h3 className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
+            {project.title}
+          </h3>
+          <p className="mt-2 text-sm leading-7 text-muted-foreground">{project.description}</p>
+        </div>
+
+        <div className="mt-auto flex flex-wrap gap-2 pt-4">
+          {project.tech_stack.slice(0, 4).map((tech, techIndex) => (
+            <Badge key={`${tech}-${techIndex}`} variant="secondary">
+              {tech}
+            </Badge>
+          ))}
+          {project.tech_stack.length > 4 ? (
+            <Badge variant="outline">+{project.tech_stack.length - 4} more</Badge>
+          ) : null}
+        </div>
+
+        <div className="mt-auto border-t border-border/70 pt-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-foreground">
+                {project.client ?? "Independent"}
+              </p>
+              {project.year_start || project.year ? (
+                <p className="text-xs text-muted-foreground">
+                  {formatProjectYear(project.year_start, project.year)}
                 </p>
-                {(project.year_start || project.year) ? (
-                  <p className="text-xs text-muted-foreground">{formatProjectYear(project.year_start, project.year)}</p>
-                ) : null}
-              </div>
-              <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary">
-                <span className="link">View Case</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
+              ) : null}
             </div>
+            <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary">
+              <span className="link">View Case</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </span>
           </div>
         </div>
       </button>
@@ -165,7 +170,9 @@ function ArchiveRow({
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        {(project.year_start || project.year) ? <span>{formatProjectYear(project.year_start, project.year)}</span> : null}
+        {project.year_start || project.year ? (
+          <span>{formatProjectYear(project.year_start, project.year)}</span>
+        ) : null}
         <ArrowRight className="h-4 w-4" />
       </div>
     </button>

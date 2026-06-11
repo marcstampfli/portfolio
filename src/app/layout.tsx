@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
@@ -111,13 +112,20 @@ const personJsonLd = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+function serializeJsonLd(value: unknown): string {
+  return JSON.stringify(value).replaceAll("<", "\\u003c");
+}
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <script
+          nonce={nonce}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
         />
       </head>
       <body
@@ -126,7 +134,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           {children}
           <Suspense fallback={null}>
-            <Analytics />
+            <Analytics nonce={nonce} />
             {isProduction ? <VercelAnalytics /> : null}
           </Suspense>
         </Providers>

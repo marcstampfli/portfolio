@@ -7,11 +7,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "npm run validate:content",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "validate:content": "node scripts/validate-content.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -24,7 +26,7 @@
     "dompurify": "^3.0.8",
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.460.0",
-    "next": "^16.1.6",
+    "next": "^16.2.9",
     "next-themes": "^0.4.3",
     "nodemailer": "^8.0.2",
     "react": "^18.3.1",
@@ -32,6 +34,9 @@
     "react-hook-form": "^7.53.2",
     "tailwind-merge": "^2.5.5",
     "zod": "^3.23.8"
+  },
+  "overrides": {
+    "postcss": "8.5.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
@@ -42,15 +47,14 @@
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.39.0",
-    "eslint-config-next": "^16.1.6",
+    "eslint-config-next": "^16.2.9",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "postcss": "^8.4.49",
+    "postcss": "8.5.14",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "tailwindcss": "^3.4.15",
     "tailwindcss-animate": "^1.0.7",
-    "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   },
   "packageManager": "npm@10.8.3",
