@@ -18,6 +18,14 @@ const projectImageSchema = z
 const experienceLogoSchema = z
   .string()
   .regex(/^[A-Za-z0-9._/-]+\.(?:avif|gif|jpe?g|png|svg|webp)$/i, "Invalid logo path");
+const optionalProjectImageSchema = z.preprocess(
+  (value) => (value === "" ? null : value),
+  projectImageSchema.optional().nullable()
+);
+const optionalExperienceLogoSchema = z.preprocess(
+  (value) => (value === "" ? null : value),
+  experienceLogoSchema.optional().nullable()
+);
 const optionalUrlSchema = z
   .string()
   .trim()
@@ -54,7 +62,7 @@ const projectConfigSchema = z
     year: z.number().int().optional().nullable(),
     sortOrder: z.number().int().optional().default(0),
     stack: z.array(z.string()).optional().default([]),
-    cover: projectImageSchema.optional().nullable(),
+    cover: optionalProjectImageSchema,
     gallery: z.array(projectImageSchema).optional().default([]),
     links: z
       .object({
@@ -77,7 +85,7 @@ const experienceConfigSchema = z.object({
   position: z.string().optional().nullable(),
   location: z.string().nullable().optional(),
   employmentType: z.string().nullable().optional(),
-  logo: experienceLogoSchema.nullable().optional(),
+  logo: optionalExperienceLogoSchema,
   logoBackground: z.enum(["none", "light", "dark"]).optional().default("dark"),
   logoFit: z.enum(["contain", "cover"]).optional().default("contain"),
   logoWidth: z.number().int().min(12).max(40).nullable().optional(),
@@ -193,7 +201,11 @@ function readProjectConfig(projectDirName: string): ProjectWithTechStack | null 
   const parsed = projectConfigSchema.safeParse(rawConfig);
 
   if (!parsed.success) {
-    throw new Error(`Invalid project config for ${projectDirName}`);
+    const details = parsed.error.issues
+      .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)
+      .join("; ");
+
+    throw new Error(`Invalid project config for ${projectDirName}: ${details}`);
   }
 
   const project = parsed.data;
