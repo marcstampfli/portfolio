@@ -26,12 +26,12 @@ export const siteConfig = {
   name: "Marc Stämpfli",
   title: "Marc Stämpfli - Web Developer & Designer",
   description:
-    "Web Developer and Designer based in Trinidad and Tobago. 15+ years building websites, WordPress solutions, and web apps — currently at WordHerd®.",
+    "Web Developer and Designer based in Trinidad and Tobago. 15+ years building websites, WordPress solutions, and web apps - currently at WordHerd®.",
   url: siteUrl,
   ogImage: `${siteUrl}/profile.jpg`,
   location: "Trinidad and Tobago",
   email,
-  mailto: `mailto:${email}?subject=${encodeURIComponent("New project — [brief description]")}&body=${encodeURIComponent("Hi Marc, I have a project I'd like to discuss...")}`,
+  mailto: `mailto:${email}?subject=${encodeURIComponent("New project - [brief description]")}&body=${encodeURIComponent("Hi Marc, I have a project I'd like to discuss...")}`,
   sameAs: [
     "https://github.com/marcstampfli",
     "https://www.linkedin.com/in/marc-st%C3%A4mpfli",

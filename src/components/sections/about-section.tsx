@@ -11,7 +11,7 @@ const principles = [
     icon: Workflow,
     title: "Full ownership, start to finish",
     description:
-      "I handle design, development, and deployment — so nothing gets lost between phases and the end result matches what was planned.",
+      "I handle design, development, and deployment - so nothing gets lost between phases and the end result matches what was planned.",
   },
   {
     icon: PenTool,
@@ -23,7 +23,7 @@ const principles = [
     icon: Blocks,
     title: "WordPress done properly",
     description:
-      "Custom themes, Gutenberg blocks, plugins, Kadence, Elementor, performance — whatever the project calls for, built to last.",
+      "Custom themes, Gutenberg blocks, plugins, Kadence, Elementor, performance - whatever the project calls for, built to last.",
   },
 ];
 
@@ -52,13 +52,13 @@ export function AboutSection() {
               titleId="about-heading"
               eyebrow="About"
               title="Developer and designer with range."
-              subtitle="I've been building for the web since 2008 — in-house, freelance, and now agency work. WordPress is my core, React and Next.js are where I'm spending more time."
+              subtitle="I've been building for the web since 2008 - in-house, freelance, and now agency work. WordPress is my core, React and Next.js are where I'm spending more time."
               titleClassName="text-3xl sm:text-4xl lg:text-5xl"
               className="max-w-3xl"
             />
           </motion.div>
 
-          {/* Bio row — photo + text */}
+          {/* Bio row - photo + text */}
           <motion.div
             initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -84,13 +84,13 @@ export function AboutSection() {
             <div className="surface-panel flex flex-col justify-between gap-6 p-6 sm:p-8">
               <div className="space-y-4">
                 <p className="text-foreground/88 text-base leading-8">
-                  My work sits across development and design — which means I think about how
+                  My work sits across development and design - which means I think about how
                   something looks, how it works, and how it's built, all at once.
                 </p>
                 <p className="text-sm leading-7 text-muted-foreground sm:text-base">
                   Most of my time goes into WordPress: custom themes, block development, plugin
                   work, performance, and keeping things maintainable. Outside of that, I build with
-                  React and Next.js, and I'm currently working on a few personal projects — games,
+                  React and Next.js, and I'm currently working on a few personal projects - games,
                   apps, and tools built for fun and for Trinidad.
                 </p>
               </div>
@@ -107,7 +107,7 @@ export function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Principles — 3 col grid */}
+          {/* Principles - 3 col grid */}
           <div className="grid gap-4 sm:grid-cols-3">
             {principles.map((item, index) => (
               <motion.article

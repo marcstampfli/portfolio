@@ -41,7 +41,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
             titleId="experience-heading"
             eyebrow="Experience"
             title="15+ years building for the web."
-            subtitle="From in-house roles to freelance work and agency life — a career spent shipping websites and products."
+            subtitle="From in-house roles to freelance work and agency life - a career spent shipping websites and products."
             titleClassName="text-3xl sm:text-4xl lg:text-5xl"
           />
         </motion.div>

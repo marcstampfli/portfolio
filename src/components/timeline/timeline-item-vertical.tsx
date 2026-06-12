@@ -114,7 +114,7 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
             {isCurrentRole ? <Badge className="flex-shrink-0">Current Role</Badge> : null}
           </div>
 
-          {/* Position — only show if more specific than the title */}
+          {/* Position - only show if more specific than the title */}
           {experience.position && experience.position !== experience.title ? (
             <p className="text-xs text-foreground/80 sm:text-sm">{experience.position}</p>
           ) : null}

@@ -8,7 +8,7 @@ import { escapeHtml } from "@/lib/html";
 const stripTags = (value: string): string => value.replace(/<[^>]*>/g, "").trim();
 const stripCrlf = (value: string): string => value.replace(/[\r\n]+/g, " ").trim();
 
-// Simple in-memory token bucket per client. Per-instance — for stronger guarantees
+// Simple in-memory token bucket per client. Per-instance - for stronger guarantees
 // behind multiple serverless instances, swap for a shared store (Redis, Upstash, etc.).
 const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const RATE_LIMIT = 5;
@@ -107,7 +107,7 @@ type ContactEmailPayload = Pick<ContactFormData, "name" | "email" | "message">;
 export async function submitContactMessage(
   data: ContactFormData
 ): Promise<{ success: boolean; error?: string }> {
-  // Honeypot — silently reject bots
+  // Honeypot - silently reject bots
   if (data.website && data.website.trim().length > 0) {
     return { success: true };
   }

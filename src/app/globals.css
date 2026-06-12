@@ -110,7 +110,7 @@ a {
   color: inherit;
 }
 
-/* Animated underline effect — works on <a> and <span>.
+/* Animated underline effect - works on <a> and <span>.
    A thin line slides left → right on hover, retreats right → left on exit.
    Trigger on the parent: hovering the parent card will underline a .link child. */
 .link {

@@ -79,3 +79,4 @@ temp/
 # ─── Misc build artifacts ────────────────────────────────────────────────────
 storybook-static/
 *.pem
+.playwright-cli/
