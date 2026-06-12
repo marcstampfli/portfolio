@@ -28,7 +28,6 @@ export function OptimizedImage({
   onError,
   ...props
 }: OptimizedImageProps) {
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const fallbackTried = useRef(false);
 
@@ -36,17 +35,8 @@ export function OptimizedImage({
     <Image
       src={error ? fallback : src}
       alt={alt}
-      className={cn(
-        "duration-700 ease-in-out",
-        isLoading ? "scale-110 blur-2xl grayscale" : "scale-100 blur-0 grayscale-0",
-        className
-      )}
-      onLoad={() => {
-        setIsLoading(false);
-        setError(false);
-      }}
+      className={cn("object-cover", className)}
       onError={() => {
-        setIsLoading(false);
         if (!fallbackTried.current) {
           setError(true);
           fallbackTried.current = true;

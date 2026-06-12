@@ -17,13 +17,10 @@ function createContentSecurityPolicy(nonce: string): string {
   const scriptSrc = [
     "'self'",
     `'nonce-${nonce}'`,
-    isDevelopment ? "'unsafe-eval'" : "",
     "https://www.googletagmanager.com",
     "https://www.google-analytics.com",
     "https://va.vercel-scripts.com",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ].join(" ");
 
   return [
     "default-src 'self'",
@@ -47,6 +44,10 @@ function createContentSecurityPolicy(nonce: string): string {
 }
 
 export function proxy(request: NextRequest) {
+  if (isDevelopment) {
+    return NextResponse.next();
+  }
+
   const nonce = createNonce();
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);

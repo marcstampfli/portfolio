@@ -39,15 +39,16 @@ function ProjectCard({
       transition={{ duration: 0.45, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
       className="surface-card group flex h-full flex-col overflow-hidden"
     >
-      <div className="relative aspect-[16/10] border-b border-border/80 bg-secondary/60">
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-border/80 bg-secondary/60 transition-transform duration-500 group-hover:scale-[1.03]">
         {isValidLocalImage(project.images?.[0]) ? (
           <OptimizedImage
             key={project.images[0]}
             src={project.images[0]}
             alt={project.title}
             fill
+            priority
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+            className="object-cover object-top"
           />
         ) : (
           <PlaceholderImage className="h-full w-full" />
@@ -56,7 +57,7 @@ function ProjectCard({
         <button
           type="button"
           onClick={() => onOpen(project)}
-          className="absolute inset-0 z-10"
+          className="absolute inset-0 z-10 bg-transparent"
           aria-label={`View ${project.title} case study`}
         />
 
