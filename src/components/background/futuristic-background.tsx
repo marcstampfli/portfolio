@@ -8,6 +8,8 @@ interface NodePoint {
   vx: number;
   vy: number;
   radius: number;
+  phase: number;
+  pulseSpeed: number;
 }
 
 interface BackgroundEnvironment {
@@ -25,9 +27,11 @@ function createPoints(width: number, height: number, count: number): NodePoint[]
   return Array.from({ length: count }, (_, index) => ({
     x: seededRandom(index * 101.7) * width,
     y: seededRandom(index * 211.3) * height,
-    vx: (seededRandom(index * 307.9) - 0.5) * 0.18,
-    vy: (seededRandom(index * 401.1) - 0.5) * 0.18,
+    vx: (seededRandom(index * 307.9) - 0.5) * 9,
+    vy: (seededRandom(index * 401.1) - 0.5) * 9,
     radius: 1.2 + seededRandom(index * 503.4) * 1.8,
+    phase: seededRandom(index * 601.9) * Math.PI * 2,
+    pulseSpeed: 0.45 + seededRandom(index * 701.2) * 0.4,
   }));
 }
 
@@ -76,10 +80,16 @@ export function FuturisticBackground() {
     if (!context) {
       return;
     }
+    const renderingContext = context;
 
     let width = 0;
     let height = 0;
     let dpr = 1;
+    let isVisible = true;
+    let isDocumentVisible = document.visibilityState === "visible";
+    const targetFrameTime = 1000 / 24;
+    const connectionDistance = 180;
+    const connectionDistanceSquared = connectionDistance ** 2;
 
     const resize = () => {
       const rect = wrapper.getBoundingClientRect();
@@ -96,25 +106,49 @@ export function FuturisticBackground() {
       pointsRef.current = createPoints(width, height, pointCount);
     };
 
-    const draw = (timestamp: number) => {
-      const targetFrameTime = 1000 / 24;
+    const stopAnimation = () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
 
-      if (timestamp - lastFrameTimeRef.current < targetFrameTime) {
+    function scheduleFrame() {
+      if (animationFrameRef.current === null && isVisible && isDocumentVisible) {
         animationFrameRef.current = window.requestAnimationFrame(draw);
+      }
+    }
+
+    function draw(timestamp: number) {
+      animationFrameRef.current = null;
+
+      if (!isVisible || !isDocumentVisible) {
         return;
       }
 
+      if (
+        lastFrameTimeRef.current !== 0 &&
+        timestamp - lastFrameTimeRef.current < targetFrameTime
+      ) {
+        scheduleFrame();
+        return;
+      }
+
+      const elapsedSeconds =
+        lastFrameTimeRef.current === 0
+          ? 0
+          : Math.min((timestamp - lastFrameTimeRef.current) / 1000, 0.1);
       lastFrameTimeRef.current = timestamp;
 
-      context.setTransform(1, 0, 0, 1, 0, 0);
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      renderingContext.setTransform(1, 0, 0, 1, 0, 0);
+      renderingContext.clearRect(0, 0, canvas.width, canvas.height);
+      renderingContext.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const points = pointsRef.current;
 
       for (const point of points) {
-        point.x += point.vx;
-        point.y += point.vy;
+        point.x += point.vx * elapsedSeconds;
+        point.y += point.vy * elapsedSeconds;
 
         if (point.x < -20) point.x = width + 20;
         if (point.x > width + 20) point.x = -20;
@@ -122,7 +156,7 @@ export function FuturisticBackground() {
         if (point.y > height + 20) point.y = -20;
       }
 
-      context.lineWidth = 0.7;
+      renderingContext.lineWidth = 0.7;
 
       for (let i = 0; i < points.length; i += 1) {
         const pointA = points[i];
@@ -131,46 +165,71 @@ export function FuturisticBackground() {
           const pointB = points[j];
           const dx = pointB.x - pointA.x;
           const dy = pointB.y - pointA.y;
-          const distance = Math.hypot(dx, dy);
+          const distanceSquared = dx * dx + dy * dy;
 
-          if (distance > 170) {
+          if (distanceSquared > connectionDistanceSquared) {
             continue;
           }
 
-          const opacity = (1 - distance / 170) * 0.14;
-          context.strokeStyle = `hsla(192, 92%, 60%, ${opacity})`;
-          context.beginPath();
-          context.moveTo(pointA.x, pointA.y);
-          context.lineTo(pointB.x, pointB.y);
-          context.stroke();
+          const opacity = (1 - Math.sqrt(distanceSquared) / connectionDistance) * 0.17;
+          renderingContext.strokeStyle = `hsla(192, 92%, 60%, ${opacity})`;
+          renderingContext.beginPath();
+          renderingContext.moveTo(pointA.x, pointA.y);
+          renderingContext.lineTo(pointB.x, pointB.y);
+          renderingContext.stroke();
         }
       }
 
       for (const point of points) {
-        context.fillStyle = "hsla(192, 92%, 60%, 0.55)";
-        context.beginPath();
-        context.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
-        context.fill();
+        const pulse = 0.84 + Math.sin((timestamp / 1000) * point.pulseSpeed + point.phase) * 0.16;
+        const radius = point.radius * (0.92 + pulse * 0.08);
+
+        renderingContext.fillStyle = `hsla(192, 92%, 60%, ${0.42 + pulse * 0.16})`;
+        renderingContext.beginPath();
+        renderingContext.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        renderingContext.fill();
       }
 
-      animationFrameRef.current = window.requestAnimationFrame(draw);
-    };
+      scheduleFrame();
+    }
 
     resize();
 
     const resizeObserver = new ResizeObserver(() => {
       resize();
     });
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+
+      if (isVisible) {
+        lastFrameTimeRef.current = 0;
+        scheduleFrame();
+      } else {
+        stopAnimation();
+      }
+    });
+    const handleVisibilityChange = () => {
+      isDocumentVisible = document.visibilityState === "visible";
+
+      if (isDocumentVisible) {
+        lastFrameTimeRef.current = 0;
+        scheduleFrame();
+      } else {
+        stopAnimation();
+      }
+    };
 
     resizeObserver.observe(wrapper);
-    animationFrameRef.current = window.requestAnimationFrame(draw);
+    intersectionObserver.observe(wrapper);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    scheduleFrame();
 
     return () => {
       resizeObserver.disconnect();
-
-      if (animationFrameRef.current !== null) {
-        window.cancelAnimationFrame(animationFrameRef.current);
-      }
+      intersectionObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      stopAnimation();
+      lastFrameTimeRef.current = 0;
     };
   }, [shouldAnimateCanvas]);
 
