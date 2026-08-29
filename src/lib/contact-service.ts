@@ -138,14 +138,17 @@ async function rateLimit(key: string, limit: number): Promise<boolean> {
       "Shared contact rate limit unavailable",
       error instanceof Error ? error.name : "unknown error"
     );
+
+    if (isProduction) {
+      // If a configured shared limiter fails, fail closed rather than allowing
+      // an outage to become an abuse-control bypass.
+      return false;
+    }
   }
 
-  if (isProduction) {
-    // A per-instance fallback is not a reliable abuse control in a
-    // serverless deployment. Require the shared limiter in production.
-    return false;
-  }
-
+  // Redis is optional for this low-volume portfolio. When it is not configured,
+  // retain the bounded per-instance limiter used before shared rate limiting
+  // was added. Configure Upstash later if cross-instance enforcement is needed.
   return inMemoryRateLimit(key, limit);
 }
 
