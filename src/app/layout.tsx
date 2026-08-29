@@ -38,7 +38,9 @@ const bodyFont = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
-  preload: true,
+  // Body copy is not the primary above-the-fold visual; avoid a global font
+  // preload that browsers may not consume during the initial render.
+  preload: false,
 });
 
 const displayFont = Space_Grotesk({
