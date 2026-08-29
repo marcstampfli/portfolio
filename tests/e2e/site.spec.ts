@@ -20,7 +20,10 @@ test("published project pages are crawlable and unpublished content stays privat
 
   expect(homeResponse?.ok()).toBe(true);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Web Developer & Designer");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/$/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://www.marcstampfli.com"
+  );
 
   const projectLink = page.locator('a[href="/projects/steups-io"]').first();
   await expect(projectLink).toBeVisible();
@@ -37,7 +40,7 @@ test("published project pages are crawlable and unpublished content stays privat
   expect(projectResponse?.headers()["cache-control"] ?? "").not.toContain("public");
   const jsonLdNonces = await page
     .locator('script[type="application/ld+json"]')
-    .evaluateAll((scripts) => scripts.map((script) => script.getAttribute("nonce")));
+    .evaluateAll((scripts) => scripts.map((script) => (script as HTMLScriptElement).nonce));
   expect(jsonLdNonces.length).toBeGreaterThanOrEqual(2);
   for (const nonce of jsonLdNonces) {
     expect(nonce).toBeTruthy();
@@ -120,6 +123,41 @@ test("mobile navigation, forms, and semantic controls remain usable", async ({ p
   const themeToggle = page.getByRole("button", { name: /Switch to (light|dark) theme/ });
   await expect(themeToggle).toBeVisible();
   expect(["true", "false"]).toContain(await themeToggle.getAttribute("aria-pressed"));
+
+  expect(pageErrors).toEqual([]);
+});
+
+test("project-page navigation restores the destination section and active item", async ({
+  page,
+}) => {
+  const pageErrors = collectPageErrors(page);
+  await page.goto("/projects/steups-io");
+
+  const primaryNavigation = page.locator('nav[aria-label="Primary"]');
+  for (const section of ["home", "about", "experience", "projects", "contact"]) {
+    const link = primaryNavigation.getByRole("link", {
+      name: section[0].toUpperCase() + section.slice(1),
+      exact: true,
+    });
+    await link.click();
+
+    await expect(page).toHaveURL(new RegExp("/#" + section + "$"));
+    await expect(link).toHaveAttribute("aria-current", "location");
+    await expect(page.locator("#" + section)).toBeInViewport();
+
+    for (const otherSection of ["home", "about", "experience", "projects", "contact"]) {
+      if (otherSection === section) {
+        continue;
+      }
+
+      await expect(
+        primaryNavigation.getByRole("link", {
+          name: otherSection[0].toUpperCase() + otherSection.slice(1),
+          exact: true,
+        })
+      ).not.toHaveAttribute("aria-current", "location");
+    }
+  }
 
   expect(pageErrors).toEqual([]);
 });

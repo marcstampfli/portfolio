@@ -8,6 +8,19 @@ import { cn, getScrollBehavior } from "@/lib/utils";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Container } from "@/components/ui/container";
 
+const navHrefs = new Set(navItems.map(({ href }) => href));
+
+function getNavHrefFromHash(hash: string): string | null {
+  return navHrefs.has(hash) ? hash : null;
+}
+
+function isAtNavigationTarget(element: HTMLElement, navHeight: number): boolean {
+  const bounds = element.getBoundingClientRect();
+  const activationLine = navHeight + 16;
+
+  return bounds.top <= activationLine && bounds.bottom > activationLine;
+}
+
 export function FloatingNav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -16,6 +29,8 @@ export function FloatingNav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const pendingScrollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingActiveSectionRef = useRef<string | null>(null);
+  const pendingActiveSectionExpiresAtRef = useRef(0);
 
   useEffect(() => {
     let frame: number | null = null;
@@ -43,35 +58,103 @@ export function FloatingNav() {
 
   useEffect(() => {
     if (!isHome) {
+      pendingActiveSectionRef.current = null;
+      pendingActiveSectionExpiresAtRef.current = 0;
       return;
     }
 
-    const sections = navItems
-      .map(({ href }) => document.querySelector<HTMLElement>(href))
-      .filter((element): element is HTMLElement => element !== null);
+    const syncActiveSection = () => {
+      const section = getNavHrefFromHash(window.location.hash);
+      const target = section ? document.getElementById(section.slice(1)) : null;
+      const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
+      const hasPendingTarget = section && (!target || !isAtNavigationTarget(target, navHeight));
 
-    if (sections.length === 0) {
+      pendingActiveSectionRef.current = hasPendingTarget ? section : null;
+      pendingActiveSectionExpiresAtRef.current = hasPendingTarget ? performance.now() + 5000 : 0;
+      setActiveSection(section);
+    };
+
+    syncActiveSection();
+    window.addEventListener("hashchange", syncActiveSection);
+    window.addEventListener("popstate", syncActiveSection);
+
+    return () => {
+      window.removeEventListener("hashchange", syncActiveSection);
+      window.removeEventListener("popstate", syncActiveSection);
+    };
+  }, [isHome, pathname]);
+
+  useEffect(() => {
+    if (!isHome) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    let frame: number | null = null;
 
-        if (visible) {
-          setActiveSection("#" + visible.target.id);
+    const updateActiveSection = () => {
+      if (frame !== null) {
+        return;
+      }
+
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        const sections = navItems
+          .map(({ href }) => document.querySelector<HTMLElement>(href))
+          .filter((element): element is HTMLElement => element !== null);
+
+        // The home page can arrive through a streamed route transition. Wait
+        // for its sections instead of permanently disabling the scroll spy.
+        if (sections.length === 0) {
+          return;
         }
-      },
-      { rootMargin: "-30% 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
-    );
 
-    for (const section of sections) {
-      observer.observe(section);
-    }
+        const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
+        const pendingSection = pendingActiveSectionRef.current;
 
-    return () => observer.disconnect();
+        // A route transition can briefly leave the old section visible while
+        // the hash destination is being restored. Keep the requested section
+        // active until its target reaches the same line used by hash scrolling.
+        if (pendingSection) {
+          const target = document.getElementById(pendingSection.slice(1));
+          const expired = performance.now() >= pendingActiveSectionExpiresAtRef.current;
+
+          if (!expired && (!target || !isAtNavigationTarget(target, navHeight))) {
+            return;
+          }
+
+          pendingActiveSectionRef.current = null;
+          pendingActiveSectionExpiresAtRef.current = 0;
+        }
+
+        const activationLine = navHeight + 16;
+        let currentSection = sections[0];
+
+        for (const section of sections) {
+          if (section.getBoundingClientRect().top <= activationLine) {
+            currentSection = section;
+          } else {
+            break;
+          }
+        }
+
+        setActiveSection("#" + currentSection.id);
+      });
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+    const mutationObserver = new MutationObserver(updateActiveSection);
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+      mutationObserver.disconnect();
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
   }, [isHome]);
 
   useEffect(() => {
@@ -118,9 +201,11 @@ export function FloatingNav() {
 
     scheduleHashScroll();
     window.addEventListener("hashchange", scheduleHashScroll);
+    window.addEventListener("popstate", scheduleHashScroll);
 
     return () => {
       window.removeEventListener("hashchange", scheduleHashScroll);
+      window.removeEventListener("popstate", scheduleHashScroll);
       if (frame !== null) {
         window.cancelAnimationFrame(frame);
       }
@@ -140,6 +225,13 @@ export function FloatingNav() {
     if (!target) {
       return;
     }
+
+    const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
+    const hasPendingTarget = activeSection !== href && !isAtNavigationTarget(target, navHeight);
+
+    pendingActiveSectionRef.current = hasPendingTarget ? href : null;
+    pendingActiveSectionExpiresAtRef.current = hasPendingTarget ? performance.now() + 5000 : 0;
+    setActiveSection(href);
 
     const scroll = () => {
       const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
