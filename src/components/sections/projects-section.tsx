@@ -1,52 +1,31 @@
 "use client";
 
-import { motion } from "framer-motion";
+import Link from "next/link";
 import { useMemo, useState } from "react";
-import { type ProjectWithTechStack, getProjectTypeDisplayName } from "@/types";
+import { type ProjectCard as ProjectCardData, getProjectTypeDisplayName } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { SectionHeader } from "@/components/shared/section-header";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import PlaceholderImage from "@/components/shared/placeholder-image";
-import dynamic from "next/dynamic";
-
-const ProjectModal = dynamic(
-  () => import("@/components/shared/project-modal").then((m) => m.ProjectModal),
-  { ssr: false }
-);
 import { formatProjectYear, isValidLocalImage } from "@/lib/utils";
 import { ArrowRight, ExternalLink, FolderArchive, Github, Star } from "lucide-react";
 
 interface ProjectsSectionProps {
-  projects: ProjectWithTechStack[];
+  projects: ProjectCardData[];
 }
 
-function ProjectCard({
-  project,
-  index,
-  onOpen,
-}: {
-  project: ProjectWithTechStack;
-  index: number;
-  onOpen: (_project: ProjectWithTechStack) => void;
-}) {
+function ProjectCard({ project }: { project: ProjectCardData }) {
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-8%" }}
-      transition={{ duration: 0.45, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-      className="surface-card group flex h-full flex-col overflow-hidden"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden border-b border-border/80 bg-secondary/60 transition-transform duration-500 group-hover:scale-[1.03]">
+    <article className="surface-card group flex h-full flex-col overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-border/80 bg-secondary/60 transition-transform duration-500 motion-safe:group-hover:scale-[1.03]">
         {isValidLocalImage(project.images?.[0]) ? (
           <OptimizedImage
             key={project.images[0]}
             src={project.images[0]}
             alt={project.title}
             fill
-            priority
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             className="object-cover object-top"
           />
@@ -54,14 +33,6 @@ function ProjectCard({
           <PlaceholderImage className="h-full w-full" />
         )}
 
-        <button
-          type="button"
-          onClick={() => onOpen(project)}
-          className="absolute inset-0 z-10 bg-transparent"
-          aria-label={`View ${project.title} case study`}
-        />
-
-        {/* dark gradient so badges are always readable over any image */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-16 bg-gradient-to-b from-black/60 to-transparent" />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 p-3">
@@ -81,10 +52,10 @@ function ProjectCard({
                 href={project.live_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
-                aria-label={`Open ${project.title} live project`}
+                className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={"Open " + project.title + " live project"}
               >
-                <ExternalLink className="h-3.5 w-3.5" />
+                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
             ) : null}
             {project.github_url ? (
@@ -92,20 +63,19 @@ function ProjectCard({
                 href={project.github_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70"
-                aria-label={`Open ${project.title} source code`}
+                className="transition-theme inline-flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-black/50 text-white backdrop-blur-sm hover:border-white/40 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={"Open " + project.title + " source code"}
               >
-                <Github className="h-3.5 w-3.5" />
+                <Github className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
             ) : null}
           </div>
         </div>
       </div>
 
-      <button
-        type="button"
-        className="flex flex-1 flex-col p-5 text-left"
-        onClick={() => onOpen(project)}
+      <Link
+        href={"/projects/" + project.slug}
+        className="flex flex-1 flex-col p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       >
         <div>
           <h3 className="font-display text-xl font-semibold tracking-[-0.04em] text-foreground">
@@ -116,7 +86,7 @@ function ProjectCard({
 
         <div className="mt-auto flex flex-wrap gap-2 pt-4">
           {project.tech_stack.slice(0, 4).map((tech, techIndex) => (
-            <Badge key={`${tech}-${techIndex}`} variant="secondary">
+            <Badge key={tech + "-" + techIndex} variant="secondary">
               {tech}
             </Badge>
           ))}
@@ -139,27 +109,20 @@ function ProjectCard({
             </div>
             <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary">
               <span className="link">View Case</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </span>
           </div>
         </div>
-      </button>
-    </motion.article>
+      </Link>
+    </article>
   );
 }
 
-function ArchiveRow({
-  project,
-  onOpen,
-}: {
-  project: ProjectWithTechStack;
-  onOpen: (_project: ProjectWithTechStack) => void;
-}) {
+function ArchiveRow({ project }: { project: ProjectCardData }) {
   return (
-    <button
-      type="button"
-      onClick={() => onOpen(project)}
-      className="transition-theme flex w-full items-center justify-between gap-4 rounded-sm border border-border/70 bg-background/40 px-4 py-4 text-left hover:border-primary/30 hover:bg-background/70"
+    <Link
+      href={"/projects/" + project.slug}
+      className="transition-theme flex w-full items-center justify-between gap-4 rounded-sm border border-border/70 bg-background/40 px-4 py-4 text-left hover:border-primary/30 hover:bg-background/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
@@ -174,14 +137,13 @@ function ArchiveRow({
         {project.year_start || project.year ? (
           <span>{formatProjectYear(project.year_start, project.year)}</span>
         ) : null}
-        <ArrowRight className="h-4 w-4" />
+        <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </div>
-    </button>
+    </Link>
   );
 }
 
-export function ProjectsSection({ projects }: ProjectsSectionProps) {
-  const [selectedProject, setSelectedProject] = useState<ProjectWithTechStack | null>(null);
+function ProjectsSection({ projects }: ProjectsSectionProps) {
   const [activeFilter, setActiveFilter] = useState("all");
   const [showAllArchive, setShowAllArchive] = useState(false);
 
@@ -223,131 +185,112 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
   const hasHiddenArchiveProjects =
     activeFilter === "all" && archiveProjects.length > archivePreviewCount;
 
-  const visibleSelectedProject = useMemo(() => {
-    if (!selectedProject) {
-      return null;
-    }
-
-    return filteredProjects.some((project) => project.id === selectedProject.id)
-      ? selectedProject
-      : null;
-  }, [filteredProjects, selectedProject]);
-
   return (
-    <>
-      <section id="projects" className="section-shell relative" aria-labelledby="projects-heading">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
-          >
-            <SectionHeader
-              titleId="projects-heading"
-              eyebrow="Projects"
-              title="Client work, personal projects, and experiments."
-              subtitle="Selected work first. Browse the full archive and filter by type."
-              titleClassName="text-3xl sm:text-4xl lg:text-5xl"
-              className="max-w-3xl"
-            />
+    <section id="projects" className="section-shell relative" aria-labelledby="projects-heading">
+      <Container>
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <SectionHeader
+            titleId="projects-heading"
+            eyebrow="Projects"
+            title="Client work, personal projects, and experiments."
+            subtitle="Selected work first. Browse the full archive and filter by type."
+            titleClassName="text-3xl sm:text-4xl lg:text-5xl"
+            className="max-w-3xl"
+          />
 
-            <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter projects by type">
+            <Button
+              type="button"
+              variant={activeFilter === "all" ? "default" : "outline"}
+              className="rounded-sm"
+              aria-pressed={activeFilter === "all"}
+              onClick={() => {
+                setActiveFilter("all");
+                setShowAllArchive(false);
+              }}
+            >
+              All
+            </Button>
+            {projectTypes.map((type) => (
               <Button
-                variant={activeFilter === "all" ? "default" : "outline"}
+                type="button"
+                key={type}
+                variant={activeFilter === type ? "default" : "outline"}
                 className="rounded-sm"
+                aria-pressed={activeFilter === type}
                 onClick={() => {
-                  setActiveFilter("all");
-                  setShowAllArchive(false);
+                  setActiveFilter(type);
+                  setShowAllArchive(true);
                 }}
               >
-                All
+                {getProjectTypeDisplayName(type)}
               </Button>
-              {projectTypes.map((type) => (
-                <Button
-                  key={type}
-                  variant={activeFilter === type ? "default" : "outline"}
-                  className="rounded-sm"
-                  onClick={() => {
-                    setActiveFilter(type);
-                    setShowAllArchive(true);
-                  }}
-                >
-                  {getProjectTypeDisplayName(type)}
-                </Button>
-              ))}
-            </div>
-          </motion.div>
+            ))}
+          </div>
+        </div>
 
-          {filteredProjects.length === 0 ? (
-            <div className="surface-panel mt-10 p-8 sm:p-10">
-              <h3 className="font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
-                No matching projects.
-              </h3>
-              <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-                Try another filter.
-              </p>
-            </div>
-          ) : (
-            <div className="mt-10 space-y-12">
-              {featuredProjects.length > 0 ? (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <Star className="h-4 w-4 text-primary" />
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      Featured Projects
-                    </p>
-                  </div>
-                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {featuredProjects.map((project, index) => (
-                      <ProjectCard
-                        key={project.id}
-                        project={project}
-                        index={index}
-                        onOpen={setSelectedProject}
-                      />
-                    ))}
-                  </div>
+        {filteredProjects.length === 0 ? (
+          <div className="surface-panel mt-10 p-8 sm:p-10">
+            <h3 className="font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
+              No matching projects.
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground">
+              Try another filter.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-10 space-y-12">
+            {featuredProjects.length > 0 ? (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <Star className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    Featured Projects
+                  </p>
                 </div>
-              ) : null}
-
-              {archiveProjects.length > 0 ? (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <FolderArchive className="h-4 w-4 text-primary" />
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      Project Archive
-                    </p>
-                  </div>
-                  <div className="surface-panel space-y-3 p-4 sm:p-5">
-                    {visibleArchiveProjects.map((project) => (
-                      <ArchiveRow key={project.id} project={project} onOpen={setSelectedProject} />
-                    ))}
-                  </div>
-                  {hasHiddenArchiveProjects ? (
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="text-sm text-muted-foreground">
-                        Showing {visibleArchiveProjects.length} of {archiveProjects.length} archived
-                        projects.
-                      </p>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowAllArchive((current) => !current)}
-                      >
-                        {showAllArchive ? "Hide Archive" : "Show Full Archive"}
-                      </Button>
-                    </div>
-                  ) : null}
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  {featuredProjects.map((project) => (
+                    <ProjectCard key={project.id} project={project} />
+                  ))}
                 </div>
-              ) : null}
-            </div>
-          )}
-        </Container>
-      </section>
+              </div>
+            ) : null}
 
-      <ProjectModal project={visibleSelectedProject} onClose={() => setSelectedProject(null)} />
-    </>
+            {archiveProjects.length > 0 ? (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <FolderArchive className="h-4 w-4 text-primary" aria-hidden="true" />
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    Project Archive
+                  </p>
+                </div>
+                <div id="project-archive" className="surface-panel space-y-3 p-4 sm:p-5">
+                  {visibleArchiveProjects.map((project) => (
+                    <ArchiveRow key={project.id} project={project} />
+                  ))}
+                </div>
+                {hasHiddenArchiveProjects ? (
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Showing {visibleArchiveProjects.length} of {archiveProjects.length} projects.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      aria-expanded={showAllArchive}
+                      aria-controls="project-archive"
+                      onClick={() => setShowAllArchive((current) => !current)}
+                    >
+                      {showAllArchive ? "Hide Archive" : "Show Full Archive"}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        )}
+      </Container>
+    </section>
   );
 }
 

@@ -1,0 +1,19 @@
+{
+  "title": "LiPS Program Flyer",
+  "slug": "lips-program-flyer",
+  "type": "flyer",
+  "summary": "Promotional flyer designed in Photoshop for the LiPS Program, a Trinidad community initiative.",
+  "featured": false,
+  "status": "published",
+  "client": "LiPS Program",
+  "year": 2016,
+  "sortOrder": 29,
+  "stack": ["Photoshop"],
+  "cover": "project-lips-flyer.gif",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

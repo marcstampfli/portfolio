@@ -5,10 +5,34 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Analytics } from "@/components/shared/analytics";
+import { AnalyticsConsent } from "@/components/shared/analytics-consent";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
-import { siteConfig } from "@/lib/site";
+import { FloatingNav } from "@/components/shared/floating-nav";
+import { SkipToContent } from "@/components/shared/skip-to-content";
+import { isIndexableDeployment, siteConfig } from "@/lib/site";
+import { serializeJsonLd } from "@/lib/json-ld";
 
 const isProduction = process.env.NODE_ENV === "production";
+const isVercelProduction =
+  isProduction && process.env.VERCEL === "1" && process.env.VERCEL_ENV === "production";
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? "";
+const hasValidGaMeasurementId = /^G-[A-Z0-9]+$/i.test(gaMeasurementId);
+const analyticsEnabled = isProduction && (hasValidGaMeasurementId || isVercelProduction);
+const themeBootstrapScript = `
+  (() => {
+    try {
+      const stored = localStorage.getItem("theme");
+      const theme = stored === "light" || stored === "dark"
+        ? stored
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      document.documentElement.style.colorScheme = theme;
+    } catch {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
+    }
+  })();
+`;
 
 const bodyFont = Inter({
   subsets: ["latin"],
@@ -58,11 +82,11 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   robots: {
-    index: true,
-    follow: true,
+    index: isIndexableDeployment,
+    follow: isIndexableDeployment,
     googleBot: {
-      index: true,
-      follow: true,
+      index: isIndexableDeployment,
+      follow: isIndexableDeployment,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
@@ -70,7 +94,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "en_TT",
     url: siteConfig.url,
     title: siteConfig.title,
     description: siteConfig.description,
@@ -83,7 +107,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: siteConfig.title,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
@@ -112,16 +136,17 @@ const personJsonLd = {
   ],
 };
 
-function serializeJsonLd(value: unknown): string {
-  return JSON.stringify(value).replaceAll("<", "\\u003c");
-}
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        <script
+          nonce={nonce}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: themeBootstrapScript }}
+        />
         <script
           nonce={nonce}
           suppressHydrationWarning
@@ -133,10 +158,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={`${bodyFont.variable} ${displayFont.variable} min-h-screen bg-background font-body text-foreground`}
       >
         <Providers>
+          <SkipToContent targetId="main-content" />
+          <FloatingNav />
           {children}
           <Suspense fallback={null}>
-            <Analytics nonce={nonce} />
-            {isProduction ? <VercelAnalytics /> : null}
+            <AnalyticsConsent enabled={analyticsEnabled}>
+              <Analytics nonce={nonce} />
+              {isVercelProduction ? <VercelAnalytics /> : null}
+            </AnalyticsConsent>
           </Suspense>
         </Providers>
       </body>

@@ -1,31 +1,58 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { navItems } from "@/lib/nav";
-import { cn } from "@/lib/utils";
+import { cn, getScrollBehavior } from "@/lib/utils";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Container } from "@/components/ui/container";
 
 export function FloatingNav() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("#home");
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+  const pendingScrollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 18);
+    let frame: number | null = null;
+
+    const onScroll = () => {
+      if (frame !== null) {
+        return;
+      }
+
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        setIsScrolled(window.scrollY > 18);
+      });
+    };
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
   }, []);
 
   useEffect(() => {
+    if (!isHome) {
+      return;
+    }
+
     const sections = navItems
       .map(({ href }) => document.querySelector<HTMLElement>(href))
-      .filter((el): el is HTMLElement => el !== null);
+      .filter((element): element is HTMLElement => element !== null);
 
-    if (sections.length === 0) return;
+    if (sections.length === 0) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -34,29 +61,104 @@ export function FloatingNav() {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
         if (visible) {
-          setActiveSection(`#${visible.target.id}`);
+          setActiveSection("#" + visible.target.id);
         }
       },
       { rootMargin: "-30% 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
     );
 
-    for (const section of sections) observer.observe(section);
+    for (const section of sections) {
+      observer.observe(section);
+    }
+
     return () => observer.disconnect();
+  }, [isHome]);
+
+  useEffect(() => {
+    if (!isHome) {
+      return;
+    }
+
+    let frame: number | null = null;
+    let attempts = 0;
+
+    const scrollToHashTarget = () => {
+      const requestedHash = window.location.hash;
+      const targetId = requestedHash.slice(1);
+      const target = targetId ? document.getElementById(targetId) : null;
+
+      if (!targetId) {
+        return;
+      }
+
+      if (!target && attempts < 60) {
+        attempts += 1;
+        frame = window.requestAnimationFrame(scrollToHashTarget);
+        return;
+      }
+
+      if (target) {
+        const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
+        const top = Math.max(
+          0,
+          target.getBoundingClientRect().top + window.scrollY - navHeight - 16
+        );
+        window.scrollTo({ top, behavior: getScrollBehavior() });
+      }
+      attempts = 0;
+    };
+
+    const scheduleHashScroll = () => {
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+      attempts = 0;
+      frame = window.requestAnimationFrame(scrollToHashTarget);
+    };
+
+    scheduleHashScroll();
+    window.addEventListener("hashchange", scheduleHashScroll);
+
+    return () => {
+      window.removeEventListener("hashchange", scheduleHashScroll);
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
+  }, [isHome]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingScrollRef.current !== null) {
+        clearTimeout(pendingScrollRef.current);
+      }
+    };
   }, []);
 
   const handleNavClick = (href: string) => {
-    const target = document.querySelector(href);
-    if (!target) return;
+    const target = document.querySelector<HTMLElement>(href);
+    if (!target) {
+      return;
+    }
+
     const scroll = () => {
-      const navHeight = 80;
-      const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
-      window.scrollTo({ top, behavior: "smooth" });
+      const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
+      const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - navHeight - 16);
+      window.scrollTo({ top, behavior: getScrollBehavior() });
+      window.history.replaceState(null, "", href);
     };
+
+    if (pendingScrollRef.current !== null) {
+      clearTimeout(pendingScrollRef.current);
+      pendingScrollRef.current = null;
+    }
 
     if (mobileMenuOpen) {
       setMobileMenuOpen(false);
-      // Wait for menu close animation so layout is stable before scrolling.
-      setTimeout(scroll, 260);
+      pendingScrollRef.current = setTimeout(() => {
+        pendingScrollRef.current = null;
+        scroll();
+      }, 0);
     } else {
       scroll();
     }
@@ -65,18 +167,20 @@ export function FloatingNav() {
   return (
     <div className="fixed inset-x-0 top-0 z-50 pt-4 sm:pt-5">
       <Container>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        <div
+          ref={navRef}
           className={cn("surface-panel transition-theme relative", isScrolled ? "shadow-card" : "")}
         >
           <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
-            <button
-              type="button"
-              onClick={() => handleNavClick("#home")}
+            <Link
+              href="/#home"
+              onClick={(event) => {
+                if (window.location.pathname === "/") {
+                  event.preventDefault();
+                  handleNavClick("#home");
+                }
+              }}
               className="group flex items-center gap-3 bg-transparent text-left"
-              aria-label="Scroll to home"
             >
               <span className="transition-theme flex h-7 w-7 items-center justify-center rounded-sm bg-primary font-display text-[0.62rem] font-bold tracking-[0.1em] text-primary-foreground group-hover:bg-primary/90">
                 MS
@@ -88,39 +192,37 @@ export function FloatingNav() {
               <span className="transition-theme text-foreground/92 font-display text-sm font-medium tracking-[0.08em] group-hover:text-foreground">
                 Marc Stämpfli
               </span>
-            </button>
+            </Link>
 
-            <nav
-              className="hidden items-center gap-1 md:flex"
-              role="navigation"
-              aria-label="Primary"
-            >
+            <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
               {navItems.map(({ href, label }) => {
-                const isActive = href === activeSection;
+                const isActive = isHome && href === activeSection;
 
                 return (
-                  <a
+                  <Link
                     key={href}
-                    href={href}
+                    href={"/" + href}
                     onClick={(event) => {
-                      event.preventDefault();
-                      handleNavClick(href);
+                      if (window.location.pathname === "/") {
+                        event.preventDefault();
+                        handleNavClick(href);
+                      }
+                      setMobileMenuOpen(false);
                     }}
-                    aria-current={isActive ? "page" : undefined}
+                    aria-current={isActive ? "location" : undefined}
                     className={cn(
                       "transition-theme relative rounded-sm px-3 py-2 text-sm text-muted-foreground no-underline hover:text-foreground",
                       isActive && "text-foreground"
                     )}
                   >
                     {isActive ? (
-                      <motion.span
-                        layoutId="nav-active"
+                      <span
                         className="absolute inset-0 rounded-sm border border-primary/10 bg-primary/10"
-                        transition={{ type: "spring", stiffness: 300, damping: 28 }}
+                        aria-hidden="true"
                       />
                     ) : null}
                     <span className="relative">{label}</span>
-                  </a>
+                  </Link>
                 );
               })}
             </nav>
@@ -130,120 +232,78 @@ export function FloatingNav() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen((open) => !open)}
-                className="transition-theme inline-flex h-11 w-11 items-center justify-center rounded-sm border-0 bg-transparent text-muted-foreground hover:text-primary md:hidden"
+                className="transition-theme relative inline-flex h-11 w-11 items-center justify-center rounded-sm border-0 bg-transparent text-muted-foreground hover:text-primary md:hidden"
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-nav"
-                aria-label="Toggle navigation"
+                aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 18 18"
-                  fill="none"
+                <span
+                  className={cn(
+                    "absolute h-px w-4 bg-current transition-transform duration-200 motion-reduce:transition-none",
+                    mobileMenuOpen ? "rotate-45" : "-translate-y-2"
+                  )}
                   aria-hidden="true"
-                  className="overflow-visible"
-                >
-                  {/* Top line → top-right diagonal */}
-                  <motion.line
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="square"
-                    initial={{ x1: 1, y1: 4, x2: 17, y2: 4 }}
-                    animate={
-                      mobileMenuOpen
-                        ? { x1: 2, y1: 2, x2: 16, y2: 16 }
-                        : { x1: 1, y1: 4, x2: 17, y2: 4 }
-                    }
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                  {/* Middle line → shrinks to a dot */}
-                  <motion.line
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="square"
-                    initial={{ x1: 1, y1: 9, x2: 17, y2: 9, opacity: 1 }}
-                    animate={
-                      mobileMenuOpen
-                        ? { x1: 9, y1: 9, x2: 9, y2: 9, opacity: 0 }
-                        : { x1: 1, y1: 9, x2: 17, y2: 9, opacity: 1 }
-                    }
-                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                  {/* Bottom line → bottom-left diagonal */}
-                  <motion.line
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="square"
-                    initial={{ x1: 1, y1: 14, x2: 17, y2: 14 }}
-                    animate={
-                      mobileMenuOpen
-                        ? { x1: 2, y1: 16, x2: 16, y2: 2 }
-                        : { x1: 1, y1: 14, x2: 17, y2: 14 }
-                    }
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                </svg>
+                />
+                <span
+                  className={cn(
+                    "absolute h-px w-4 bg-current transition-transform duration-200 motion-reduce:transition-none",
+                    mobileMenuOpen ? "scale-x-0" : ""
+                  )}
+                  aria-hidden="true"
+                />
+                <span
+                  className={cn(
+                    "absolute h-px w-4 bg-current transition-transform duration-200 motion-reduce:transition-none",
+                    mobileMenuOpen ? "-rotate-45" : "translate-y-2"
+                  )}
+                  aria-hidden="true"
+                />
               </button>
             </div>
           </div>
 
-          <AnimatePresence initial={false}>
-            {mobileMenuOpen ? (
-              <motion.div
-                id="mobile-nav"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden border-t border-border/60 md:hidden"
-              >
-                <nav className="grid gap-1 p-3" aria-label="Mobile">
-                  {navItems.map(({ href, label, icon: Icon }, index) => {
-                    const isActive = href === activeSection;
+          {mobileMenuOpen ? (
+            <div id="mobile-nav" className="border-t border-border/60 md:hidden">
+              <nav className="grid gap-1 p-3" aria-label="Mobile">
+                {navItems.map(({ href, label, icon: Icon }) => {
+                  const isActive = isHome && href === activeSection;
 
-                    return (
-                      <motion.a
-                        key={href}
-                        href={href}
-                        onClick={(event) => {
+                  return (
+                    <Link
+                      key={href}
+                      href={"/" + href}
+                      onClick={(event) => {
+                        if (window.location.pathname === "/") {
                           event.preventDefault();
                           handleNavClick(href);
-                        }}
-                        aria-current={isActive ? "page" : undefined}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{
-                          duration: 0.2,
-                          delay: index * 0.04,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
-                        className={cn(
-                          "transition-theme flex items-center gap-3 rounded-sm border px-4 py-3 text-sm",
-                          isActive
-                            ? "border-primary/20 bg-primary/10 text-foreground"
-                            : "border-transparent text-muted-foreground hover:border-border/70 hover:bg-secondary/50 hover:text-foreground"
-                        )}
-                      >
-                        <span className={cn("transition-theme", isActive ? "text-primary" : "")}>
-                          <Icon className="h-4 w-4" aria-hidden="true" />
-                        </span>
-                        <span>{label}</span>
-                        {isActive ? (
-                          <motion.span
-                            layoutId="mobile-nav-active"
-                            className="ml-auto h-1.5 w-1.5 rounded-full bg-primary"
-                            transition={{ type: "spring", stiffness: 300, damping: 28 }}
-                          />
-                        ) : null}
-                      </motion.a>
-                    );
-                  })}
-                </nav>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-        </motion.div>
+                        }
+                        setMobileMenuOpen(false);
+                      }}
+                      aria-current={isActive ? "location" : undefined}
+                      className={cn(
+                        "transition-theme flex items-center gap-3 rounded-sm border px-4 py-3 text-sm",
+                        isActive
+                          ? "border-primary/20 bg-primary/10 text-foreground"
+                          : "border-transparent text-muted-foreground hover:border-border/70 hover:bg-secondary/50 hover:text-foreground"
+                      )}
+                    >
+                      <span className={cn("transition-theme", isActive ? "text-primary" : "")}>
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                      </span>
+                      <span>{label}</span>
+                      {isActive ? (
+                        <span
+                          className="ml-auto h-1.5 w-1.5 rounded-full bg-primary"
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          ) : null}
+        </div>
       </Container>
     </div>
   );

@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -11,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border-primary bg-primary text-primary-foreground shadow-card hover:-translate-y-0.5 hover:bg-primary/90",
+          "border-primary bg-primary text-primary-foreground shadow-card hover:-translate-y-0.5 hover:bg-primary/90 motion-reduce:hover:translate-y-0",
         destructive:
           "border-destructive bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -36,7 +34,7 @@ const buttonVariants = cva(
   }
 );
 
-export interface ButtonProps
+interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
@@ -51,4 +49,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+export { Button };

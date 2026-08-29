@@ -1,7 +1,7 @@
 # ─── Dependencies ────────────────────────────────────────────────────────────
 /node_modules
 /.pnp
-.pnp.js
+.pnp.*
 .yarn/install-state.gz
 
 # ─── Next.js ─────────────────────────────────────────────────────────────────
@@ -22,6 +22,7 @@ next-env.d.ts
 .env.development.local
 .env.test.local
 .env.production.local
+.envrc
 
 # ─── Vercel ──────────────────────────────────────────────────────────────────
 .vercel
@@ -79,4 +80,23 @@ temp/
 # ─── Misc build artifacts ────────────────────────────────────────────────────
 storybook-static/
 *.pem
+*.key
+*.p12
+*.pfx
 .playwright-cli/
+playwright-report/
+test-results/
+
+# ─── Local agent settings ───────────────────────────────────────────────────
+.agents/
+.claude/
+.codex/
+
+# ─── Additional tool caches ──────────────────────────────────────────────────
+.eslintcache
+.stylelintcache
+.sass-cache/
+.turbo/
+.vite/
+.yarn/cache/
+*.tgz

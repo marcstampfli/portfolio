@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, getScrollBehavior } from "@/lib/utils";
 
 interface SkipToContentProps {
   targetId?: string;
@@ -13,7 +13,7 @@ export function SkipToContent({ targetId = "main-content", className }: SkipToCo
     const target = document.getElementById(targetId);
     if (target) {
       target.focus();
-      target.scrollIntoView({ behavior: "smooth" });
+      target.scrollIntoView({ behavior: getScrollBehavior() });
     }
   };
 

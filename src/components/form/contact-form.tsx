@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -31,11 +30,35 @@ const contactInfo = [
   { icon: MapPin, label: "Location", value: siteConfig.location },
 ];
 
+type ContactStatus = "sent" | "error" | null;
+
+function getContactStatus(): ContactStatus {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const status = new URLSearchParams(window.location.search).get("contact");
+  return status === "sent" || status === "error" ? status : null;
+}
+
+function subscribeToContactStatus(onChange: () => void): () => void {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener("contact-status-change", onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener("contact-status-change", onChange);
+  };
+}
+
 export function ContactForm() {
-  const prefersReducedMotion = useReducedMotion();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const contactStatus = useSyncExternalStore(
+    subscribeToContactStatus,
+    getContactStatus,
+    () => null
+  );
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
@@ -47,8 +70,19 @@ export function ContactForm() {
     },
   });
 
+  useEffect(() => {
+    if (contactStatus) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+    }
+  }, [contactStatus]);
+
+  const displayError =
+    error || (contactStatus === "error" ? "Failed to send message. Please try again later." : null);
+  const displaySubmitted = isSubmitted || contactStatus === "sent";
+
   async function onSubmit(data: ContactFormData) {
     try {
+      window.dispatchEvent(new Event("contact-status-change"));
       setIsSubmitting(true);
       setError(null);
       setIsSubmitted(false);
@@ -56,7 +90,7 @@ export function ContactForm() {
       const result = await submitContactMessage(data);
 
       if (!result.success) {
-        throw new Error(result.error);
+        throw new Error(result.error ?? "Failed to send message. Please try again later.");
       }
 
       setIsSubmitted(true);
@@ -74,28 +108,15 @@ export function ContactForm() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(280px,0.78fr)_minmax(0,1fr)] lg:gap-10">
-      <motion.aside
-        initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-10%" }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="surface-panel p-6 sm:p-7"
-      >
+      <aside className="surface-panel p-6 sm:p-7">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
           Contact Details
         </p>
         <div className="divide-y divide-border/60">
-          {contactInfo.map((item, index) => (
-            <motion.div
-              key={item.label}
-              initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="flex items-start gap-4 py-7 first:pt-5 last:pb-1"
-            >
+          {contactInfo.map((item) => (
+            <div key={item.label} className="flex items-start gap-4 py-7 first:pt-5 last:pb-1">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-sm border border-primary/20 bg-primary/10 text-primary">
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-4 w-4" aria-hidden="true" />
               </span>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
@@ -114,7 +135,7 @@ export function ContactForm() {
                   </p>
                 )}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -126,23 +147,23 @@ export function ContactForm() {
             {socialLinks.map((link) => (
               <Button key={link.name} variant="outline" asChild className="rounded-sm">
                 <a href={link.href} target="_blank" rel="noopener noreferrer">
-                  <link.icon className="mr-2 h-4 w-4" />
+                  <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
                   {link.name}
                 </a>
               </Button>
             ))}
           </div>
         </div>
-      </motion.aside>
+      </aside>
 
-      <motion.div
-        initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-10%" }}
-        transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-        className="surface-card p-6 sm:p-7"
-      >
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
+      <div className="surface-card p-6 sm:p-7">
+        <form
+          action="/api/contact"
+          method="post"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-5"
+          aria-busy={isSubmitting}
+        >
           <div className="hidden" aria-hidden="true">
             <label htmlFor="website">Website</label>
             <input
@@ -160,6 +181,9 @@ export function ContactForm() {
             form={form}
             errors={form.formState.errors}
             placeholder="Your name"
+            autoComplete="name"
+            minLength={2}
+            maxLength={120}
           />
 
           <FormField
@@ -169,6 +193,8 @@ export function ContactForm() {
             form={form}
             errors={form.formState.errors}
             placeholder="you@example.com"
+            autoComplete="email"
+            maxLength={254}
           />
 
           <FormField
@@ -179,47 +205,40 @@ export function ContactForm() {
             form={form}
             errors={form.formState.errors}
             placeholder="What are you building, what is not working, and what kind of help do you need?"
+            autoComplete="off"
+            minLength={10}
+            maxLength={5000}
           />
 
-          <AnimatePresence mode="wait">
-            {error ? (
-              <motion.div
-                key="error"
-                role="alert"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                className="flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
-              >
-                <AlertCircle className="mt-0.5 h-4 w-4" />
-                <span>{error}</span>
-              </motion.div>
-            ) : null}
+          {displayError ? (
+            <div
+              role="alert"
+              className="flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            >
+              <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden="true" />
+              <span>{displayError}</span>
+            </div>
+          ) : null}
 
-            {!error && isSubmitted ? (
-              <motion.div
-                key="success"
-                role="status"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                className="flex items-start gap-3 rounded-md border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary"
-              >
-                <CheckCircle2 className="mt-0.5 h-4 w-4" />
-                <span>Message received. I’ll be in touch.</span>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
+          {!displayError && displaySubmitted ? (
+            <div
+              role="status"
+              className="flex items-start gap-3 rounded-md border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary"
+            >
+              <CheckCircle2 className="mt-0.5 h-4 w-4" aria-hidden="true" />
+              <span>Message received. I’ll be in touch.</span>
+            </div>
+          ) : null}
 
           <div className="flex flex-col gap-3 border-t border-border/70 pt-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm leading-6 text-muted-foreground">Short briefs are fine.</p>
             <Button type="submit" size="lg" disabled={isSubmitting}>
               {isSubmitting ? "Sending..." : "Send Message"}
-              <Send className="ml-2 h-4 w-4" />
+              <Send className="ml-2 h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
         </form>
-      </motion.div>
+      </div>
     </div>
   );
 }

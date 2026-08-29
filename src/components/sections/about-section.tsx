@@ -1,6 +1,3 @@
-"use client";
-
-import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { Blocks, PenTool, Workflow } from "lucide-react";
 import { Container } from "@/components/ui/container";
@@ -35,19 +32,12 @@ const focusAreas = [
 ];
 
 export function AboutSection() {
-  const prefersReducedMotion = useReducedMotion();
-
   return (
     <section id="about" className="section-shell relative" aria-labelledby="about-heading">
       <Container>
         <div className="space-y-12">
           {/* Header */}
-          <motion.div
-            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <div>
             <SectionHeader
               titleId="about-heading"
               eyebrow="About"
@@ -56,16 +46,10 @@ export function AboutSection() {
               titleClassName="text-3xl sm:text-4xl lg:text-5xl"
               className="max-w-3xl"
             />
-          </motion.div>
+          </div>
 
           {/* Bio row - photo + text */}
-          <motion.div
-            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.5, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-            className="grid gap-6 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-start lg:grid-cols-[200px_minmax(0,1fr)]"
-          >
+          <div className="grid gap-6 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-start lg:grid-cols-[200px_minmax(0,1fr)]">
             {/* Photo */}
             <div className="surface-card overflow-hidden p-2">
               <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-border/60 bg-secondary/40">
@@ -73,7 +57,6 @@ export function AboutSection() {
                   src="/profile.jpg"
                   alt="Marc Stämpfli portrait"
                   fill
-                  priority
                   sizes="(max-width: 640px) 160px, 200px"
                   className="object-cover"
                 />
@@ -105,25 +88,14 @@ export function AboutSection() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Principles - 3 col grid */}
           <div className="grid gap-4 sm:grid-cols-3">
-            {principles.map((item, index) => (
-              <motion.article
-                key={item.title}
-                initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-8%" }}
-                transition={{
-                  duration: 0.45,
-                  delay: 0.08 + index * 0.07,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="surface-panel flex flex-col gap-4 p-6"
-              >
+            {principles.map((item) => (
+              <article key={item.title} className="surface-panel flex flex-col gap-4 p-6">
                 <div className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-primary/20 bg-primary/10 text-primary">
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-4 w-4" aria-hidden="true" />
                 </div>
                 <div>
                   <h3 className="font-display text-base font-semibold tracking-[-0.02em] text-foreground">
@@ -131,7 +103,7 @@ export function AboutSection() {
                   </h3>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.description}</p>
                 </div>
-              </motion.article>
+              </article>
             ))}
           </div>
         </div>

@@ -1,0 +1,19 @@
+{
+  "title": "Irie Bites Digital Signage",
+  "slug": "irie-bites-digital-signage",
+  "type": "signage",
+  "summary": "Digital menu and promotional signage designed in Photoshop for Irie Bites, a Trinidad street food vendor.",
+  "featured": false,
+  "status": "published",
+  "client": "Irie Bites",
+  "year": 2018,
+  "sortOrder": 27,
+  "stack": ["Photoshop"],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

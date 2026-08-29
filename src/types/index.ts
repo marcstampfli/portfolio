@@ -4,7 +4,7 @@ import { z } from "zod";
 // Project Types
 // =============================================================================
 
-export interface Project {
+interface Project {
   id: string;
   title: string;
   slug: string;
@@ -26,6 +26,8 @@ export interface Project {
 export interface ProjectWithTechStack extends Project {
   tech_stack: string[];
 }
+
+export type ProjectCard = Omit<ProjectWithTechStack, "content">;
 
 // =============================================================================
 // Experience Types
@@ -57,13 +59,14 @@ export interface Experience {
 // =============================================================================
 
 export const contactFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(120, "Name is too long"),
-  email: z.string().email("Invalid email address").max(254, "Email is too long"),
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(120, "Name is too long"),
+  email: z.string().trim().email("Invalid email address").max(254, "Email is too long"),
   message: z
     .string()
+    .trim()
     .min(10, "Message must be at least 10 characters")
     .max(5000, "Message is too long (max 5000 characters)"),
-  website: z.string().max(200).optional().default(""),
+  website: z.string().trim().max(200).optional().default(""),
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -72,7 +75,7 @@ export type ContactFormData = z.infer<typeof contactFormSchema>;
 // Project Type Display Names
 // =============================================================================
 
-export const PROJECT_TYPE_DISPLAY_NAMES: Record<string, string> = {
+const PROJECT_TYPE_DISPLAY_NAMES: Record<string, string> = {
   bizcard: "Business Card",
   web: "Web App",
   website: "Website",

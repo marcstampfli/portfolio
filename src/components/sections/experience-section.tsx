@@ -1,10 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useState } from "react";
 import { Briefcase } from "lucide-react";
 import { TimelineItem } from "@/components/timeline/timeline-item-vertical";
-import { BackgroundEffect } from "@/components/timeline/background-effect";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
@@ -27,16 +25,8 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
       className="section-shell relative"
       aria-labelledby="experience-heading"
     >
-      <BackgroundEffect />
-
       <Container>
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-10%" }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-10"
-        >
+        <div className="mb-10">
           <SectionHeader
             titleId="experience-heading"
             eyebrow="Experience"
@@ -44,12 +34,12 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
             subtitle="From in-house roles to freelance work and agency life - a career spent shipping websites and products."
             titleClassName="text-3xl sm:text-4xl lg:text-5xl"
           />
-        </motion.div>
+        </div>
 
         {experiences.length === 0 ? (
           <div className="surface-panel max-w-3xl p-8 sm:p-10">
             <div className="flex h-12 w-12 items-center justify-center rounded-md border border-primary/20 bg-primary/10 text-primary">
-              <Briefcase className="h-5 w-5" />
+              <Briefcase className="h-5 w-5" aria-hidden="true" />
             </div>
             <h3 className="mt-5 font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
               Experience coming soon.
@@ -60,7 +50,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
           </div>
         ) : (
           <div className="relative mx-auto max-w-5xl space-y-6">
-            <div className="space-y-1">
+            <div id="experience-timeline" className="space-y-1">
               {visibleExperiences.map((experience, index) => (
                 <TimelineItem
                   key={experience.id}
@@ -78,7 +68,10 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                     : `Showing ${recentExperiences.length} recent roles. ${archivedExperiences.length} older roles are tucked away.`}
                 </p>
                 <Button
+                  type="button"
                   variant="outline"
+                  aria-expanded={showFullTimeline}
+                  aria-controls="experience-timeline"
                   onClick={() => setShowFullTimeline((current) => !current)}
                 >
                   {showFullTimeline ? "Hide Older Roles" : "View Full Timeline"}

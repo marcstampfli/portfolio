@@ -1,0 +1,19 @@
+{
+  "title": "Van's Vegan Delights Social Story",
+  "slug": "vans-vegan-delights-social-story",
+  "type": "story",
+  "summary": "Branded Instagram story set designed in Photoshop for Van's Vegan Delights, a Trinidad plant-based food brand.",
+  "featured": false,
+  "status": "published",
+  "client": "Van's Vegan Delights",
+  "year": 2020,
+  "sortOrder": 9,
+  "stack": ["Photoshop"],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

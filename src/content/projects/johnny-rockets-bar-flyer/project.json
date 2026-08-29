@@ -1,0 +1,19 @@
+{
+  "title": "Johnny Rockets Bar Flyer",
+  "slug": "johnny-rockets-bar-flyer",
+  "type": "flyer",
+  "summary": "Animated promotional flyer designed in Photoshop for Johnny Rockets Bar, a Trinidad entertainment venue.",
+  "featured": false,
+  "status": "published",
+  "client": "Johnny Rockets Bar",
+  "year": 2018,
+  "sortOrder": 21,
+  "stack": ["Photoshop"],
+  "cover": "project-johnnyrocket-flyer.gif",
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

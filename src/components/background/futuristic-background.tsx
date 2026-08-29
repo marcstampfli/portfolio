@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useReducedMotion } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useEffect, useRef, useState } from "react";
 
 interface NodePoint {
   x: number;
@@ -10,6 +8,12 @@ interface NodePoint {
   vx: number;
   vy: number;
   radius: number;
+}
+
+interface BackgroundEnvironment {
+  ready: boolean;
+  prefersReducedMotion: boolean;
+  isMobile: boolean;
 }
 
 function seededRandom(seed: number) {
@@ -33,9 +37,32 @@ export function FuturisticBackground() {
   const pointsRef = useRef<NodePoint[]>([]);
   const animationFrameRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef(0);
-  const prefersReducedMotion = useReducedMotion();
-  const isMobile = useIsMobile();
-  const shouldAnimateCanvas = !prefersReducedMotion && !isMobile;
+  const [environment, setEnvironment] = useState<BackgroundEnvironment>({
+    ready: false,
+    prefersReducedMotion: false,
+    isMobile: false,
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateEnvironment = () =>
+      setEnvironment({
+        ready: true,
+        prefersReducedMotion: mediaQuery.matches,
+        isMobile: window.innerWidth < 768 || "ontouchstart" in window,
+      });
+
+    updateEnvironment();
+    mediaQuery.addEventListener("change", updateEnvironment);
+    window.addEventListener("resize", updateEnvironment, { passive: true });
+    return () => {
+      mediaQuery.removeEventListener("change", updateEnvironment);
+      window.removeEventListener("resize", updateEnvironment);
+    };
+  }, []);
+
+  const shouldAnimateCanvas =
+    environment.ready && !environment.prefersReducedMotion && !environment.isMobile;
 
   useEffect(() => {
     if (!shouldAnimateCanvas || !canvasRef.current || !wrapperRef.current) {
@@ -150,8 +177,6 @@ export function FuturisticBackground() {
   return (
     <div ref={wrapperRef} className="absolute inset-0 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.09),transparent_28%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,hsl(var(--foreground)/0.04),transparent_24%)]" />
 
       <div
         className="absolute inset-0 opacity-40"
@@ -162,11 +187,6 @@ export function FuturisticBackground() {
           maskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
         }}
       />
-
-      <div className="absolute left-[7%] top-[16%] h-px w-[30%] bg-gradient-to-r from-primary/30 to-transparent" />
-      <div className="absolute right-[9%] top-[24%] h-px w-[18%] bg-gradient-to-l from-primary/20 to-transparent" />
-      <div className="absolute bottom-[18%] right-[12%] h-[24vw] w-[24vw] rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute left-[10%] top-[20%] h-[18vw] w-[18vw] rounded-full bg-primary/5 blur-3xl" />
 
       {shouldAnimateCanvas ? (
         <canvas ref={canvasRef} className="absolute inset-0 opacity-80" aria-hidden="true" />

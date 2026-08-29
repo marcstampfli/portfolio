@@ -1,0 +1,19 @@
+{
+  "title": "Nicholas St\u00e4mpfli Business Card",
+  "slug": "nicholas-stampfli-business-card",
+  "type": "bizcard",
+  "summary": "Business card design created in Photoshop for Nicholas St\u00e4mpfli.",
+  "featured": false,
+  "status": "published",
+  "client": "Nicholas St\u00e4mpfli",
+  "year": 2015,
+  "sortOrder": 33,
+  "stack": ["Photoshop"],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

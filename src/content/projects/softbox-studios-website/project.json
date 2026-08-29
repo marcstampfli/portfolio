@@ -1,0 +1,24 @@
+{
+  "title": "Softbox Studios Website",
+  "slug": "softbox-studios-website",
+  "type": "website",
+  "summary": "Early client website built for Softbox Studios, a Trinidad photography and media production company.",
+  "featured": false,
+  "status": "published",
+  "client": "Softbox Studios",
+  "year": 2012,
+  "sortOrder": 35,
+  "stack": ["HTML", "CSS", "JavaScript"],
+  "cover": "project-softbox-website.jpg",
+  "gallery": [
+    "project-softbox-website2.jpg",
+    "project-softbox-website3.jpg",
+    "project-softbox-website4.jpg",
+    "project-softbox-website5.jpg"
+  ],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

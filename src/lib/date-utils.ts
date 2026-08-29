@@ -1,80 +1,71 @@
-/**
- * Calculates the duration between two dates and returns a formatted string
- * @param startDate - The start date
- * @param endDate - The end date (null for current position)
- * @returns Formatted duration string like "2 yrs 3 mos" or "3 mos"
- */
-export function calculateDuration(startDate: string | Date, endDate: string | Date | null): string {
-  try {
-    const start = new Date(startDate);
-    const end = endDate ? new Date(endDate) : new Date();
+type DateInput = string | Date;
 
-    // Validate dates
-    if (isNaN(start.getTime()) || (endDate && isNaN(end.getTime()))) {
-      return "Duration unavailable";
-    }
+function parseDate(value: DateInput): Date | null {
+  const date =
+    typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
+      ? new Date(value + "T00:00:00Z")
+      : new Date(value);
 
-    const diffTime = end.getTime() - start.getTime();
-    const diffMonths = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 
-    const years = Math.floor(diffMonths / 12);
-    const months = diffMonths % 12;
+function getCalendarParts(date: Date) {
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth(),
+    day: date.getUTCDate(),
+  };
+}
 
-    const parts: string[] = [];
+export function calculateDuration(startDate: DateInput, endDate: DateInput | null): string {
+  const start = parseDate(startDate);
+  const end = parseDate(endDate ?? new Date());
 
-    if (years > 0) {
-      parts.push(`${years} yr${years !== 1 ? "s" : ""}`);
-    }
-
-    if (months > 0) {
-      parts.push(`${months} mo${months !== 1 ? "s" : ""}`);
-    }
-
-    if (parts.length === 0) {
-      return "Less than 1 mo";
-    }
-
-    return parts.join(" ");
-  } catch {
+  if (!start || !end || end.getTime() < start.getTime()) {
     return "Duration unavailable";
   }
+
+  const startParts = getCalendarParts(start);
+  const endParts = getCalendarParts(end);
+  let diffMonths = (endParts.year - startParts.year) * 12 + (endParts.month - startParts.month);
+
+  if (endParts.day < startParts.day) {
+    diffMonths -= 1;
+  }
+
+  const years = Math.floor(diffMonths / 12);
+  const months = diffMonths % 12;
+  const parts: string[] = [];
+
+  if (years > 0) {
+    parts.push(years + " yr" + (years !== 1 ? "s" : ""));
+  }
+
+  if (months > 0) {
+    parts.push(months + " mo" + (months !== 1 ? "s" : ""));
+  }
+
+  return parts.length > 0 ? parts.join(" ") : "Less than 1 mo";
 }
 
-/**
- * Formats a date range string
- * @param startDate - The start date
- * @param endDate - The end date (null for current position)
- * @returns Formatted date range like "Aug 2021 - Present" or "Apr 2021 - Nov 2021"
- */
-export function formatDateRange(startDate: string | Date, endDate: string | Date | null): string {
-  try {
-    const start = new Date(startDate);
-    const end = endDate ? new Date(endDate) : null;
+export function formatDateRange(startDate: DateInput, endDate: DateInput | null): string {
+  const start = parseDate(startDate);
+  const end = endDate ? parseDate(endDate) : null;
 
-    // Validate dates
-    if (isNaN(start.getTime()) || (endDate && end && isNaN(end.getTime()))) {
-      return "Date range unavailable";
-    }
-
-    const formatDate = (date: Date) => {
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        year: "numeric",
-      });
-    };
-
-    const startFormatted = formatDate(start);
-    const endFormatted = end ? formatDate(end) : "Present";
-
-    return `${startFormatted} - ${endFormatted}`;
-  } catch {
+  if (!start || (endDate && !end) || (end && end.getTime() < start.getTime())) {
     return "Date range unavailable";
   }
+
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-US", {
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+
+  return formatDate(start) + " - " + (end ? formatDate(end) : "Present");
 }
 
-export function generatePeriodString(
-  startDate: string | Date,
-  endDate: string | Date | null
-): string {
-  return `${formatDateRange(startDate, endDate)} · ${calculateDuration(startDate, endDate)}`;
+export function generatePeriodString(startDate: DateInput, endDate: DateInput | null): string {
+  return formatDateRange(startDate, endDate) + " · " + calculateDuration(startDate, endDate);
 }

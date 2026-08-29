@@ -1,29 +1,14 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import dynamic from "next/dynamic";
-
-const ImageOff = dynamic(() => import("lucide-react").then((mod) => mod.ImageOff));
+import { ImageOff } from "lucide-react";
 
 interface PlaceholderImageProps {
   className?: string;
-  animate?: boolean;
   fill?: boolean;
 }
 
-export default function PlaceholderImage({
-  className,
-  animate = true,
-  fill,
-}: PlaceholderImageProps) {
-  const Component = animate ? motion.div : "div";
-
+export default function PlaceholderImage({ className, fill }: PlaceholderImageProps) {
   return (
-    <Component
-      initial={animate ? { opacity: 0, scale: 0.95 } : undefined}
-      animate={animate ? { opacity: 1, scale: 1 } : undefined}
-      transition={{ duration: 0.3 }}
+    <div
       className={cn(
         "relative flex flex-col items-center justify-center gap-3",
         "bg-background/50 backdrop-blur-sm",
@@ -37,6 +22,6 @@ export default function PlaceholderImage({
           No project image available
         </span>
       </div>
-    </Component>
+    </div>
   );
 }

@@ -1,0 +1,19 @@
+{
+  "title": "Gimmick Tees Logo",
+  "slug": "gimmick-tees-logo",
+  "type": "logo",
+  "summary": "Logo design for Gimmick Tees, a custom t-shirt brand, created in Photoshop.",
+  "featured": false,
+  "status": "published",
+  "client": "Gimmick Tees",
+  "year": 2017,
+  "sortOrder": 26,
+  "stack": ["Photoshop"],
+  "cover": null,
+  "gallery": [],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

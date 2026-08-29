@@ -14,6 +14,10 @@ interface FormFieldProps {
   fieldType?: "input" | "textarea";
   rows?: number;
   placeholder?: string;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  autoComplete?: string;
 }
 
 export function FormField({
@@ -25,6 +29,10 @@ export function FormField({
   fieldType = "input",
   rows = 6,
   placeholder,
+  required = true,
+  minLength,
+  maxLength,
+  autoComplete,
 }: FormFieldProps) {
   const error = errors[name]?.message;
   const sharedProps = {
@@ -33,6 +41,11 @@ export function FormField({
     "aria-describedby": error ? `${name}-error` : undefined,
     placeholder,
     ...form.register(name),
+    required,
+    "aria-required": required,
+    minLength,
+    maxLength,
+    autoComplete,
   };
 
   return (
@@ -51,7 +64,7 @@ export function FormField({
       )}
 
       {error ? (
-        <p id={`${name}-error`} className="text-sm text-destructive">
+        <p id={`${name}-error`} role="alert" className="text-sm text-destructive">
           {String(error)}
         </p>
       ) : null}

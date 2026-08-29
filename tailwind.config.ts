@@ -1,12 +1,10 @@
 import type { Config } from "tailwindcss";
-import tailwindcssAnimate from "tailwindcss-animate";
 import typography from "@tailwindcss/typography";
 
 const config: Config = {
   darkMode: ["class"],
   corePlugins: {
     fontSmoothing: false,
-    preflight: false,
   },
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -64,9 +62,6 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -76,23 +71,9 @@ const config: Config = {
         panel: "0 24px 80px -32px hsl(var(--shadow-color) / 0.45)",
         card: "0 18px 48px -28px hsl(var(--shadow-color) / 0.35)",
       },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
     },
   },
-  plugins: [tailwindcssAnimate, typography],
+  plugins: [typography],
 };
 
 export default config;

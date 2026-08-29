@@ -1,0 +1,19 @@
+{
+  "title": "IOCL Website",
+  "slug": "iocl-website",
+  "type": "website",
+  "summary": "Website for IOCL (Indian Oil Corporation Limited) Trinidad, providing a clean public-facing presence for the local subsidiary.",
+  "featured": false,
+  "status": "published",
+  "client": "IOCL",
+  "year": 2017,
+  "sortOrder": 24,
+  "stack": ["WordPress", "Web Design"],
+  "cover": "project-iocl-website.jpg",
+  "gallery": ["project-iocl-website2.jpg", "project-iocl-website3.jpg"],
+  "links": {
+    "live": "https://www.iocltt.com/",
+    "github": "",
+    "figma": ""
+  }
+}

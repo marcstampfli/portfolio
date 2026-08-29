@@ -1,0 +1,19 @@
+{
+  "title": "Addict Gang Website",
+  "slug": "addict-gang-website",
+  "type": "website",
+  "summary": "WordPress website for Addict Gang, a Trinidad-based streetwear brand, built to establish their online presence and showcase the label's identity.",
+  "featured": false,
+  "status": "published",
+  "client": "Addict Gang",
+  "year": 2016,
+  "sortOrder": 30,
+  "stack": ["WordPress", "Web Design"],
+  "cover": "project-addcitgang-website.jpg",
+  "gallery": ["project-addcitgang-website2.jpg"],
+  "links": {
+    "live": "",
+    "github": "",
+    "figma": ""
+  }
+}

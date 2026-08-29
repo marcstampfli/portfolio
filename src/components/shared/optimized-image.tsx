@@ -1,47 +1,59 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-interface OptimizedImageProps {
+interface BaseOptimizedImageProps {
   src: string;
   alt: string;
-  width?: number;
-  height?: number;
-  fill?: boolean;
   className?: string;
   sizes?: string;
   priority?: boolean;
   quality?: number;
   blurDataURL?: string;
-  fallback?: string;
   onError?: () => void;
 }
+
+type OptimizedImageProps = BaseOptimizedImageProps &
+  ({ fill: true; width?: never; height?: never } | { fill?: false; width: number; height: number });
 
 export function OptimizedImage({
   src,
   alt,
   className,
   blurDataURL,
-  fallback = "/images/particle.png",
+  fill = false,
   onError,
   ...props
 }: OptimizedImageProps) {
   const [error, setError] = useState(false);
-  const fallbackTried = useRef(false);
+
+  if (error) {
+    return (
+      <div
+        role="img"
+        aria-label={alt + " image unavailable"}
+        className={cn(
+          "flex items-center justify-center bg-secondary/70 px-4 text-center text-xs text-muted-foreground",
+          fill ? "absolute inset-0" : "relative min-h-32 w-full",
+          className
+        )}
+      >
+        Image unavailable
+      </div>
+    );
+  }
 
   return (
     <Image
-      src={error ? fallback : src}
+      src={src}
       alt={alt}
+      fill={fill}
       className={cn("object-cover", className)}
       onError={() => {
-        if (!fallbackTried.current) {
-          setError(true);
-          fallbackTried.current = true;
-          onError?.();
-        }
+        setError(true);
+        onError?.();
       }}
       placeholder={blurDataURL ? "blur" : "empty"}
       blurDataURL={blurDataURL}

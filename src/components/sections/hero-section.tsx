@@ -1,7 +1,3 @@
-"use client";
-
-import { memo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { FuturisticBackground } from "@/components/background/futuristic-background";
 import { Container } from "@/components/ui/container";
@@ -14,9 +10,7 @@ const heroMeta = [
   { label: "Contact", value: siteConfig.email, href: siteConfig.mailto },
 ];
 
-export const HeroSection = memo(function HeroSection() {
-  const prefersReducedMotion = useReducedMotion();
-
+export function HeroSection() {
   return (
     <section
       className="relative flex min-h-screen items-center overflow-hidden pb-24 pt-28 sm:pb-28 sm:pt-36"
@@ -27,12 +21,7 @@ export const HeroSection = memo(function HeroSection() {
       </div>
 
       <Container className="relative z-10">
-        <motion.div
-          initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-5xl"
-        >
+        <div className="max-w-5xl">
           <div className="section-kicker mb-8">
             <span className="eyebrow-dot" aria-hidden="true" />
             <span>WordPress • React • UI Design</span>
@@ -50,7 +39,7 @@ export const HeroSection = memo(function HeroSection() {
             <Button asChild size="lg">
               <a href="#projects">
                 View Projects
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </a>
             </Button>
             <Button asChild size="lg" variant="outline">
@@ -79,8 +68,8 @@ export const HeroSection = memo(function HeroSection() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </Container>
     </section>
   );
-});
+}

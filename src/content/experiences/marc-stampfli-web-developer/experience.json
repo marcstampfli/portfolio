@@ -1,0 +1,19 @@
+{
+  "slug": "marc-stampfli-web-developer",
+  "title": "Web Developer",
+  "company": "Marc Stampfli",
+  "position": "Web Developer / Designer",
+  "location": null,
+  "employmentType": "Freelance",
+  "logo": null,
+  "summary": "Independent web and graphic designer/developer, taking on client work locally and internationally across web builds, branding, and design.",
+  "techStack": ["WordPress", "HTML/CSS", "JavaScript", "Graphic Design"],
+  "achievements": [
+    "Designed and built custom websites for a range of local and international clients",
+    "Produced branding, print, and graphic design work alongside web projects",
+    "Managed projects end-to-end — brief, design, development, and delivery"
+  ],
+  "startDate": "2013-04-01",
+  "endDate": "2021-10-31",
+  "sortOrder": 0
+}

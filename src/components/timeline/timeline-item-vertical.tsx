@@ -1,7 +1,3 @@
-"use client";
-
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, ChevronRight, Briefcase } from "lucide-react";
@@ -32,9 +28,6 @@ export interface TimelineItemProps {
 }
 
 export function TimelineItem({ experience, isLast = false }: TimelineItemProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.25 });
-  const prefersReducedMotion = useReducedMotion();
   const isCurrentRole = !experience.end_date;
   const logoBackgroundClass =
     experience.logo_background === "light"
@@ -47,13 +40,10 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
   const logoHeight = experience.logo_height ?? 24;
 
   return (
-    <div ref={ref} className="relative flex gap-3 sm:gap-5">
+    <div className="relative flex gap-3 sm:gap-5">
       {/* Timeline connector column */}
       <div className="relative flex flex-col items-center pt-1">
-        <motion.div
-          initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        <div
           className={cn(
             "relative z-10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-sm border sm:h-12 sm:w-12",
             isCurrentRole
@@ -83,20 +73,15 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
               />
             </div>
           ) : (
-            <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
           )}
-        </motion.div>
+        </div>
 
         {!isLast ? <div className="mt-3 w-px flex-1 bg-border/80" /> : null}
       </div>
 
       {/* Card */}
-      <motion.article
-        initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-        transition={{ duration: 0.45, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-        className={cn("surface-card relative flex-1 p-4 sm:p-6", !isLast && "mb-5 sm:mb-6")}
-      >
+      <article className={cn("surface-card relative flex-1 p-4 sm:p-6", !isLast && "mb-5 sm:mb-6")}>
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
         {/* Header */}
@@ -122,7 +107,7 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
           {/* Meta row: date + type */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="inline-flex items-center gap-1.5 rounded-sm border border-border/70 bg-secondary/50 px-2.5 py-1 text-[0.68rem] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:px-3 sm:py-1.5 sm:text-xs">
-              <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
               <span>{experience.period}</span>
             </div>
             {experience.type ? (
@@ -161,14 +146,17 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
                   key={`${achievement}-${index}`}
                   className="flex items-start gap-1.5 text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6"
                 >
-                  <ChevronRight className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary sm:h-3.5 sm:w-3.5" />
+                  <ChevronRight
+                    className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary sm:h-3.5 sm:w-3.5"
+                    aria-hidden="true"
+                  />
                   <span>{achievement}</span>
                 </li>
               ))}
             </ul>
           </div>
         ) : null}
-      </motion.article>
+      </article>
     </div>
   );
 }

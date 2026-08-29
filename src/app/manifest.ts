@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description:
       "Web developer and designer with 15+ years of experience building websites and products.",
     start_url: "/",
-    display: "standalone",
+    display: "browser",
     background_color: "#0b1018",
     theme_color: "#0b1018",
     icons: [
