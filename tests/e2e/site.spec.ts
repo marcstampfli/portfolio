@@ -161,3 +161,36 @@ test("project-page navigation restores the destination section and active item",
 
   expect(pageErrors).toEqual([]);
 });
+
+test("rapid project-page navigation never creates a compound fragment", async ({ page }) => {
+  const pageErrors = collectPageErrors(page);
+  await page.goto("/projects/steups-io");
+
+  await page.evaluate(() => {
+    const links = Array.from(document.querySelectorAll('nav[aria-label="Primary"] a'));
+    const experienceLink = links.find((link) => link.textContent?.trim() === "Experience");
+    const aboutLink = links.find((link) => link.textContent?.trim() === "About");
+
+    (experienceLink as HTMLElement | undefined)?.click();
+    (aboutLink as HTMLElement | undefined)?.click();
+  });
+
+  await expect(page).toHaveURL(/\/#about$/);
+  await expect(page.locator('nav[aria-label="Primary"] a[aria-current="location"]')).toHaveText(
+    "About"
+  );
+  await expect(page.locator("#about")).toBeInViewport();
+  expect(pageErrors).toEqual([]);
+});
+
+test("malformed section fragments recover to the last valid destination", async ({ page }) => {
+  const pageErrors = collectPageErrors(page);
+  await page.goto("/#experience#about");
+
+  await expect(page).toHaveURL(/\/#about$/);
+  await expect(page.locator('nav[aria-label="Primary"] a[aria-current="location"]')).toHaveText(
+    "About"
+  );
+  await expect(page.locator("#about")).toBeInViewport();
+  expect(pageErrors).toEqual([]);
+});

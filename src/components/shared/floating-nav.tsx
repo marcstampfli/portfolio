@@ -1,34 +1,57 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { navItems } from "@/lib/nav";
 import { cn, getScrollBehavior } from "@/lib/utils";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Container } from "@/components/ui/container";
 
 const navHrefs = new Set(navItems.map(({ href }) => href));
+const NAVIGATION_GAP = 16;
+const ACTIVE_SECTION_TOLERANCE = 1;
 
 function getNavHrefFromHash(hash: string): string | null {
-  return navHrefs.has(hash) ? hash : null;
+  if (navHrefs.has(hash)) {
+    return hash;
+  }
+
+  // Recover gracefully from a malformed fragment such as
+  // `#experience#about`, which can otherwise leave the page at the top with
+  // no active section. The most recently requested valid section wins.
+  const fragments = hash.split("#").filter(Boolean);
+  for (let index = fragments.length - 1; index >= 0; index -= 1) {
+    const candidate = "#" + fragments[index];
+    if (navHrefs.has(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
-function isAtNavigationTarget(element: HTMLElement, navHeight: number): boolean {
+function getNavigationOffset(element: HTMLElement | null): number {
+  return element?.getBoundingClientRect().bottom ?? 80;
+}
+
+function isAtNavigationTarget(element: HTMLElement, navigationOffset: number): boolean {
   const bounds = element.getBoundingClientRect();
-  const activationLine = navHeight + 16;
+  const activationLine = navigationOffset + NAVIGATION_GAP + ACTIVE_SECTION_TOLERANCE;
 
   return bounds.top <= activationLine && bounds.bottom > activationLine;
 }
 
 export function FloatingNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const isHome = pathname === "/";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const pendingScrollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSectionFrameRef = useRef<number | null>(null);
   const pendingActiveSectionRef = useRef<string | null>(null);
   const pendingActiveSectionExpiresAtRef = useRef(0);
 
@@ -64,10 +87,19 @@ export function FloatingNav() {
     }
 
     const syncActiveSection = () => {
-      const section = getNavHrefFromHash(window.location.hash);
+      const rawHash = window.location.hash;
+      const section = getNavHrefFromHash(rawHash);
+
+      if (section && rawHash !== section) {
+        const url = new URL(window.location.href);
+        url.hash = section.slice(1);
+        window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
+
       const target = section ? document.getElementById(section.slice(1)) : null;
-      const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
-      const hasPendingTarget = section && (!target || !isAtNavigationTarget(target, navHeight));
+      const navigationOffset = getNavigationOffset(navRef.current);
+      const hasPendingTarget =
+        section && (!target || !isAtNavigationTarget(target, navigationOffset));
 
       pendingActiveSectionRef.current = hasPendingTarget ? section : null;
       pendingActiveSectionExpiresAtRef.current = hasPendingTarget ? performance.now() + 5000 : 0;
@@ -108,8 +140,18 @@ export function FloatingNav() {
           return;
         }
 
-        const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
-        const pendingSection = pendingActiveSectionRef.current;
+        const navigationOffset = getNavigationOffset(navRef.current);
+        const currentHashSection = getNavHrefFromHash(window.location.hash);
+        let pendingSection = pendingActiveSectionRef.current;
+
+        // A rapid cross-route click can finish an older transition after the
+        // URL already contains the newer destination. Never let that stale
+        // request override the section represented by the current hash.
+        if (pendingSection !== currentHashSection) {
+          pendingActiveSectionRef.current = null;
+          pendingActiveSectionExpiresAtRef.current = 0;
+          pendingSection = null;
+        }
 
         // A route transition can briefly leave the old section visible while
         // the hash destination is being restored. Keep the requested section
@@ -118,7 +160,7 @@ export function FloatingNav() {
           const target = document.getElementById(pendingSection.slice(1));
           const expired = performance.now() >= pendingActiveSectionExpiresAtRef.current;
 
-          if (!expired && (!target || !isAtNavigationTarget(target, navHeight))) {
+          if (!expired && (!target || !isAtNavigationTarget(target, navigationOffset))) {
             return;
           }
 
@@ -126,7 +168,7 @@ export function FloatingNav() {
           pendingActiveSectionExpiresAtRef.current = 0;
         }
 
-        const activationLine = navHeight + 16;
+        const activationLine = navigationOffset + NAVIGATION_GAP + ACTIVE_SECTION_TOLERANCE;
         let currentSection = sections[0];
 
         for (const section of sections) {
@@ -166,8 +208,8 @@ export function FloatingNav() {
     let attempts = 0;
 
     const scrollToHashTarget = () => {
-      const requestedHash = window.location.hash;
-      const targetId = requestedHash.slice(1);
+      const requestedHash = getNavHrefFromHash(window.location.hash);
+      const targetId = requestedHash?.slice(1) ?? "";
       const target = targetId ? document.getElementById(targetId) : null;
 
       if (!targetId) {
@@ -181,10 +223,10 @@ export function FloatingNav() {
       }
 
       if (target) {
-        const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
+        const navigationOffset = getNavigationOffset(navRef.current);
         const top = Math.max(
           0,
-          target.getBoundingClientRect().top + window.scrollY - navHeight - 16
+          target.getBoundingClientRect().top + window.scrollY - navigationOffset - NAVIGATION_GAP
         );
         window.scrollTo({ top, behavior: getScrollBehavior() });
       }
@@ -217,27 +259,56 @@ export function FloatingNav() {
       if (pendingScrollRef.current !== null) {
         clearTimeout(pendingScrollRef.current);
       }
+      if (pendingSectionFrameRef.current !== null) {
+        window.cancelAnimationFrame(pendingSectionFrameRef.current);
+      }
     };
   }, []);
 
   const handleNavClick = (href: string) => {
-    const target = document.querySelector<HTMLElement>(href);
-    if (!target) {
-      return;
-    }
-
-    const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
-    const hasPendingTarget = activeSection !== href && !isAtNavigationTarget(target, navHeight);
+    const targetId = href.slice(1);
+    const target = document.getElementById(targetId);
+    const navigationOffset = getNavigationOffset(navRef.current);
+    const hasPendingTarget = !target || !isAtNavigationTarget(target, navigationOffset);
 
     pendingActiveSectionRef.current = hasPendingTarget ? href : null;
     pendingActiveSectionExpiresAtRef.current = hasPendingTarget ? performance.now() + 5000 : 0;
     setActiveSection(href);
 
+    const url = new URL(window.location.href);
+    url.pathname = "/";
+    url.search = "";
+    url.hash = targetId;
+    window.history.replaceState(null, "", url.pathname + url.hash);
+
+    if (pendingSectionFrameRef.current !== null) {
+      window.cancelAnimationFrame(pendingSectionFrameRef.current);
+      pendingSectionFrameRef.current = null;
+    }
+
+    let attempts = 0;
     const scroll = () => {
-      const navHeight = navRef.current?.getBoundingClientRect().height ?? 80;
-      const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - navHeight - 16);
+      const currentTarget = document.getElementById(targetId);
+      if (!currentTarget) {
+        if (attempts < 60) {
+          attempts += 1;
+          pendingSectionFrameRef.current = window.requestAnimationFrame(scroll);
+        } else {
+          pendingSectionFrameRef.current = null;
+        }
+        return;
+      }
+
+      pendingSectionFrameRef.current = null;
+      const navigationOffset = getNavigationOffset(navRef.current);
+      const top = Math.max(
+        0,
+        currentTarget.getBoundingClientRect().top +
+          window.scrollY -
+          navigationOffset -
+          NAVIGATION_GAP
+      );
       window.scrollTo({ top, behavior: getScrollBehavior() });
-      window.history.replaceState(null, "", href);
     };
 
     if (pendingScrollRef.current !== null) {
@@ -256,6 +327,24 @@ export function FloatingNav() {
     }
   };
 
+  const handleNavigationClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    event.preventDefault();
+    setMobileMenuOpen(false);
+
+    if (isHome) {
+      handleNavClick(href);
+      return;
+    }
+
+    // Keep cross-route navigation deterministic even if a user clicks two
+    // destinations before the first App Router transition has completed.
+    router.push("/" + href, { scroll: false });
+  };
+
   return (
     <div className="fixed inset-x-0 top-0 z-50 pt-4 sm:pt-5">
       <Container>
@@ -266,12 +355,7 @@ export function FloatingNav() {
           <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
             <Link
               href="/#home"
-              onClick={(event) => {
-                if (window.location.pathname === "/") {
-                  event.preventDefault();
-                  handleNavClick("#home");
-                }
-              }}
+              onClick={(event) => handleNavigationClick(event, "#home")}
               className="group flex items-center gap-3 bg-transparent text-left"
             >
               <span className="transition-theme flex h-7 w-7 items-center justify-center rounded-sm bg-primary font-display text-[0.62rem] font-bold tracking-[0.1em] text-primary-foreground group-hover:bg-primary/90">
@@ -294,13 +378,7 @@ export function FloatingNav() {
                   <Link
                     key={href}
                     href={"/" + href}
-                    onClick={(event) => {
-                      if (window.location.pathname === "/") {
-                        event.preventDefault();
-                        handleNavClick(href);
-                      }
-                      setMobileMenuOpen(false);
-                    }}
+                    onClick={(event) => handleNavigationClick(event, href)}
                     aria-current={isActive ? "location" : undefined}
                     className={cn(
                       "transition-theme relative rounded-sm px-3 py-2 text-sm text-muted-foreground no-underline hover:text-foreground",
@@ -364,13 +442,7 @@ export function FloatingNav() {
                     <Link
                       key={href}
                       href={"/" + href}
-                      onClick={(event) => {
-                        if (window.location.pathname === "/") {
-                          event.preventDefault();
-                          handleNavClick(href);
-                        }
-                        setMobileMenuOpen(false);
-                      }}
+                      onClick={(event) => handleNavigationClick(event, href)}
                       aria-current={isActive ? "location" : undefined}
                       className={cn(
                         "transition-theme flex items-center gap-3 rounded-sm border px-4 py-3 text-sm",
