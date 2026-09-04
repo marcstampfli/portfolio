@@ -109,7 +109,7 @@ export function TurnstileWidget({ onToken, onExpired, onError, resetKey }: Turns
       />
       <div ref={containerRef} className="min-h-[65px]" />
       <p className="text-xs leading-5 text-muted-foreground">
-        This check helps keep automated messages out.
+        This quick security check helps prevent spam submissions.
       </p>
     </div>
   );
