@@ -49,7 +49,7 @@ export function HeroSection() {
 
           <div className="mt-20 grid gap-6 border-t border-border/60 pt-6 sm:grid-cols-3 sm:gap-8">
             {heroMeta.map((item) => (
-              <div key={item.label} className="space-y-2">
+              <div key={item.label} className="w-fit space-y-2">
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                   {item.label}
                 </p>
