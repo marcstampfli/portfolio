@@ -56,7 +56,7 @@ export function HeroSection() {
                 {item.href ? (
                   <a
                     href={item.href}
-                    className="link block max-w-sm text-sm leading-6 sm:text-base"
+                    className="link inline-block max-w-sm text-sm leading-6 sm:text-base"
                   >
                     {item.value}
                   </a>
