@@ -24,6 +24,7 @@ function createContentSecurityPolicy(nonce: string, upgradeInsecureRequests: boo
     "https://www.googletagmanager.com",
     "https://www.google-analytics.com",
     "https://va.vercel-scripts.com",
+    "https://challenges.cloudflare.com",
   ].join(" ");
 
   const directives = [
@@ -31,7 +32,7 @@ function createContentSecurityPolicy(nonce: string, upgradeInsecureRequests: boo
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
-    "frame-src 'none'",
+    "frame-src https://challenges.cloudflare.com",
     "media-src 'self'",
     "object-src 'none'",
     "img-src 'self' data:",
@@ -45,6 +46,7 @@ function createContentSecurityPolicy(nonce: string, upgradeInsecureRequests: boo
       "https://region1.google-analytics.com",
       "https://vitals.vercel-insights.com",
       "https://va.vercel-scripts.com",
+      "https://challenges.cloudflare.com",
     ].join(" "),
   ];
 

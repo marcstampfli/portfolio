@@ -99,7 +99,7 @@ test("mobile navigation, forms, and semantic controls remain usable", async ({ p
       (button) => !button.textContent?.trim() && !button.getAttribute("aria-label")
     ).length,
     unlabeledFormControlCount: Array.from(
-      document.querySelectorAll("input, textarea, select")
+      document.querySelectorAll('input:not([type="hidden"]), textarea, select')
     ).filter((control) => {
       const id = control.getAttribute("id");
       return !id || !document.querySelector(`label[for="${CSS.escape(id)}"]`);

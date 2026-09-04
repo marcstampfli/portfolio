@@ -48,7 +48,13 @@ export default function PrivacyPage() {
             When you submit the contact form, your name, email address, and project brief are sent
             through Gmail SMTP to {siteConfig.email} so a reply can be made. The portfolio does not
             store those fields in an application database. The form is protected with validation, a
-            bot honeypot, request limits, and same-origin checks.
+            bot honeypot, Cloudflare Turnstile, request limits, and same-origin checks. Turnstile
+            processes limited browser and device signals to detect automated submissions; it does
+            not receive the form fields. See Cloudflare&apos;s{" "}
+            <a href="https://www.cloudflare.com/turnstile-privacy-policy/" className="link">
+              Turnstile Privacy Addendum
+            </a>
+            .
           </p>
 
           <h2>Operational processing</h2>

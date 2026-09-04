@@ -9,6 +9,7 @@ Live at [www.marcstampfli.com](https://www.marcstampfli.com)
 - Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
+- Cloudflare Turnstile (contact form bot protection)
 - Nodemailer + Gmail SMTP (contact form)
 
 ## Development
@@ -22,14 +23,16 @@ Copy `.env.example` to `.env.local` and fill in the values before running.
 
 ## Environment Variables
 
-| Variable                        | Required | Description                                              |
-| ------------------------------- | -------- | -------------------------------------------------------- |
-| `NEXT_PUBLIC_APP_URL`           | Yes      | Full canonical URL (e.g. `https://www.marcstampfli.com`) |
-| `GMAIL_USER`                    | Yes      | Gmail address used to send contact form emails           |
-| `GMAIL_APP_PASSWORD`            | Yes      | Gmail App Password (not your account password)           |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No       | Google Analytics measurement ID                          |
-| `UPSTASH_REDIS_REST_URL`        | No       | Optional shared Redis REST URL for rate limiting         |
-| `UPSTASH_REDIS_REST_TOKEN`      | No       | Optional shared Redis REST token for rate limiting       |
+| Variable                         | Required | Description                                              |
+| -------------------------------- | -------- | -------------------------------------------------------- |
+| `NEXT_PUBLIC_APP_URL`            | Yes      | Full canonical URL (e.g. `https://www.marcstampfli.com`) |
+| `GMAIL_USER`                     | Yes      | Gmail address used to send contact form emails           |
+| `GMAIL_APP_PASSWORD`             | Yes      | Gmail App Password (not your account password)           |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Yes      | Public Cloudflare Turnstile site key                     |
+| `TURNSTILE_SECRET_KEY`           | Yes      | Private Cloudflare Turnstile server-validation key       |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID`  | No       | Google Analytics measurement ID                          |
+| `UPSTASH_REDIS_REST_URL`         | No       | Optional shared Redis REST URL for rate limiting         |
+| `UPSTASH_REDIS_REST_TOKEN`       | No       | Optional shared Redis REST token for rate limiting       |
 
 Set these in Vercel under Project → Settings → Environment Variables.
 When present, Upstash enforces contact limits across serverless instances. When absent, the

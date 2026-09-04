@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { type ContactFormData } from "@/types";
 
 interface FormFieldProps {
-  name: keyof Omit<ContactFormData, "website">;
+  name: keyof Omit<ContactFormData, "website" | "turnstileToken">;
   label: string;
   form: UseFormReturn<ContactFormData>;
   errors: FieldErrors<ContactFormData>;

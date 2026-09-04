@@ -92,6 +92,7 @@ export async function POST(request: Request) {
         email: getString("email"),
         message: getString("message"),
         website: getString("website"),
+        turnstileToken: getString("turnstileToken") || getString("cf-turnstile-response"),
       },
       request.headers
     );

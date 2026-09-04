@@ -12,6 +12,10 @@ const RATE_LIMIT = 5;
 const GLOBAL_RATE_LIMIT = 50;
 const MAX_LOCAL_RATE_KEYS = 10_000;
 const REDIS_TIMEOUT_MS = 1_500;
+const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+const TURNSTILE_TIMEOUT_MS = 5_000;
+const TURNSTILE_ACTION = "contact";
+const TURNSTILE_HOSTNAMES = new Set(["marcstampfli.com", "www.marcstampfli.com"]);
 const isProduction = process.env.NODE_ENV === "production";
 const submissions = new Map<string, number[]>();
 
@@ -166,6 +170,75 @@ async function getClientKey(headerReader?: HeaderReader): Promise<string> {
   return headerSafe(ip).slice(0, 128) || "unknown";
 }
 
+type TurnstileVerificationResponse = {
+  success?: unknown;
+  action?: unknown;
+  hostname?: unknown;
+};
+
+function isAllowedTurnstileHostname(hostname: unknown): boolean {
+  if (typeof hostname !== "string") {
+    return false;
+  }
+
+  const normalizedHostname = hostname.toLowerCase().replace(/\.$/, "");
+  if (!isProduction && ["localhost", "127.0.0.1"].includes(normalizedHostname)) {
+    return true;
+  }
+
+  return TURNSTILE_HOSTNAMES.has(normalizedHostname);
+}
+
+async function verifyTurnstile(token: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
+
+  // Local development can continue to work without production credentials.
+  // Production fails closed if the protection has not been configured.
+  if (!secret) {
+    return !isProduction;
+  }
+
+  if (!token || token.length > 2048) {
+    return false;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), TURNSTILE_TIMEOUT_MS);
+
+  try {
+    const body = new URLSearchParams({
+      secret,
+      response: token,
+    });
+    const response = await fetch(TURNSTILE_VERIFY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body,
+      cache: "no-store",
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const result = (await response.json()) as TurnstileVerificationResponse;
+    return (
+      result.success === true &&
+      result.action === TURNSTILE_ACTION &&
+      isAllowedTurnstileHostname(result.hostname)
+    );
+  } catch (error) {
+    console.warn(
+      "Turnstile verification unavailable",
+      error instanceof Error ? error.name : "unknown error"
+    );
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function buildMailtoHref(email: string): string {
   return "mailto:" + encodeURIComponent(email);
 }
@@ -267,6 +340,10 @@ export async function processContactMessage(
 
   if (!(await rateLimit("global", GLOBAL_RATE_LIMIT))) {
     return { success: false, error: "Too many submissions. Please try again later." };
+  }
+
+  if (!(await verifyTurnstile(parsed.data.turnstileToken))) {
+    return { success: false, error: "Please complete the verification and try again." };
   }
 
   try {

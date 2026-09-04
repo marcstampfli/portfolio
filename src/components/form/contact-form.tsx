@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { type ContactFormData, contactFormSchema } from "@/types";
 import { FormField } from "./form-field";
+import { TurnstileWidget } from "./turnstile-widget";
 import { submitContactMessage } from "@/lib/actions";
 import { siteConfig } from "@/lib/site";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,10 @@ export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileError, setTurnstileError] = useState(false);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const turnstileRequired = process.env.NODE_ENV === "production";
   const contactStatus = useSyncExternalStore(
     subscribeToContactStatus,
     getContactStatus,
@@ -67,6 +72,7 @@ export function ContactForm() {
       email: "",
       message: "",
       website: "",
+      turnstileToken: "",
     },
   });
 
@@ -77,17 +83,39 @@ export function ContactForm() {
   }, [contactStatus]);
 
   const displayError =
-    error || (contactStatus === "error" ? "Failed to send message. Please try again later." : null);
+    error ||
+    (turnstileError ? "Please complete the verification and try again." : null) ||
+    (contactStatus === "error" ? "Failed to send message. Please try again later." : null);
   const displaySubmitted = isSubmitted || contactStatus === "sent";
 
+  const handleTurnstileToken = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setTurnstileError(false);
+  }, []);
+
+  const handleTurnstileReset = useCallback(() => {
+    setTurnstileToken("");
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken("");
+    setTurnstileError(true);
+  }, []);
+
   async function onSubmit(data: ContactFormData) {
+    if (turnstileRequired && !turnstileToken) {
+      setTurnstileError(true);
+      setError(null);
+      return;
+    }
+
     try {
       window.dispatchEvent(new Event("contact-status-change"));
       setIsSubmitting(true);
       setError(null);
       setIsSubmitted(false);
 
-      const result = await submitContactMessage(data);
+      const result = await submitContactMessage({ ...data, turnstileToken });
 
       if (!result.success) {
         throw new Error(result.error ?? "Failed to send message. Please try again later.");
@@ -95,6 +123,8 @@ export function ContactForm() {
 
       setIsSubmitted(true);
       form.reset();
+      setTurnstileToken("");
+      setTurnstileResetKey((key) => key + 1);
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -208,6 +238,15 @@ export function ContactForm() {
             autoComplete="off"
             minLength={10}
             maxLength={5000}
+          />
+
+          <input type="hidden" name="turnstileToken" value={turnstileToken} readOnly />
+
+          <TurnstileWidget
+            onToken={handleTurnstileToken}
+            onExpired={handleTurnstileReset}
+            onError={handleTurnstileError}
+            resetKey={turnstileResetKey}
           />
 
           {displayError ? (
