@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Github, Layers } from "lucide-react";
@@ -11,6 +10,7 @@ import { getProjectTypeDisplayName } from "@/types";
 import { isValidLocalImage } from "@/lib/utils";
 import { siteConfig } from "@/lib/site";
 import { serializeJsonLd } from "@/lib/json-ld";
+import { ProjectGallery } from "@/components/projects/project-gallery";
 
 export const dynamicParams = false;
 // The root layout and the page JSON-LD use a request-specific CSP nonce.
@@ -89,8 +89,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const coverImage = project.images.find(isValidLocalImage);
-  const galleryImages = project.images.filter((image) => image !== coverImage);
+  const projectImages = project.images.filter(isValidLocalImage);
+  const coverImage = projectImages[0];
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   const pageUrl = siteConfig.url + "/projects/" + project.slug;
   const projectJsonLd = {
@@ -165,46 +165,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </div>
           </header>
 
-          {coverImage ? (
-            <figure className="relative mt-10 aspect-[16/10] overflow-hidden rounded-sm border border-border/70 bg-secondary/60">
-              <Image
-                src={coverImage}
-                alt={project.title}
-                fill
-                priority
-                sizes="(max-width: 896px) 100vw, 896px"
-                className="object-cover object-top"
-              />
-            </figure>
-          ) : null}
-
-          <div className="prose prose-slate mt-10 max-w-none dark:prose-invert">
-            {project.content ? (
-              <div dangerouslySetInnerHTML={{ __html: project.content }} />
-            ) : (
-              <p>Project details are available on request.</p>
-            )}
-          </div>
-
-          {galleryImages.length > 0 ? (
-            <div className="mt-12 grid gap-6 sm:grid-cols-2">
-              {galleryImages.map((image) => (
-                <figure
-                  key={image}
-                  className="relative aspect-[16/10] overflow-hidden rounded-sm border border-border/70 bg-secondary/60"
-                >
-                  <Image
-                    src={image}
-                    alt={project.title + " project detail"}
-                    fill
-                    loading="lazy"
-                    sizes="(max-width: 640px) 100vw, 448px"
-                    className="object-cover object-top"
-                  />
-                </figure>
-              ))}
+          <ProjectGallery title={project.title} images={projectImages}>
+            <div className="prose prose-slate mt-10 max-w-none dark:prose-invert">
+              {project.content ? (
+                <div dangerouslySetInnerHTML={{ __html: project.content }} />
+              ) : (
+                <p>Project details are available on request.</p>
+              )}
             </div>
-          ) : null}
+          </ProjectGallery>
         </article>
       </Container>
     </main>

@@ -1,17 +1,18 @@
 {
   "slug": "marc-stampfli-web-developer",
-  "title": "Web Developer",
-  "company": "Marc Stampfli",
-  "position": "Web Developer / Designer",
+  "title": "Freelance Web Developer / Designer",
+  "company": "Marc Stämpfli",
+  "position": null,
   "location": null,
   "employmentType": "Freelance",
   "logo": null,
-  "summary": "Independent web and graphic designer/developer, taking on client work locally and internationally across web builds, branding, and design.",
+  "logoKind": "brand-mark",
+  "summary": "Worked independently with clients in Trinidad and internationally on web development, WordPress, graphic design, and other digital projects. Managed projects from initial requirements and design through development, revisions, deployment, and ongoing support.\n\nFreelancing alongside other roles gave me experience working directly with clients, managing projects independently, adapting to different businesses and requirements, and taking responsibility for both the technical and visual sides of a project.",
   "techStack": ["WordPress", "HTML/CSS", "JavaScript", "Graphic Design"],
   "achievements": [
-    "Designed and built custom websites for a range of local and international clients",
-    "Produced branding, print, and graphic design work alongside web projects",
-    "Managed projects end-to-end — brief, design, development, and delivery"
+    "Built and maintained websites for local and international clients",
+    "Provided web development and graphic design services",
+    "Managed client communication, project requirements, revisions, launches, and ongoing website support"
   ],
   "startDate": "2013-04-01",
   "endDate": "2021-10-31",

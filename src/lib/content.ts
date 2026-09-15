@@ -1,6 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
@@ -106,6 +107,7 @@ const experienceConfigSchema = z
     location: z.string().trim().max(MAX_PROJECT_TITLE_LENGTH).nullable().optional(),
     employmentType: z.string().trim().max(MAX_PROJECT_TITLE_LENGTH).nullable().optional(),
     logo: optionalExperienceLogoSchema,
+    logoKind: z.enum(["image", "brand-mark"]).optional().default("image"),
     logoBackground: z.enum(["none", "light", "dark"]).optional().default("dark"),
     logoFit: z.enum(["contain", "cover"]).optional().default("contain"),
     logoWidth: z.number().int().min(12).max(40).nullable().optional(),
@@ -324,9 +326,33 @@ function loadPublishedProjectBySlug(
   return project?.status === "published" ? project : null;
 }
 
+function getProjectCacheKey(slug?: string, includeContent = true): string {
+  const hash = createHash("sha256");
+  const projectDirectories = (slug ? [slug] : getContentDirectories(contentProjectsRootDir)).sort();
+
+  for (const projectDirName of projectDirectories) {
+    const projectDir = join(contentProjectsRootDir, projectDirName);
+    const configPath = join(projectDir, "project.json");
+    const bodyPath = join(projectDir, "body.md");
+    const assetsPath = join(projectAssetsRootDir, projectDirName);
+    const assets = existsSync(assetsPath) ? readdirSync(assetsPath).sort() : [];
+
+    hash.update(projectDirName).update("\0");
+    if (existsSync(configPath)) {
+      hash.update(readFileSync(configPath, "utf-8"));
+    }
+    if (includeContent && existsSync(bodyPath)) {
+      hash.update("\0").update(readFileSync(bodyPath, "utf-8"));
+    }
+    hash.update("\0").update(assets.join("\0")).update("\0");
+  }
+
+  return hash.digest("hex");
+}
+
 const loadPublishedProjectCardsCached = unstable_cache(
   async () => loadPublishedProjects(false),
-  ["published-project-cards"],
+  ["published-project-cards", getProjectCacheKey(undefined, false)],
   { revalidate: 3600 }
 );
 
@@ -366,6 +392,7 @@ const loadExperiences = (): Experience[] => {
         location: experience.location || null,
         type: experience.employmentType || null,
         logo: resolveExperienceLogo(experience),
+        logo_kind: experience.logoKind,
         logo_background: experience.logoBackground,
         logo_fit: experience.logoFit,
         logo_width: experience.logoWidth ?? null,
@@ -395,9 +422,29 @@ const loadExperiences = (): Experience[] => {
     .map(({ order: _order, ...experience }) => experience);
 };
 
-const loadExperiencesCached = unstable_cache(async () => loadExperiences(), ["experiences"], {
-  revalidate: 3600,
-});
+function getExperienceCacheKey(): string {
+  const hash = createHash("sha256");
+
+  for (const experienceDirName of getContentDirectories(contentExperiencesRootDir).sort()) {
+    const configPath = join(contentExperiencesRootDir, experienceDirName, "experience.json");
+    const assetsPath = join(experienceAssetsRootDir, experienceDirName);
+    const assets = existsSync(assetsPath) ? readdirSync(assetsPath).sort() : [];
+
+    hash.update(experienceDirName).update("\0");
+    if (existsSync(configPath)) {
+      hash.update(readFileSync(configPath, "utf-8"));
+    }
+    hash.update("\0").update(assets.join("\0")).update("\0");
+  }
+
+  return hash.digest("hex");
+}
+
+const loadExperiencesCached = unstable_cache(
+  async () => loadExperiences(),
+  ["experiences", getExperienceCacheKey()],
+  { revalidate: 3600 }
+);
 
 export async function getPublishedProjectCards(): Promise<ProjectCard[]> {
   const projects = isProduction
@@ -421,7 +468,7 @@ export async function getPublishedProjectBySlug(
   if (isProduction) {
     return unstable_cache(
       async () => loadPublishedProjectBySlug(parsedSlug.data, true),
-      ["published-project-by-slug", parsedSlug.data],
+      ["published-project-by-slug", parsedSlug.data, getProjectCacheKey(parsedSlug.data)],
       { revalidate: 3600 }
     )();
   }

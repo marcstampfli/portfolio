@@ -20,7 +20,12 @@
     "PWA"
   ],
   "cover": "project-incometaxtt.jpg",
-  "gallery": ["project-incometax2.jpg"],
+  "gallery": [
+    "project-incometax2.jpg",
+    "project-incometax3.jpg",
+    "project-incometax4.jpg",
+    "project-incometax5.jpg"
+  ],
   "links": {
     "live": "https://incometaxtt.com",
     "github": "",

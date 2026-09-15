@@ -47,6 +47,7 @@ export interface Experience {
   tech_stack: string[];
   achievements: string[];
   logo?: string | null;
+  logo_kind?: "image" | "brand-mark";
   logo_background?: "none" | "light" | "dark";
   logo_fit?: "contain" | "cover";
   logo_width?: number | null;

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { navItems } from "@/lib/nav";
 import { cn, getScrollBehavior } from "@/lib/utils";
+import { BrandMark } from "@/components/shared/brand-mark";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Container } from "@/components/ui/container";
 
@@ -358,9 +359,7 @@ export function FloatingNav() {
               onClick={(event) => handleNavigationClick(event, "#home")}
               className="group flex items-center gap-3 bg-transparent text-left"
             >
-              <span className="transition-theme flex h-7 w-7 items-center justify-center rounded-sm bg-primary font-display text-[0.62rem] font-bold tracking-[0.1em] text-primary-foreground group-hover:bg-primary/90">
-                MS
-              </span>
+              <BrandMark />
               <span
                 className="transition-theme h-4 w-px bg-border/70 group-hover:bg-primary/30"
                 aria-hidden="true"

@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ChevronRight, Briefcase } from "lucide-react";
+import { Calendar, ChevronRight, Briefcase, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandMark } from "@/components/shared/brand-mark";
 
 export interface TimelineItemProps {
   experience: {
@@ -16,6 +17,7 @@ export interface TimelineItemProps {
     start_date: Date | string;
     end_date: Date | string | null;
     logo?: string | null;
+    logo_kind?: "image" | "brand-mark";
     logo_background?: "none" | "light" | "dark";
     logo_fit?: "contain" | "cover";
     logo_width?: number | null;
@@ -51,7 +53,9 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
               : "border-borderStrong/80 bg-surfaceStrong text-muted-foreground"
           )}
         >
-          {experience.logo ? (
+          {experience.logo_kind === "brand-mark" ? (
+            <BrandMark />
+          ) : experience.logo ? (
             <div
               className={cn(
                 "relative overflow-hidden rounded-sm",
@@ -115,11 +119,17 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
                 {experience.type}
               </div>
             ) : null}
+            {experience.location ? (
+              <div className="inline-flex items-center gap-1.5 rounded-sm border border-border/70 bg-secondary/50 px-2.5 py-1 text-[0.68rem] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:px-3 sm:py-1.5 sm:text-xs">
+                <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
+                <span>{experience.location}</span>
+              </div>
+            ) : null}
           </div>
         </div>
 
         {/* Description */}
-        <p className="mt-4 text-sm leading-6 text-muted-foreground sm:mt-5 sm:text-[0.96rem] sm:leading-7">
+        <p className="mt-4 whitespace-pre-line text-sm leading-6 text-muted-foreground sm:mt-5 sm:text-[0.96rem] sm:leading-7">
           {experience.description}
         </p>
 
@@ -138,7 +148,7 @@ export function TimelineItem({ experience, isLast = false }: TimelineItemProps) 
         {experience.achievements.length > 0 ? (
           <div className="mt-4 border-t border-border/70 pt-4 sm:mt-5 sm:pt-5">
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground sm:text-xs">
-              Key Achievements
+              Highlights
             </p>
             <ul className="m-0 mt-2.5 list-none space-y-2 p-0 sm:space-y-2.5">
               {experience.achievements.map((achievement, index) => (

@@ -1,9 +1,9 @@
 {
   "slug": "ccn-tv6-webmaster",
   "title": "Webmaster",
-  "company": "CCN TV6",
+  "company": "CCN Group / CCN TV6",
   "position": "Webmaster",
-  "location": null,
+  "location": "Semi-remote",
   "employmentType": "Contract",
   "logo": "ccntv6-logo.png",
   "logoBackground": "none",
@@ -11,13 +11,13 @@
   "logoWidth": 22,
   "logoHeight": 22,
   "logoPadding": 1,
-  "summary": "Webmaster at CCN TV6 and Trinidad Express Newspaper, handling content management, ePaper production, social media, and video editing for the 'Beyond the Tape' segment. Semi-remote.",
+  "summary": "Webmaster supporting CCN TV6 and Trinidad Express Newspaper in a fast-moving digital news environment. Managed day-to-day website publishing, digital content, ePaper production, and social media, while also providing video editing support for the 'Beyond the Tape' segment.",
   "techStack": ["Content Management", "Social Media", "Video Editing"],
   "achievements": [
-    "Maintained and updated website content across both CCN TV6 and Trinidad Express platforms",
-    "Produced ePaper editions and managed digital publication workflows",
-    "Ran social media strategy and day-to-day channel management",
-    "Handled video editing for the 'Beyond the Tape' news segment"
+    "Maintained and published content across the CCN TV6 and Trinidad Express websites",
+    "Produced digital ePaper editions and supported the publication workflow",
+    "Managed social media content and updates",
+    "Edited video content for 'Beyond the Tape'"
   ],
   "startDate": "2018-10-01",
   "endDate": "2019-03-31",

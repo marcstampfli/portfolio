@@ -23,7 +23,12 @@
     "Vercel"
   ],
   "cover": "project-steups.jpg",
-  "gallery": ["project-steups2.jpg"],
+  "gallery": [
+    "project-steups2.jpg",
+    "project-steups3.jpg",
+    "project-steups4.jpg",
+    "project-steups5.jpg"
+  ],
   "links": {
     "live": "https://steups.io",
     "github": "",

@@ -24,7 +24,12 @@
     "pnpm"
   ],
   "cover": "project-strain-memo.jpg",
-  "gallery": [],
+  "gallery": [
+    "project-strain-memo2.jpg",
+    "project-strain-memo3.jpg",
+    "project-strain-memo4.jpg",
+    "project-strain-memo5.jpg"
+  ],
   "links": {
     "live": "https://strainmemo.com",
     "github": "",

@@ -3,7 +3,7 @@
   "title": "Web Developer",
   "company": "Simply Intense Media",
   "position": "Web Developer",
-  "location": null,
+  "location": "Office & remote",
   "employmentType": "Full-time",
   "logo": "simply-intense-media.png",
   "logoBackground": "none",
@@ -11,12 +11,13 @@
   "logoWidth": 22,
   "logoHeight": 18,
   "logoPadding": 2,
-  "summary": "In-house Web Developer at a Trinidad digital agency, covering web development, design, server administration, and database management across semi-remote and fully remote work arrangements.",
+  "summary": "In-house Web Developer responsible for developing and maintaining company websites, with additional responsibilities spanning web design, server administration, and database management. Supported the digital needs of multiple business units.",
   "techStack": ["Web Development", "Server Administration", "Database Management"],
   "achievements": [
-    "Built and maintained client and company websites from development through to deployment",
-    "Managed server infrastructure and database administration",
-    "Delivered digital solutions across multiple business units within the agency"
+    "Developed and maintained company websites",
+    "Managed web servers and databases",
+    "Provided web design and technical support across multiple areas of the business",
+    "Implemented and maintained digital solutions for internal teams and company projects"
   ],
   "startDate": "2008-10-01",
   "endDate": "2013-03-31",

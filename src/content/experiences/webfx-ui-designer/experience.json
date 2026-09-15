@@ -1,9 +1,9 @@
 {
   "slug": "webfx-ui-designer",
-  "title": "UI Designer",
+  "title": "UI/UX Designer",
   "company": "Webfx",
-  "position": "UI Designer",
-  "location": null,
+  "position": "UI/UX Designer",
+  "location": "Remote",
   "employmentType": "Contract",
   "logo": "webfx.png",
   "logoBackground": "light",
@@ -11,12 +11,12 @@
   "logoWidth": 30,
   "logoHeight": 16,
   "logoPadding": 1,
-  "summary": "Freelance UI Designer working with a local digital agency on interface design for web and mobile projects. Fully remote.",
-  "techStack": ["Figma", "Adobe XD", "UI Design"],
+  "summary": "Contract UI/UX Designer supporting a local digital agency across web and mobile client projects. Created interface designs, reusable visual systems, and developer-ready layouts in Figma and Adobe XD, working closely with developers to make sure the finished product matched the intended design.",
+  "techStack": ["Figma", "Adobe XD", "UI/UX Design"],
   "achievements": [
-    "Designed interfaces for web and mobile applications across multiple client projects",
-    "Produced design systems and style guides to maintain consistency across deliverables",
-    "Worked closely with developers to ensure designs translated accurately into the final build"
+    "Designed responsive interfaces for web and mobile applications",
+    "Created reusable design patterns and style guides for consistency across projects",
+    "Prepared designs for development handoff and collaborated with developers during implementation and revisions"
   ],
   "startDate": "2021-04-01",
   "endDate": "2021-11-30",
